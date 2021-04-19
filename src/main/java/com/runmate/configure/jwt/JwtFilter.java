@@ -33,7 +33,6 @@ public class JwtFilter implements Filter {
         try{
             JwtUtils.validate(header);
         }catch(JWTVerificationException exception){
-            System.out.println("validation failed");
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
