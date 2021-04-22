@@ -2,7 +2,6 @@ package com.runmate.configure.jwt;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -24,7 +23,7 @@ public class JwtAuthenticationFilter implements Filter {
         HttpServletRequest httpRequest= (HttpServletRequest) request;
         HttpServletResponse httpResponse=(HttpServletResponse)response;
 
-        String requestPath=httpRequest.getServletPath();
+        String requestPath=httpRequest.getRequestURI();
 
         //permit
         if(requestPath.startsWith("/api/auth/")){
