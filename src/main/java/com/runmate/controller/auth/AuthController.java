@@ -46,23 +46,14 @@ public class AuthController {
     }
 
     @RequestMapping("/kakao/login")
-    public ResponseEntity kakaoLogin(@RequestParam(name = "code",required = false)String code){
+    public ResponseEntity kakaoLogin(@RequestParam(name = "code",required = false)String code) throws URISyntaxException {
         if(code==null){
-            try {
-                HttpHeaders httpHeaders=new HttpHeaders();
-                httpHeaders.setLocation(new URI(kakaoApi.getRedirectionUri()));
-                return new ResponseEntity(httpHeaders,HttpStatus.SEE_OTHER);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-                return null;
-            }
+            HttpHeaders httpHeaders=new HttpHeaders();
+            httpHeaders.setLocation(new URI(kakaoApi.getRedirectionUri()));
+
+            return new ResponseEntity(httpHeaders,HttpStatus.SEE_OTHER);
         }else{
-            String email;
-            try{
-                email=kakaoApi.getEmail(code);
-            }catch (JSONException exception){
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid code");
-            }
+            String email=kakaoApi.getEmail(code);
             if(userService.getUser(email)==null) {
                 User user=new User();
                 user.setEmail(email);

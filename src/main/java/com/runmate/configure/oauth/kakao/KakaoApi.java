@@ -1,5 +1,6 @@
 package com.runmate.configure.oauth.kakao;
 
+import com.runmate.controller.exception.InvalidCodeException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -50,7 +51,7 @@ public class KakaoApi{
                 .queryParam("response_type",responseType)
                 .build().toString();
     }
-    public String getAccessToken(String code) throws JSONException {
+    public String getAccessToken(String code) throws InvalidCodeException {
         try {
             URI uri = new URI(requestTokenUri);
 
@@ -73,6 +74,8 @@ public class KakaoApi{
             e.printStackTrace();
         } catch(IOException e){
             e.printStackTrace();
+        } catch(JSONException e){
+            throw new InvalidCodeException("invalidate code",e);
         }
         return null;
     }
