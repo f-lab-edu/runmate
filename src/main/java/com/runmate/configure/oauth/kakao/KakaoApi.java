@@ -10,6 +10,7 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -49,7 +50,7 @@ public class KakaoApi{
                 .queryParam("response_type",responseType)
                 .build().toString();
     }
-    public String getAccessToken(String code) {
+    public String getAccessToken(String code) throws JSONException {
         try {
             URI uri = new URI(requestTokenUri);
 

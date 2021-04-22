@@ -7,6 +7,7 @@ import com.runmate.domain.dto.AuthRequest;
 import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-@RequestMapping("/api/auth/*")
+@RequestMapping("/api/auth")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -56,8 +57,12 @@ public class AuthController {
                 return null;
             }
         }else{
-            String email=kakaoApi.getEmail(code);
-
+            String email;
+            try{
+                email=kakaoApi.getEmail(code);
+            }catch (JSONException exception){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid code");
+            }
             if(userService.getUser(email)==null) {
                 User user=new User();
                 user.setEmail(email);
