@@ -1,26 +1,29 @@
 package com.runmate.security.jwtUtils;
 
-import com.runmate.configure.jwt.JwtUtils;
+import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.domain.user.CrewRole;
 import com.runmate.domain.user.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.junit.jupiter.api.Assertions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest
 public class JwtUtilsTests {
+    @Autowired
+    JwtProvider jwtProvider;
 
     @Test
     public void createTokenAndValidate(){
         User user=new User();
-        user.setCrewRole(CrewRole.NO);
         user.setEmail("anny@anny.com");
 
-        String token=JwtUtils.createToken(user.getEmail());
+        String token= jwtProvider.createToken(user.getEmail());
         System.out.println(token);
 
-        assertEquals(JwtUtils.validate(token),true);
+        assertEquals(jwtProvider.validate(token),true);
     }
     @Test
     public void getClaim(){
@@ -28,7 +31,7 @@ public class JwtUtilsTests {
         user.setCrewRole(CrewRole.NO);
         user.setEmail("anny@anny.com");
 
-        String token=JwtUtils.createToken(user.getEmail());
-        assertEquals(JwtUtils.getClaim(token),user.getEmail());
+        String token= jwtProvider.createToken(user.getEmail());
+        assertEquals(jwtProvider.getClaim(token),user.getEmail());
     }
 }

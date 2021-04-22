@@ -31,4 +31,7 @@ kakao:
   responseType: code
   redirectUri: http://localhost:8080/api/auth/kakao/login
 
+jwt:
+  secretKey: 3q$.5pdz4563!2aghkz
+  expire: 600000
 

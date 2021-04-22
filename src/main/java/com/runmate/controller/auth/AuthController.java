@@ -1,10 +1,9 @@
 package com.runmate.controller.auth;
 
 
-import com.runmate.configure.jwt.JwtUtils;
+import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.configure.oauth.kakao.KakaoApi;
 import com.runmate.domain.dto.AuthRequest;
-import com.runmate.domain.user.CrewRole;
 import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +22,19 @@ import java.net.URISyntaxException;
 public class AuthController {
     private final UserService userService;
     private final KakaoApi kakaoApi;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/local/login")
     public ResponseEntity<String> login(@RequestBody AuthRequest request){
         if(userService.login(request))
             return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION,"Bearer "+JwtUtils.createToken(request.getEmail()))
+                    .header(HttpHeaders.AUTHORIZATION,"Bearer "+ jwtProvider.createToken(request.getEmail()))
                     .body("success");
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
     @PostMapping("/local/new")
     public ResponseEntity<String>join(@RequestBody User user){
-        user.setCrewRole(CrewRole.NO);
         if(userService.join(user)){
             return ResponseEntity.ok()
                     .body("success");
@@ -65,7 +64,7 @@ public class AuthController {
                 userService.join(user);
             }
             return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION,"Bearer "+JwtUtils.createToken(email))
+                    .header(HttpHeaders.AUTHORIZATION,"Bearer "+ jwtProvider.createToken(email))
                     .build();
         }
     }

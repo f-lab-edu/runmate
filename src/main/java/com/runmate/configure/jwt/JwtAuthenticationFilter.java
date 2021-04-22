@@ -8,7 +8,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtFilter implements Filter {
+public class JwtAuthenticationFilter implements Filter {
+    private JwtProvider jwtProvider;
+    public JwtAuthenticationFilter(JwtProvider jwtProvider) {
+        this.jwtProvider=jwtProvider;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest= (HttpServletRequest) request;
@@ -31,7 +36,7 @@ public class JwtFilter implements Filter {
         //validate token
         header=header.replace("Bearer ","");
         try{
-            JwtUtils.validate(header);
+            jwtProvider.validate(header);
         }catch(JWTVerificationException exception){
             httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
