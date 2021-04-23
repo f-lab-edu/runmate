@@ -32,8 +32,10 @@ public class UserService{
     public User getUser(String email) {
         return userRepository.findByEmail(email);
     }
-    public void modify(User user){
-        userRepository.save(user);
+    public void modify(String email,User modifiedUser){
+        User user=userRepository.findByEmail(email);
+        modifiedUser.setId(user.getId());
+        userRepository.save(modifiedUser);
     }
     public boolean delete(String email){
         return userRepository.deleteByEmail(email)==1;
