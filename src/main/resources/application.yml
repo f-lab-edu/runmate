@@ -1,3 +1,8 @@
+spring:
+  profiles:
+    active: local
+---
+#Local
 server:
   port: 8080
   servlet:
@@ -20,6 +25,9 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+  config:
+    activate:
+      on-profile: "local"
 
 kakao:
   requestCodeUrl: https://kauth.kakao.com/oauth/authorize
@@ -34,4 +42,7 @@ kakao:
 jwt:
   secretKey: 3q$.5pdz4563!2aghkz
   expire: 600000
+---
+#Prod
+---
 
