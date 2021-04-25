@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.4.5'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id "org.flywaydb.flyway" version "7.8.1"
 }
 
 group = 'com.runmate'
@@ -23,7 +24,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'com.auth0', name: 'java-jwt', version: '3.10.3'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-// https://mvnrepository.com/artifact/org.json/json
+    implementation 'org.flywaydb:flyway-core'
     implementation group: 'org.json', name: 'json', version: '20160810'
 
     compileOnly 'org.projectlombok:lombok'
@@ -35,4 +36,17 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+flyway {
+    url = 'jdbc:mysql://localhost:3306/runmate?serverTimezone=Asia/Seoul&characterEncoding=utf8'
+    user = 'root'
+    password = 'dbtjd007'
+    schemas = ['runmate']
+    placeholders = [
+            'keyABC': 'valueXYZ',
+            'otherplaceholder': 'value123'
+    ]
+    encoding = 'UTF8'
+    table = 'flyway_migration_history'
+    driver = "com.mysql.cj.jdbc.Driver"
 }
