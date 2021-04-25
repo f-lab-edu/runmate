@@ -1,10 +1,14 @@
 package com.runmate.domain.user;
 
+import com.runmate.domain.activity.Activity;
+import com.runmate.domain.common.LocalDateTimeConverter;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="user")
@@ -36,6 +40,9 @@ public class User {
     Grade grade;
 
     @Column(name="created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private LocalDate createdAt;
+    @Convert(converter = LocalDateTimeConverter.class)
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user")
+    List<Activity> activities=new ArrayList<>();
 }
