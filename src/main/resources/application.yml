@@ -15,19 +15,26 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/security?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/runmate?serverTimezone=Asia/Seoul&characterEncoding=utf8
     username: cos
     password: cos1234
 
   jpa:
     hibernate:
-      ddl-auto: create #create update none
+      ddl-auto: none #create update none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
   config:
     activate:
       on-profile: "local"
+  flyway:
+    url: jdbc:mysql://localhost:3306/runmate?serverTimezone=Asia/Seoul&characterEncoding=utf8
+    user: root
+    password: dbtjd007
+    schemas: runmate
+    encoding: UTF-8
+    table: flyway_migration_history
 
 kakao:
   requestCodeUrl: https://kauth.kakao.com/oauth/authorize

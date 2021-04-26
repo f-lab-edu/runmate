@@ -22,7 +22,7 @@ public class UserController {
     @PutMapping("/{passedEmail}")
     public ResponseEntity<String>modify(@RequestParam("email")String tokenEmail,
                                         @PathVariable("passedEmail")String passedEmail,
-                                        User user){
+                                        @RequestBody User user){
 
         if(!tokenEmail.equals(passedEmail))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
