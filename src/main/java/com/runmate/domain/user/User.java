@@ -37,12 +37,19 @@ public class User {
 
     @Convert(converter = GradeConverter.class)
     @Column(name="grade")
-    Grade grade;
+    private Grade grade;
 
     @Column(name="created_at")
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "user")
-    List<Activity> activities=new ArrayList<>();
+    private List<Activity> activities=new ArrayList<>();
+
+    public boolean canUpgrade(float totalDistance){
+        return totalDistance>=this.grade.getNext().getRequiredScore();
+    }
+    public void upgrade(){
+        this.grade=this.grade.getNext();
+    }
 }
