@@ -1,5 +1,8 @@
 package com.runmate.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Arrays;
 
 public enum Grade {
@@ -20,6 +23,7 @@ public enum Grade {
         this.next=grade;
         this.requiredScore=requiredScore;
     }
+    @JsonValue
     public char getValue(){
         return this.value;
     }
@@ -28,5 +32,9 @@ public enum Grade {
                 .filter(grade->grade.getValue()==value)
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+    @JsonCreator
+    public static Grade fromChar(char symbol){
+        return of(symbol);
     }
 }
