@@ -5,10 +5,10 @@ create table USER
     introduction varchar(255),
     name         varchar(20),
     password     varchar(255),
-    si           varchar(20) not null,
+    si           varchar(20),
     gu           varchar(20),
     gun          varchar(20),
-    grade        char(1)     not null,
+    grade        char(1) not null default 'U',
     created_at   timestamp default CURRENT_TIMESTAMP
 )default character set utf8;
 

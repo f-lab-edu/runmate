@@ -27,7 +27,6 @@ public class UserTest {
         user.setUsername("yousung");
         user.setRegion(new Region("seoul","nowon",null));
         user.setIntroduction("my name is yousung");
-        user.setGrade(Grade.of('U'));
 
         userRepository.save(user);
         assertEquals(userRepository.findAll().size(),4);

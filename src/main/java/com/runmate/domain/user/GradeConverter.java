@@ -8,7 +8,7 @@ public class GradeConverter implements AttributeConverter<Grade,Character> {
 
     @Override
     public Character convertToDatabaseColumn(Grade grade) {
-        return grade.getValue();
+        return grade==null ? Grade.of('U').getValue()  : grade.getValue();
     }
 
     @Override
