@@ -12,7 +12,7 @@ import javax.persistence.Embeddable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Region {
-    @Column(name="si", nullable = false, length = 20)
+    @Column(name="si", length = 20)
     private String si;
     @Column(name="gu", length = 20)
     private String gu;
