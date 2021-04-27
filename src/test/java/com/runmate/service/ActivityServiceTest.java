@@ -211,7 +211,7 @@ public class ActivityServiceTest {
                 .thenReturn(activities);
 
         //when
-        ActivityStatisticsDto weeklyStatistics = service.findWeeklyStatistics(user.getEmail(), fromDate, toDate);
+        ActivityStatisticsDto weeklyStatistics = service.findStatisticsDuringPeriod(user.getEmail(), fromDate, toDate);
 
         //then
         assertThat(weeklyStatistics.getCount()).isEqualTo(2);
@@ -219,27 +219,5 @@ public class ActivityServiceTest {
         assertThat(weeklyStatistics.getRunningTime()).isEqualTo(RunningTime.of(1, 29, 37));
         assertThat(weeklyStatistics.getAveragePace()).isEqualTo(LocalTime.of(0, 4, 47));
         assertThat(weeklyStatistics.getCalories()).isEqualTo(918);
-    }
-
-    @DisplayName("최근 활동 조회")
-    @Test
-    public void findRecentActivities() {
-        //given
-        int offset = 1;
-        int length = 5;
-
-        //when
-        List<ActivityDto> activities = service.findRecentActivities(user.getEmail(), offset, length);
-
-        //then
-        assertThat(activities.size()).isEqualTo(2);
-
-        assertThat(activities.get(0).getDistance()).isEqualTo(8.2f);
-        assertThat(activities.get(0).getRunningTime()).isEqualTo(LocalTime.of(0, 38, 52));
-        assertThat(activities.get(0).getCalories()).isEqualTo(418);
-
-        assertThat(activities.get(1).getDistance()).isEqualTo(10.5f);
-        assertThat(activities.get(1).getRunningTime()).isEqualTo(LocalTime.of(0, 50, 45));
-        assertThat(activities.get(1).getCalories()).isEqualTo(500);
     }
 }
