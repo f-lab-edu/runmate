@@ -8,7 +8,7 @@ create table USER
     si           varchar(20),
     gu           varchar(20),
     gun          varchar(20),
-    grade        char(1) not null default 'U',
+    grade        varchar(20) not null default 'UNRANKED',
     created_at   timestamp default CURRENT_TIMESTAMP
 )default character set utf8;
 
@@ -25,13 +25,13 @@ alter table ACTIVITY
     ADD FOREIGN KEY (user_id) REFERENCES USER (id);
 
 insert into USER(email,introduction,name,password,si,gu,grade)
-values('you@you.com','메일 뛰자!','you',1234,'seoul','nowon','U');
+values('you@you.com','메일 뛰자!','you',1234,'seoul','nowon','UNRANKED');
 
 insert into USER(email,introduction,name,password,si,gu,grade)
-values('ann@ann.com','같이 뛰자!','ann',1234,'seoul','gangbuk','B');
+values('ann@ann.com','같이 뛰자!','ann',1234,'seoul','gangbuk','BRONZE');
 
 insert into USER(email,introduction,name,password,si,gu,grade)
-values('sung@sung.com','오래 뛰자!','sung',1234,'seoul','gangnam','S');
+values('sung@sung.com','오래 뛰자!','sung',1234,'seoul','gangnam','SILVER');
 
 insert into ACTIVITY(user_id,distance,running_time,calories)
 values(1,10.5,'00:50:45',500);
