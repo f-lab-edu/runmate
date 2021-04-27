@@ -1,4 +1,4 @@
-package com.runmate.domain;
+package com.runmate.repository;
 
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.user.User;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
-public class ActivityTest {
+public class ActivityRepositoryTest {
     @Autowired
     ActivityRepository activityRepository;
     @Autowired
