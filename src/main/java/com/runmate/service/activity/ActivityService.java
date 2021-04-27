@@ -2,7 +2,6 @@ package com.runmate.service.activity;
 
 import com.runmate.domain.activity.Activities;
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.dto.ActivityDto;
 import com.runmate.domain.dto.ActivityStatisticsDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityRepository;
@@ -11,11 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.util.List;
+import java.time.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,4 +47,32 @@ public class ActivityService {
 
         return activities.toStatistics();
     }
+
+    @Transactional(readOnly = true)
+    public ActivityStatisticsDto findMonthlyStatistics(String email, int year, Month month) {
+        User user = userRepository.findByEmail(email);
+
+        LocalDate fromDate = LocalDate.of(year, month, 1);
+        LocalDateTime from = LocalDateTime.of(fromDate, LocalTime.MIN);
+
+        LocalDate toDate = LocalDate.of(year, month, month.length(Year.isLeap(year)));
+        LocalDateTime to = LocalDateTime.of(toDate, LocalTime.MAX);
+
+        Activities activities = new Activities(activityRepository.findAllByUserAndBetweenDates(user.getId(), from, to));
+
+        return activities.toStatistics();
+    }
+
+    @Transactional(readOnly = true)
+    public ActivityStatisticsDto findStatisticsDuringPeriod(String email, LocalDate fromDate, LocalDate toDate) {
+        User user = userRepository.findByEmail(email);
+
+        LocalDateTime from = LocalDateTime.of(fromDate, LocalTime.MIN);
+        LocalDateTime to = LocalDateTime.of(toDate, LocalTime.MAX);
+
+        Activities activities = new Activities(activityRepository.findAllByUserAndBetweenDates(user.getId(), from, to));
+
+        return activities.toStatistics();
+    }
+
 }

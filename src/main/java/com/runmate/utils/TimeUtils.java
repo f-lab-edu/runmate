@@ -1,5 +1,7 @@
 package com.runmate.utils;
 
+import com.runmate.domain.activity.RunningTime;
+
 import java.time.LocalTime;
 
 public class TimeUtils {
@@ -16,5 +18,9 @@ public class TimeUtils {
         int second = (int) ((seconds % HOUR_SECOND_UNIT) % MINUTE_SECOND_UNIT);
 
         return LocalTime.of(hour, minute, second);
+    }
+
+    public static long runningTimeToSeconds(RunningTime time) {
+        return (long) time.getHour() * HOUR_SECOND_UNIT + (long) time.getMinute() * MINUTE_SECOND_UNIT + time.getSecond();
     }
 }
