@@ -35,9 +35,9 @@ public class User {
     @Column(name="introduction",length = 255)
     private String introduction;
 
-    @Convert(converter = GradeConverter.class)
+    @Enumerated(EnumType.STRING)
     @Column(name="grade")
-    private Grade grade;
+    private Grade grade=Grade.UNRANKED;
 
     @Column(name="created_at")
     @Convert(converter = LocalDateTimeConverter.class)

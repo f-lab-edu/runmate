@@ -2,7 +2,6 @@ package com.runmate.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
 
 import java.util.Arrays;
 
@@ -24,7 +23,6 @@ public enum Grade {
         this.next=grade;
         this.requiredScore=requiredScore;
     }
-    @JsonValue
     public char getValue(){
         return this.value;
     }
