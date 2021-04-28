@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.*;
 import java.util.*;
@@ -236,7 +237,7 @@ public class ActivityServiceTest {
                 .sorted((o1, o2) -> -o1.getCreatedAt().compareTo(o2.getCreatedAt()))
                 .collect(Collectors.toList());
 
-        Mockito.when(activityRepository.findAllByUserWithPagination(user.getId(), PageRequest.of(offset, limit)))
+        Mockito.when(activityRepository.findAllByUserWithPagination(user.getId(), PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"))))
                 .thenReturn(sortedActivities);
 
         //when
