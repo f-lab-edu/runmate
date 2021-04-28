@@ -2,15 +2,20 @@ package com.runmate.service.activity;
 
 import com.runmate.domain.activity.Activities;
 import com.runmate.domain.activity.Activity;
+import com.runmate.domain.dto.ActivityDto;
 import com.runmate.domain.dto.ActivityStatisticsDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,32 +40,18 @@ public class ActivityService {
 
     @Transactional(readOnly = true)
     public ActivityStatisticsDto findYearlyStatistics(String email, int year) {
-        User user = userRepository.findByEmail(email);
-
         LocalDate fromDate = LocalDate.of(year, 1, 1);
-        LocalDateTime from = LocalDateTime.of(fromDate, LocalTime.MIN);
-
         LocalDate toDate = LocalDate.of(year, 12, 31);
-        LocalDateTime to = LocalDateTime.of(toDate, LocalTime.MAX);
 
-        Activities activities = new Activities(activityRepository.findAllByUserAndBetweenDates(user.getId(), from, to));
-
-        return activities.toStatistics();
+        return findStatisticsDuringPeriod(email, fromDate, toDate);
     }
 
     @Transactional(readOnly = true)
     public ActivityStatisticsDto findMonthlyStatistics(String email, int year, Month month) {
-        User user = userRepository.findByEmail(email);
-
         LocalDate fromDate = LocalDate.of(year, month, 1);
-        LocalDateTime from = LocalDateTime.of(fromDate, LocalTime.MIN);
-
         LocalDate toDate = LocalDate.of(year, month, month.length(Year.isLeap(year)));
-        LocalDateTime to = LocalDateTime.of(toDate, LocalTime.MAX);
 
-        Activities activities = new Activities(activityRepository.findAllByUserAndBetweenDates(user.getId(), from, to));
-
-        return activities.toStatistics();
+        return findStatisticsDuringPeriod(email, fromDate, toDate);
     }
 
     @Transactional(readOnly = true)
@@ -75,4 +66,15 @@ public class ActivityService {
         return activities.toStatistics();
     }
 
+    @Transactional(readOnly = true)
+    public List<ActivityDto> findActivitiesWithPagination(String email, int offset, int limit) {
+        User user = userRepository.findByEmail(email);
+
+        List<Activity> activities = activityRepository.findAllByUserWithPagination(user.getId(),
+                PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt")));
+
+        return activities.stream()
+                .map(ActivityDto::of)
+                .collect(Collectors.toList());
+    }
 }

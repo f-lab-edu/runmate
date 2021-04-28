@@ -16,12 +16,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,12 +71,14 @@ public class ActivityServiceTest {
                 .distance(10.5f)
                 .runningTime(LocalTime.of(0, 50, 45))
                 .calories(500)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         Activity activity4 = Activity.builder()
                 .distance(8.2f)
                 .runningTime(LocalTime.of(0, 38, 52))
                 .calories(418)
+                .createdAt(LocalDateTime.now().plusSeconds(10L))
                 .build();
 
         this.activities = Arrays.asList(activity3, activity4);
@@ -219,5 +221,39 @@ public class ActivityServiceTest {
         assertThat(weeklyStatistics.getRunningTime()).isEqualTo(RunningTime.of(1, 29, 37));
         assertThat(weeklyStatistics.getAveragePace()).isEqualTo(LocalTime.of(0, 4, 47));
         assertThat(weeklyStatistics.getCalories()).isEqualTo(918);
+    }
+
+    @DisplayName("최근 활동 조회 (2개의 활동이 조회된 경우)")
+    @Test
+    public void findRecentActivities() {
+        //given
+        int offset = 1;
+        int limit = 5;
+
+        Mockito.when(userRepository.findByEmail(user.getEmail()))
+                .thenReturn(user);
+
+        List<Activity> sortedActivities = activities.stream()
+                .sorted((o1, o2) -> -o1.getCreatedAt().compareTo(o2.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        Mockito.when(activityRepository.findAllByUserWithPagination(user.getId(), PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt"))))
+                .thenReturn(sortedActivities);
+
+        //when
+        List<ActivityDto> dtos = service.findActivitiesWithPagination(user.getEmail(), offset, limit);
+
+        //then
+        assertThat(dtos.size()).isEqualTo(2);
+
+        assertThat(dtos.get(0).getDistance()).isEqualTo(8.2f);
+        assertThat(dtos.get(0).getRunningTime()).isEqualTo(RunningTime.of(0, 38, 52));
+        assertThat(dtos.get(0).getAveragePace()).isEqualTo(LocalTime.of(0, 4, 44));
+        assertThat(dtos.get(0).getCalories()).isEqualTo(418);
+
+        assertThat(dtos.get(1).getDistance()).isEqualTo(10.5f);
+        assertThat(dtos.get(1).getRunningTime()).isEqualTo(RunningTime.of(0, 50, 45));
+        assertThat(dtos.get(1).getAveragePace()).isEqualTo(LocalTime.of(0, 4, 50));
+        assertThat(dtos.get(1).getCalories()).isEqualTo(500);
     }
 }
