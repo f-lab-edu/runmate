@@ -1,6 +1,7 @@
 package com.runmate.repository.activity;
 
 import com.runmate.domain.activity.Activity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,4 +15,9 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             "WHERE u.id = :userId " +
             "AND a.createdAt >= :from AND a.createdAt <= :to")
     List<Activity> findAllByUserAndBetweenDates(Long userId, LocalDateTime from, LocalDateTime to);
+
+    @Query("SELECT a FROM Activity a JOIN User u " +
+            "ON a.user.id = u.id " +
+            "WHERE u.id = :userId")
+    List<Activity> findAllByUserWithPagination(Long userId, Pageable pageable);
 }

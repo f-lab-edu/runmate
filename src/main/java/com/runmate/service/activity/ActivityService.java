@@ -2,15 +2,20 @@ package com.runmate.service.activity;
 
 import com.runmate.domain.activity.Activities;
 import com.runmate.domain.activity.Activity;
+import com.runmate.domain.dto.ActivityDto;
 import com.runmate.domain.dto.ActivityStatisticsDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,4 +80,15 @@ public class ActivityService {
         return activities.toStatistics();
     }
 
+    @Transactional(readOnly = true)
+    public List<ActivityDto> findActivitiesWithPagination(String email, int offset, int limit) {
+        User user = userRepository.findByEmail(email);
+
+        List<Activity> activities = activityRepository.findAllByUserWithPagination(user.getId(),
+                PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "createdAt")));
+
+        return activities.stream()
+                .map(ActivityDto::of)
+                .collect(Collectors.toList());
+    }
 }
