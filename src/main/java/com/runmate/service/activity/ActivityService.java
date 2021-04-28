@@ -40,32 +40,18 @@ public class ActivityService {
 
     @Transactional(readOnly = true)
     public ActivityStatisticsDto findYearlyStatistics(String email, int year) {
-        User user = userRepository.findByEmail(email);
-
         LocalDate fromDate = LocalDate.of(year, 1, 1);
-        LocalDateTime from = LocalDateTime.of(fromDate, LocalTime.MIN);
-
         LocalDate toDate = LocalDate.of(year, 12, 31);
-        LocalDateTime to = LocalDateTime.of(toDate, LocalTime.MAX);
 
-        Activities activities = new Activities(activityRepository.findAllByUserAndBetweenDates(user.getId(), from, to));
-
-        return activities.toStatistics();
+        return findStatisticsDuringPeriod(email, fromDate, toDate);
     }
 
     @Transactional(readOnly = true)
     public ActivityStatisticsDto findMonthlyStatistics(String email, int year, Month month) {
-        User user = userRepository.findByEmail(email);
-
         LocalDate fromDate = LocalDate.of(year, month, 1);
-        LocalDateTime from = LocalDateTime.of(fromDate, LocalTime.MIN);
-
         LocalDate toDate = LocalDate.of(year, month, month.length(Year.isLeap(year)));
-        LocalDateTime to = LocalDateTime.of(toDate, LocalTime.MAX);
 
-        Activities activities = new Activities(activityRepository.findAllByUserAndBetweenDates(user.getId(), from, to));
-
-        return activities.toStatistics();
+        return findStatisticsDuringPeriod(email, fromDate, toDate);
     }
 
     @Transactional(readOnly = true)
