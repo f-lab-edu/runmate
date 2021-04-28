@@ -1,6 +1,5 @@
-package com.runmate.domain;
+package com.runmate.repository;
 
-import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @Transactional
-public class UserTest {
+public class UserRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
