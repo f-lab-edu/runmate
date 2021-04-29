@@ -141,4 +141,10 @@ public class ActivityControllerTest {
                 .andExpect(jsonPath("$.data", is(notNullValue())))
                 .andExpect(jsonPath("$.error", is(nullValue())));
     }
+
+    @Test
+    public void When_Search_UnAuthorizedUser_Expect_Status_UnAuthorized() throws Exception {
+        mockMvc.perform(get("/api/users/" + user.getEmail() + "/activities?offset=5&limit=5"))
+                .andExpect(status().isUnauthorized());
+    }
 }

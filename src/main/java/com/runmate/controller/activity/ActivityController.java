@@ -1,7 +1,7 @@
 package com.runmate.controller.activity;
 
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.common.JsonWrapper;
+import com.runmate.utils.JsonWrapper;
 import com.runmate.domain.dto.ActivityDto;
 import com.runmate.domain.dto.ActivityStatisticsDto;
 import com.runmate.service.activity.ActivityService;
@@ -24,10 +24,10 @@ public class ActivityController {
     public ResponseEntity completeActivity(@RequestParam("email") String tokenEmail,
                                            @PathVariable("passedEmail") String passedEmail,
                                            @RequestBody Activity activity) {
-        if (!tokenEmail.equals(passedEmail))
+        if (!tokenEmail.equals(passedEmail)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("failed");
-
+        }
         service.completeActivity(passedEmail, activity);
         return ResponseEntity.ok()
                 .body("success");

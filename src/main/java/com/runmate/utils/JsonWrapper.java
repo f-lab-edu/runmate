@@ -1,4 +1,4 @@
-package com.runmate.domain.common;
+package com.runmate.utils;
 
 import lombok.AccessLevel;
 import lombok.Builder;
