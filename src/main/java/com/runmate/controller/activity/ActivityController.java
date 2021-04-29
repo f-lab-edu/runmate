@@ -1,9 +1,9 @@
 package com.runmate.controller.activity;
 
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.activity.ActivitySearch;
-import com.runmate.domain.activity.DummyActivityDto;
 import com.runmate.domain.common.JsonWrapper;
+import com.runmate.domain.dto.ActivityDto;
+import com.runmate.domain.dto.ActivityStatisticsDto;
 import com.runmate.service.activity.ActivityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,9 +35,9 @@ public class ActivityController {
 
     @GetMapping("/{passedEmail}/activities")
     public ResponseEntity<JsonWrapper> searchLatestActivity(@PathVariable("passedEmail") String passedEmail,
-                                                           @RequestParam int offset,
-                                                           @RequestParam int limit) {
-        List<Activity> activities = service.dummyFindByPagination(passedEmail,offset,limit);
+                                                            @RequestParam int offset,
+                                                            @RequestParam int limit) {
+        List<ActivityDto> activities = service.findActivitiesWithPagination(passedEmail, offset, limit);
         JsonWrapper jsonWrapper = JsonWrapper.builder()
                 .data(activities)
                 .error(null)
@@ -47,38 +47,16 @@ public class ActivityController {
 
     @GetMapping("/{passedEmail}/activities/statistics")
     public ResponseEntity<JsonWrapper> searchActivityBetweenDates(@PathVariable("passedEmail") String passedEmail,
-                                                                @RequestParam
-                                                                @DateTimeFormat(pattern = "yyyy-MM-dd")
-                                                                        LocalDate from,
-                                                                @RequestParam
-                                                                @DateTimeFormat(pattern = "yyyy-MM-dd")
-                                                                        LocalDate to) {
-        DummyActivityDto dto = service.dummyFindBetweenDates(passedEmail,from, to);
+                                                                  @RequestParam
+                                                                  @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                                  @RequestParam
+                                                                  @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+        ActivityStatisticsDto dto = service.findStatisticsDuringPeriod(passedEmail, from, to);
         JsonWrapper response = JsonWrapper.builder()
                 .data(dto)
                 .error(null)
                 .build();
 
-        return ResponseEntity.ok().body(response);
-    }
-    @GetMapping("/{passedEmail}/activities/statistics")
-    public ResponseEntity<JsonWrapper>searchActivityByYear(@PathVariable("passedEmail")String passedEmail,
-                                                           @RequestParam int year){
-        DummyActivityDto dto=service.dummyFindByYear(passedEmail,year);
-        JsonWrapper response=JsonWrapper.builder()
-                .data(dto)
-                .error(null)
-                .build();
-        return ResponseEntity.ok().body(response);
-    }
-    @GetMapping("/{passedEmail}/activities/statistics")
-    public ResponseEntity<JsonWrapper>searchActivityByMonth(@PathVariable("passedEmail")String passedEmail,
-                                                           @RequestParam int year,@RequestParam int month){
-        DummyActivityDto dto=service.dummyFindByMonth(passedEmail,year,month);
-        JsonWrapper response=JsonWrapper.builder()
-                .data(dto)
-                .error(null)
-                .build();
         return ResponseEntity.ok().body(response);
     }
 }
