@@ -107,7 +107,7 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void When_Search_TotalActivity_Expect_Status_OK_Body_JsonWrapper() throws Exception {
+    public void When_Search_ActivityStatistics_Expect_Status_OK_Body_JsonWrapper() throws Exception {
         //given
         when(activityService.findStatisticsDuringPeriod(anyString(), ArgumentMatchers.any(LocalDate.class), ArgumentMatchers.any(LocalDate.class)))
                 .thenReturn(ActivityStatisticsDto.of(0, 0, RunningTime.of(2, 30, 0), LocalTime.of(2, 30, 0), 0));
@@ -129,7 +129,7 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void When_Get_LatestActivity_Expect_Status_OK_Body_JsonWrapper() throws Exception {
+    public void When_Search_LatestActivity_Expect_Status_OK_Body_JsonWrapper() throws Exception {
         //given
         when(activityService.findActivitiesWithPagination(anyString(), anyInt(), anyInt())).thenReturn(new ArrayList<ActivityDto>());
 
