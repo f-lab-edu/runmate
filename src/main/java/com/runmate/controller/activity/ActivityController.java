@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class ActivityController {
     @PostMapping("/{passedEmail}/activities")
     public ResponseEntity completeActivity(@RequestParam("email") String tokenEmail,
                                            @PathVariable("passedEmail") String passedEmail,
-                                           @RequestBody Activity activity) {
+                                           @Valid @RequestBody Activity activity) {
         if (!tokenEmail.equals(passedEmail)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("failed");

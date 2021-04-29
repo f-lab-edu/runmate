@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static com.runmate.controller.exception.GlobalExceptionHandler.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -88,11 +89,9 @@ public class ActivityControllerTest {
     @Test
     public void When_Complete_Activity_Expect_Status_OK_Body_success() throws Exception {
         String jsonBody = "{\n" +
-                "  \"id\": null,\n" +
                 "  \"distance\": 12.0,\n" +
                 "  \"runningTime\": \"02:30:30\",\n" +
-                "  \"calories\": 1200,\n" +
-                "  \"createdAt\": null\n" +
+                "  \"calories\": 1200\n" +
                 "}";
 
         mockMvc.perform(post("/api/users/" + user.getEmail() + "/activities")
@@ -104,6 +103,23 @@ public class ActivityControllerTest {
                 .andExpect(content().string("success"));
 
         verify(activityService, times(1)).completeActivity(anyString(), ArgumentMatchers.any(Activity.class));
+    }
+
+    @Test
+    public void When_InvalidCompleteActivity_Expect_Status_ClientError() throws Exception {
+        //running Time null,minus distance
+        String invalidJsonBody = "{\n" +
+                "  \"distance\": -12.0,\n" +
+                "  \"calories\": 1200\n" +
+                "}";
+
+        mockMvc.perform(post("/api/users/" + user.getEmail() + "/activities")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(invalidJsonBody)
+                .header("Authorization", "Bearer " + token))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(content().string(INVALID_REQUEST_BODY_MESSAGE));
     }
 
     @Test

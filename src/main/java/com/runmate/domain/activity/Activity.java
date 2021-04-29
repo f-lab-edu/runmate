@@ -8,6 +8,8 @@ import com.runmate.utils.TimeUtils;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -26,14 +28,17 @@ public class Activity {
     private User user;
 
     @Column(name = "distance", nullable = false)
+    @Positive(message = "distance must be greater than 0.")
     private float distance;
 
     @Column(name = "running_time", nullable = false)
     @Convert(converter = LocalTimeConverter.class)
     @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
+    @NotNull(message = "runningTime can't be null value")
     private LocalTime runningTime;
 
     @Column(name = "calories")
+    @Positive(message = "calories must be greater than 0.")
     private int calories;
 
     @Column(name = "created_at")
