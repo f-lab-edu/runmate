@@ -18,9 +18,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -80,5 +81,30 @@ public class UserControllerTest {
                 .header("Authorization", "Bearer " + token))
                 .andDo(print())
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void When_Get_User_Expect_Status_OK_Body_UserJson()throws Exception{
+        AuthRequest authRequest=new AuthRequest();
+        authRequest.setEmail(user.getEmail());
+        authRequest.setPassword(user.getPassword());
+
+        String jsonBody=mapper.writeValueAsString(authRequest);
+
+        MvcResult result= mockMvc.perform(post("/api/auth/local/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String token=result.getResponse().getHeader("Authorization").replace("Bearer ","");
+
+        mockMvc.perform(get("/api/users/"+user.getEmail())
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization","Bearer "+token))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data",is(notNullValue())))
+                .andExpect(jsonPath("$.error",is(nullValue())));
     }
 }

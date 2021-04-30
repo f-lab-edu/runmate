@@ -2,6 +2,7 @@ package com.runmate.controller.user;
 
 import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
+import com.runmate.utils.JsonWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,15 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/{passedEmail}")
-    public ResponseEntity<User> get(@PathVariable("passedEmail") String passedEmail) {
+    public ResponseEntity<JsonWrapper> get(@PathVariable("passedEmail") String passedEmail) {
+        User user=userService.getUser(passedEmail);
+        JsonWrapper jsonWrapper=JsonWrapper.builder()
+                .data(user)
+                .error(null)
+                .build();
+
         return ResponseEntity.ok()
-                .body(userService.getUser(passedEmail));
+                .body(jsonWrapper);
     }
 
     @PutMapping("/{passedEmail}")
