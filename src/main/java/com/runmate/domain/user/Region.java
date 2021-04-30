@@ -1,5 +1,6 @@
 package com.runmate.domain.user;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Region {
     @Column(name="si", length = 20)
     private String si;
