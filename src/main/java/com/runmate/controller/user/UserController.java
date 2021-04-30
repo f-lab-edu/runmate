@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -14,19 +16,19 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/{passedEmail}")
-    public ResponseEntity<User>get(@PathVariable("passedEmail")String passedEmail) {
+    public ResponseEntity<User> get(@PathVariable("passedEmail") String passedEmail) {
         return ResponseEntity.ok()
                 .body(userService.getUser(passedEmail));
     }
 
     @PutMapping("/{passedEmail}")
-    public ResponseEntity<String>modify(@RequestParam("email")String tokenEmail,
-                                        @PathVariable("passedEmail")String passedEmail,
-                                        @RequestBody User user){
+    public ResponseEntity<String> modify(@RequestParam("email") String tokenEmail,
+                                         @PathVariable("passedEmail") String passedEmail,
+                                         @Valid @RequestBody User user) {
 
-        if(!tokenEmail.equals(passedEmail))
+        if (!tokenEmail.equals(passedEmail))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                .body("it's not your email");
+                    .body("it's not your email");
 
         userService.modify(passedEmail, user);
         return ResponseEntity.ok().body("success");
