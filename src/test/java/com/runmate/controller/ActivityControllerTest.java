@@ -31,12 +31,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static com.runmate.controller.exception.GlobalExceptionHandler.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -106,20 +106,24 @@ public class ActivityControllerTest {
     }
 
     @Test
-    public void When_InvalidCompleteActivity_Expect_Status_ClientError() throws Exception {
+    public void When_InvalidCompleteActivity_Expect_Status_ClientError_Body_ErrorMessage() throws Exception {
         //running Time null,minus distance
         String invalidJsonBody = "{\n" +
                 "  \"distance\": -12.0,\n" +
                 "  \"calories\": 1200\n" +
                 "}";
 
-        mockMvc.perform(post("/api/users/" + user.getEmail() + "/activities")
+        MvcResult result = mockMvc.perform(post("/api/users/" + user.getEmail() + "/activities")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidJsonBody)
                 .header("Authorization", "Bearer " + token))
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(content().string(INVALID_REQUEST_BODY_MESSAGE));
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        assertTrue(content.contains("runningTime:Field can't be null value;"));
+        assertTrue(content.contains("distance:Field must be greater than 0.;"));
     }
 
     @Test

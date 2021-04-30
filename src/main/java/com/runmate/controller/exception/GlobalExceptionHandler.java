@@ -12,7 +12,6 @@ import java.net.URISyntaxException;
 @RestController
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    public static final String INVALID_REQUEST_BODY_MESSAGE = "invalid Request Body";
     public static final String INVALID_CODE_MESSAGE = "failed to get access token:invalid Code";
 
     @ExceptionHandler(InvalidCodeException.class)
@@ -34,6 +33,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleNotValidException(MethodArgumentNotValidException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(INVALID_REQUEST_BODY_MESSAGE);
+                .body(createErrorMessage(e));
+    }
+
+    private String createErrorMessage(MethodArgumentNotValidException e) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < e.getErrorCount(); i++) {
+            sb.append(e.getBindingResult().getFieldErrors().get(i).getField() + ":"
+                    + e.getBindingResult().getAllErrors().get(i).getDefaultMessage() + ";");
+        }
+        return sb.toString();
     }
 }

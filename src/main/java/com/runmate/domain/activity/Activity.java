@@ -28,17 +28,17 @@ public class Activity {
     private User user;
 
     @Column(name = "distance", nullable = false)
-    @Positive(message = "distance must be greater than 0.")
+    @Positive(message = "Field must be greater than 0.")
     private float distance;
 
     @Column(name = "running_time", nullable = false)
     @Convert(converter = LocalTimeConverter.class)
     @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    @NotNull(message = "runningTime can't be null value")
+    @NotNull(message = "Field can't be null value")
     private LocalTime runningTime;
 
     @Column(name = "calories")
-    @Positive(message = "calories must be greater than 0.")
+    @Positive(message = "Field must be greater than 0.")
     private int calories;
 
     @Column(name = "created_at")
