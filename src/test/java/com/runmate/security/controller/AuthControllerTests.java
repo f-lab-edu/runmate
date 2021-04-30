@@ -57,6 +57,8 @@ public class AuthControllerTests {
         User user=new User();
         user.setEmail("kyo@kyo.com");
         user.setPassword("1234");
+        user.setRegion(new Region("si","gu","gun"));
+        user.setUsername("kyo");
 
         String jsonBody=mapper.writeValueAsString(user);
 
