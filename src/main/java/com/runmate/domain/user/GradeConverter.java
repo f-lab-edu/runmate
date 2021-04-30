@@ -4,15 +4,15 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 @Converter
-public class GradeConverter implements AttributeConverter<Grade,Character> {
+public class GradeConverter implements AttributeConverter<Grade,String> {
 
     @Override
-    public Character convertToDatabaseColumn(Grade grade) {
-        return grade==null ? Grade.of('U').getValue()  : grade.getValue();
+    public String convertToDatabaseColumn(Grade grade) {
+        return grade==null ? Grade.of("UNRANKED").getValue()  : grade.getValue();
     }
 
     @Override
-    public Grade convertToEntityAttribute(Character dbData) {
+    public Grade convertToEntityAttribute(String dbData) {
         return Grade.of(dbData);
     }
 }

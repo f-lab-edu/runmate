@@ -6,39 +6,35 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Arrays;
 
 public enum Grade {
-    RUBY('R', null, 30000),
-    DIA('D', RUBY, 10000),
-    PLATINUM('P', DIA, 3000),
-    GOLD('G', PLATINUM, 1000),
-    SILVER('S', GOLD, 300),
-    BRONZE('B', SILVER, 50),
-    UNRANKED('U', BRONZE, 0);
+    RUBY("RUBY", null, 30000),
+    DIA("DIA", RUBY, 10000),
+    PLATINUM("PLATINUM", DIA, 3000),
+    GOLD("GOLD", PLATINUM, 1000),
+    SILVER("SILVER", GOLD, 300),
+    BRONZE("BRONZE", SILVER, 50),
+    UNRANKED("UNRANKED", BRONZE, 0);
 
-    private char value;
+    private String  value;
     private Grade next;
     private int requiredScore;
 
-    Grade(char value, Grade grade, int requiredScore) {
+    Grade(String value, Grade grade, int requiredScore) {
         this.value = value;
         this.next = grade;
         this.requiredScore = requiredScore;
     }
 
-    public char getValue() {
+    public String getValue() {
         return this.value;
     }
 
-    public static Grade of(char value) {
+    public static Grade of(String value) {
         return Arrays.stream(Grade.values())
-                .filter(grade -> grade.getValue() == value)
+                .filter(grade -> grade.getValue().equals(value))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    @JsonCreator
-    public static Grade fromChar(char symbol) {
-        return of(symbol);
-    }
 
     public boolean canUpgrade(float totalDistance) {
         return totalDistance >= this.next.requiredScore;
