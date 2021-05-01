@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActivityController {
     private final ActivityService service;
-    private final ModelMapper modelMapper=new ModelMapper();
+    private final ModelMapper modelMapper;
 
     @PostMapping("/{passedEmail}/activities")
     public ResponseEntity completeActivity(@RequestParam("email") String tokenEmail,
@@ -32,7 +32,7 @@ public class ActivityController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("failed");
         }
-        service.completeActivity(passedEmail, modelMapper.map(activityDto,Activity.class));
+        service.completeActivity(passedEmail, modelMapper.map(activityDto, Activity.class));
         return ResponseEntity.ok()
                 .body("success");
     }
