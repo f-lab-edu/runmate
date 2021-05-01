@@ -1,5 +1,6 @@
 package com.runmate.domain.dto;
 
+import com.runmate.domain.dto.user.UserGetDto;
 import com.runmate.domain.dto.user.UserModificationDto;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
@@ -17,11 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class UserDtoMapperTest {
     @Autowired
     UserRepository userRepository;
-
-    static final ModelMapper modelMapper = new ModelMapper();
+    @Autowired
+    ModelMapper modelMapper;
 
     static final String ADDRESS = "you@you.com";
-
 
     @DisplayName("User 에서 변경 되지 않는 필드도 그대로 남는다.")
     @Test
@@ -42,5 +42,20 @@ public class UserDtoMapperTest {
         assertEquals(user.getUsername(), userModificationDto.getUsername());
         assertEquals(user.getIntroduction(), userModificationDto.getIntroduction());
         assertEquals(user.getRegion().getGu(), userModificationDto.getRegion().getGu());
+    }
+
+    @DisplayName("User객체를 UserGetDto로 변경")
+    @Test
+    public void When_Mapping_User_To_UserGetDto_Expect_Same_Value() {
+        User user = userRepository.findByEmail(ADDRESS);
+
+        UserGetDto userGetDto = modelMapper.map(user, UserGetDto.class);
+
+        assertEquals(user.getEmail(), userGetDto.getEmail());
+        assertEquals(user.getIntroduction(), userGetDto.getIntroduction());
+        assertEquals(user.getGrade(), userGetDto.getGrade());
+        assertEquals(user.getRegion(), userGetDto.getRegion());
+        assertEquals(user.getUsername(), userGetDto.getUsername());
+        assertEquals(user.getCreatedAt(), userGetDto.getCreatedAt());
     }
 }

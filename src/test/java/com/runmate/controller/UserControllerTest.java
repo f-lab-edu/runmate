@@ -3,18 +3,13 @@ package com.runmate.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
-import com.runmate.domain.dto.AuthRequest;
-import com.runmate.domain.dto.user.UserModificationDto;
-import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
-import com.runmate.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -53,11 +48,10 @@ public class UserControllerTest {
 
         user = userRepository.findByEmail(ADDRESS);
 
-        AuthRequest authRequest = new AuthRequest();
-        authRequest.setEmail(user.getEmail());
-        authRequest.setPassword(user.getPassword());
-
-        String jsonBody = mapper.writeValueAsString(authRequest);
+        String jsonBody = "{\n" +
+                "\t\"email\":\"you@you.com\",\n" +
+                "\t\"password\":\"1234\"\n" +
+                "}";
 
         MvcResult result = mockMvc.perform(post("/api/auth/local/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -109,20 +103,6 @@ public class UserControllerTest {
 
     @Test
     public void When_Get_User_Expect_Status_OK_Body_UserJson() throws Exception {
-        AuthRequest authRequest = new AuthRequest();
-        authRequest.setEmail(user.getEmail());
-        authRequest.setPassword(user.getPassword());
-
-        String jsonBody = mapper.writeValueAsString(authRequest);
-
-        MvcResult result = mockMvc.perform(post("/api/auth/local/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonBody))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String token = result.getResponse().getHeader("Authorization").replace("Bearer ", "");
-
         mockMvc.perform(get("/api/users/" + user.getEmail())
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token))
