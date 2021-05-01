@@ -1,11 +1,13 @@
 package com.runmate.controller.activity;
 
 import com.runmate.domain.activity.Activity;
+import com.runmate.domain.dto.activity.PostActivityDto;
 import com.runmate.utils.JsonWrapper;
 import com.runmate.domain.dto.activity.ActivityDto;
 import com.runmate.domain.dto.activity.ActivityStatisticsDto;
 import com.runmate.service.activity.ActivityService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +22,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActivityController {
     private final ActivityService service;
+    private final ModelMapper modelMapper=new ModelMapper();
 
     @PostMapping("/{passedEmail}/activities")
     public ResponseEntity completeActivity(@RequestParam("email") String tokenEmail,
                                            @PathVariable("passedEmail") String passedEmail,
-                                           @Valid @RequestBody Activity activity) {
+                                           @Valid @RequestBody PostActivityDto activityDto) {
         if (!tokenEmail.equals(passedEmail)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("failed");
         }
-        service.completeActivity(passedEmail, activity);
+        service.completeActivity(passedEmail, modelMapper.map(activityDto,Activity.class));
         return ResponseEntity.ok()
                 .body("success");
     }

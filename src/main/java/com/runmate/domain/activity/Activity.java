@@ -16,6 +16,7 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "activity")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Activity {
     @Id
@@ -28,26 +29,19 @@ public class Activity {
     private User user;
 
     @Column(name = "distance", nullable = false)
-    @Positive(message = "Field must be greater than 0.")
     private float distance;
 
     @Column(name = "running_time", nullable = false)
     @Convert(converter = LocalTimeConverter.class)
     @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
-    @NotNull(message = "Field can't be null value")
     private LocalTime runningTime;
 
     @Column(name = "calories")
-    @Positive(message = "Field must be greater than 0.")
     private int calories;
 
     @Column(name = "created_at")
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime createdAt;
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public LocalTime calculatePace() {
         long totalSeconds = TimeUtils.timeToSeconds(runningTime);
