@@ -1,7 +1,7 @@
 package com.runmate.util;
 
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.dto.activity.PostActivityDto;
+import com.runmate.domain.dto.activity.ActivityCreationDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -19,16 +19,16 @@ public class ModelMapperTest {
     @DisplayName("Mapping from PostActivityDto to Activity")
     @Test
     public void When_Mapping_PostActivityDto_To_Activity_Expect_Same_Value() {
-        PostActivityDto postActivityDto = PostActivityDto.builder()
+        ActivityCreationDto activityCreationDto = ActivityCreationDto.builder()
                 .distance(12F)
                 .calories(300)
                 .runningTime(LocalTime.of(3, 30))
                 .build();
-        Activity result = modelMapper.map(postActivityDto, Activity.class);
+        Activity result = modelMapper.map(activityCreationDto, Activity.class);
 
-        assertEquals(postActivityDto.getCalories(), result.getCalories());
-        assertEquals(postActivityDto.getDistance(), result.getDistance());
-        assertEquals(postActivityDto.getRunningTime(), result.getRunningTime());
-        assertEquals(postActivityDto.getCreatedAt(), result.getCreatedAt());
+        assertEquals(activityCreationDto.getCalories(), result.getCalories());
+        assertEquals(activityCreationDto.getDistance(), result.getDistance());
+        assertEquals(activityCreationDto.getRunningTime(), result.getRunningTime());
+        assertEquals(activityCreationDto.getCreatedAt(), result.getCreatedAt());
     }
 }

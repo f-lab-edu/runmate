@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostActivityDto {
+public class ActivityCreationDto {
     @Positive(message = "Field must be greater than 0.")
     private float distance;
 
@@ -23,7 +23,7 @@ public class PostActivityDto {
     private LocalDateTime createdAt=LocalDateTime.now();
 
     @Builder
-    public PostActivityDto(float distance, LocalTime runningTime, int calories) {
+    public ActivityCreationDto(float distance, LocalTime runningTime, int calories) {
         this.distance=distance;
         this.runningTime=runningTime;
         this.calories=calories;

@@ -1,7 +1,7 @@
 package com.runmate.controller.activity;
 
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.dto.activity.PostActivityDto;
+import com.runmate.domain.dto.activity.ActivityCreationDto;
 import com.runmate.utils.JsonWrapper;
 import com.runmate.domain.dto.activity.ActivityDto;
 import com.runmate.domain.dto.activity.ActivityStatisticsDto;
@@ -27,7 +27,7 @@ public class ActivityController {
     @PostMapping("/{passedEmail}/activities")
     public ResponseEntity completeActivity(@RequestParam("email") String tokenEmail,
                                            @PathVariable("passedEmail") String passedEmail,
-                                           @Valid @RequestBody PostActivityDto activityDto) {
+                                           @Valid @RequestBody ActivityCreationDto activityDto) {
         if (!tokenEmail.equals(passedEmail)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("failed");
