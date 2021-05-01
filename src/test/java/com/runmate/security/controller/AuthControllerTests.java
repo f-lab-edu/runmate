@@ -20,19 +20,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.transaction.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 public class AuthControllerTests {
     MockMvc mockMvc;
-    ObjectMapper mapper=new ObjectMapper();
+    ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     WebApplicationContext ctx;
@@ -46,37 +44,36 @@ public class AuthControllerTests {
     UserRepository userRepository;
 
     @BeforeEach
-    public void setUp(){
-        mockMvc= MockMvcBuilders.webAppContextSetup(ctx)
+    public void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
                 .addFilter(new JwtAuthenticationFilter(provider))
                 .build();
     }
 
     @Test
     public void joinAndLogin() throws Exception {
-        User user=new User();
+        User user = new User();
         user.setEmail("kyo@kyo.com");
         user.setPassword("1234");
-        user.setRegion(new Region("si","gu","gun"));
+        user.setRegion(new Region("si", "gu", "gun"));
         user.setUsername("kyo");
 
-        String jsonBody=mapper.writeValueAsString(user);
+        String jsonBody = mapper.writeValueAsString(user);
 
         assertNotNull(mockMvc);
         mockMvc.perform(post("/api/auth/local/new")
                 .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding("UTF-8")
                 .content(jsonBody))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        AuthRequest authRequest=new AuthRequest();
+        AuthRequest authRequest = new AuthRequest();
         authRequest.setEmail("kyo@kyo.com");
         authRequest.setPassword("1234");
 
-        jsonBody=mapper.writeValueAsString(authRequest);
+        jsonBody = mapper.writeValueAsString(authRequest);
 
-        MvcResult mvcResult=mockMvc.perform(post("/api/auth/local/login")
+        MvcResult mvcResult = mockMvc.perform(post("/api/auth/local/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8")
                 .content(jsonBody))
@@ -84,10 +81,29 @@ public class AuthControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Authorization")).andReturn();
 
-        String token=mvcResult.getResponse().getHeader("Authorization").replace("Bearer ","");
-        assertEquals(jwtProvider.validate(token),true);
-        assertEquals(jwtProvider.getClaim(token),user.getEmail());
+        String token = mvcResult.getResponse().getHeader("Authorization").replace("Bearer ", "");
+        assertEquals(jwtProvider.validate(token), true);
+        assertEquals(jwtProvider.getClaim(token), user.getEmail());
 
         assertNotNull(userRepository.findByEmail(user.getEmail()));
+    }
+
+    @Test
+    public void When_CreatInvalidUser_Expect_Status_ClientError_Body_ErrorMessage() throws Exception {
+        //no password, no region
+        String jsonBody = "{\"email\":\"anny@anny.com\"," +
+                "\"username\":\"anny\"," +
+                "\"introduction\":\"메일 뛰자!\"}";
+
+        MvcResult result = mockMvc.perform(post("/api/auth/local/new")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonBody))
+                .andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andReturn();
+        String resultBody = result.getResponse().getContentAsString();
+
+        assertTrue(resultBody.contains("password:Field can't be null value;"));
+        assertTrue(resultBody.contains("region:Field can't be null value;"));
     }
 }
