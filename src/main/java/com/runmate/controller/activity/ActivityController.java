@@ -2,8 +2,8 @@ package com.runmate.controller.activity;
 
 import com.runmate.domain.activity.Activity;
 import com.runmate.utils.JsonWrapper;
-import com.runmate.domain.dto.ActivityDto;
-import com.runmate.domain.dto.ActivityStatisticsDto;
+import com.runmate.domain.dto.activity.ActivityDto;
+import com.runmate.domain.dto.activity.ActivityStatisticsDto;
 import com.runmate.service.activity.ActivityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;

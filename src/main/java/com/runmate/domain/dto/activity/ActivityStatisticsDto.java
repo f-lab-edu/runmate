@@ -1,4 +1,4 @@
-package com.runmate.domain.dto;
+package com.runmate.domain.dto.activity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.runmate.domain.activity.Activity;

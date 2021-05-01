@@ -1,4 +1,4 @@
-package com.runmate.domain.dto;
+package com.runmate.domain.dto.activity;
 
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.activity.RunningTime;

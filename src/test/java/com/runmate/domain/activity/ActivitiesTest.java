@@ -1,6 +1,6 @@
 package com.runmate.domain.activity;
 
-import com.runmate.domain.dto.ActivityStatisticsDto;
+import com.runmate.domain.dto.activity.ActivityStatisticsDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,9 +9,7 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ActivitiesTest {
 
