@@ -1,8 +1,11 @@
 package com.runmate.service.user;
 
 import com.runmate.domain.dto.AuthRequest;
+import com.runmate.domain.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +13,13 @@ import javax.transaction.Transactional;
 
 @Service
 @Transactional
-public class UserService{
-    @Autowired
-    private UserRepository userRepository;
+@RequiredArgsConstructor
+public class UserService {
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
     public boolean join(User user) {
-        if(user!=null && userRepository.findByEmail(user.getEmail())==null){
+        if (user != null && userRepository.findByEmail(user.getEmail()) == null) {
             userRepository.save(user);
             return true;
         }
@@ -23,8 +27,8 @@ public class UserService{
     }
 
     public boolean login(AuthRequest request) {
-        User user=userRepository.findByEmail(request.getEmail());
-        if(user==null || !user.getPassword().equals(request.getPassword()))
+        User user = userRepository.findByEmail(request.getEmail());
+        if (user == null || !user.getPassword().equals(request.getPassword()))
             return false;
         return true;
     }
@@ -32,12 +36,14 @@ public class UserService{
     public User getUser(String email) {
         return userRepository.findByEmail(email);
     }
-    public void modify(String email,User modifiedUser){
-        User user=userRepository.findByEmail(email);
-        modifiedUser.setId(user.getId());
-        userRepository.save(modifiedUser);
+
+    public void modify(String email, UserModificationDto modificationDto) {
+        User user = userRepository.findById(modificationDto.getId()).orElseThrow(IllegalArgumentException::new);
+        modelMapper.map(modificationDto, user);
+        userRepository.save(user);
     }
-    public boolean delete(String email){
-        return userRepository.deleteByEmail(email)==1;
+
+    public boolean delete(String email) {
+        return userRepository.deleteByEmail(email) == 1;
     }
 }

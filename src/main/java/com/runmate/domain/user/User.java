@@ -26,18 +26,15 @@ public class User {
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true, length = 30)
-    @Email(message = "Field is not email format.")
     private String email;
 
     @Column(name = "password", length = 255)
     private String password;
 
     @Column(name = "name", length = 20)
-    @NotNull(message="Field must be not null")
     private String username;
 
     @Embedded
-    @NotNull(message = "Field must be not null")
     private Region region;
 
     @Column(name = "introduction", length = 255)
