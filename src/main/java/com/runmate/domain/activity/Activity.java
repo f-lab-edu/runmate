@@ -8,12 +8,15 @@ import com.runmate.utils.TimeUtils;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "activity")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Activity {
     @Id
@@ -39,10 +42,6 @@ public class Activity {
     @Column(name = "created_at")
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime createdAt;
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public LocalTime calculatePace() {
         long totalSeconds = TimeUtils.timeToSeconds(runningTime);

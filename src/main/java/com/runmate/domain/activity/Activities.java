@@ -1,6 +1,6 @@
 package com.runmate.domain.activity;
 
-import com.runmate.domain.dto.ActivityStatisticsDto;
+import com.runmate.domain.dto.activity.ActivityStatisticsDto;
 import com.runmate.utils.TimeUtils;
 
 import java.time.LocalTime;

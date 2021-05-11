@@ -1,6 +1,7 @@
-package com.runmate.domain.dto;
+package com.runmate.domain.dto.activity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.activity.RunningTime;
 import lombok.Getter;
@@ -14,7 +15,6 @@ public class ActivityStatisticsDto {
 
     private final float distance;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss")
     private final RunningTime runningTime;
 
     private final LocalTime averagePace;

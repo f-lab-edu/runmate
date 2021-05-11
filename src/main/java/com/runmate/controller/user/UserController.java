@@ -1,34 +1,47 @@
 package com.runmate.controller.user;
 
+import com.runmate.domain.dto.user.UserGetDto;
+import com.runmate.domain.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.runmate.utils.JsonWrapper;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    UserService userService;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
     @GetMapping("/{passedEmail}")
-    public ResponseEntity<User>get(@PathVariable("passedEmail")String passedEmail) {
+    public ResponseEntity<JsonWrapper> get(@PathVariable("passedEmail") String passedEmail) {
+        User user = userService.getUser(passedEmail);
+
+        JsonWrapper jsonWrapper = JsonWrapper.builder()
+                .data(modelMapper.map(user, UserGetDto.class))
+                .error(null)
+                .build();
+
         return ResponseEntity.ok()
-                .body(userService.getUser(passedEmail));
+                .body(jsonWrapper);
     }
 
     @PutMapping("/{passedEmail}")
-    public ResponseEntity<String>modify(@RequestParam("email")String tokenEmail,
-                                        @PathVariable("passedEmail")String passedEmail,
-                                        @RequestBody User user){
-
-        if(!tokenEmail.equals(passedEmail))
+    public ResponseEntity<String> modify(@RequestParam("email") String tokenEmail,
+                                         @PathVariable("passedEmail") String passedEmail,
+                                         @Valid @RequestBody UserModificationDto modificationDto) {
+        if (!tokenEmail.equals(passedEmail))
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                .body("it's not your email");
+                    .body("it's not your email");
 
-        userService.modify(passedEmail, user);
+        userService.modify(passedEmail, modificationDto);
         return ResponseEntity.ok().body("success");
     }
 }
