@@ -7,6 +7,8 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -30,9 +32,19 @@ public class Crew {
     @Enumerated(EnumType.STRING)
     private Grade gradeLimit;
 
+    @OneToMany(mappedBy = "crew_id")
+    private final List<CrewJoinRequest> joinRequests = new ArrayList<>();
+
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
 
+    public void addRequest(CrewJoinRequest request) {
+        if (request == null) {
+            throw new NullPointerException("크루 가입 요청이 비어있습니다.");
+        }
+        joinRequests.add(request);
+        request.setCrew(this);
+    }
 }
 
