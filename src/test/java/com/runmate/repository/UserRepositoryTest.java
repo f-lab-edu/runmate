@@ -28,7 +28,7 @@ public class UserRepositoryTest {
         user.setIntroduction("my name is yousung");
 
         userRepository.save(user);
-        assertEquals(userRepository.findAll().size(),4);
+        assertEquals(userRepository.findAll().size(),6);
     }
     @Test
     public void find(){
