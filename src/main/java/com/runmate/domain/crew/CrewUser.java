@@ -15,11 +15,11 @@ public class CrewUser {
     @Id
     private Long id;
 
-    @JoinColumn(name = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id")
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
-    @JoinColumn(name = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "crew_id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
     private Crew crew;
 
