@@ -22,4 +22,8 @@ public class CrewUser {
     @JoinColumn(name = "id", insertable = false, updatable = false)
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
     private Crew crew;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
