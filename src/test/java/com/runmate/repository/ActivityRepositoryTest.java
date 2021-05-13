@@ -48,7 +48,7 @@ public class ActivityRepositoryTest {
         activity.setUser(user);
 
         activityRepository.save(activity);
-        assertEquals(activityRepository.findAll().size(), 8);
+        assertEquals(activityRepository.findAll().size(), 11);
     }
 
     @DisplayName("올해 동안의 활동 기록 검색")
