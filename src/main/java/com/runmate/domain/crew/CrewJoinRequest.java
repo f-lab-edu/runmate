@@ -17,15 +17,16 @@ public class CrewJoinRequest {
     @Id
     private Long id;
 
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
     @Setter
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "crew_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
     private Crew crew;
 
+    @Column(name = "created_at", nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
 }

@@ -32,7 +32,7 @@ public class Crew {
     @Enumerated(EnumType.STRING)
     private Grade gradeLimit;
 
-    @OneToMany(mappedBy = "crew_id")
+    @OneToMany(mappedBy = "crew")
     private final List<CrewJoinRequest> joinRequests = new ArrayList<>();
 
     @Column(name = "created_at")
