@@ -36,6 +36,10 @@ public class Crew {
     @Enumerated(EnumType.STRING)
     private Grade gradeLimit;
 
+
+    @OneToMany(mappedBy = "crew")
+    private final List<CrewUser> userInfoInCrew=new ArrayList<>();
+
     @OneToMany(mappedBy = "crew")
     private final List<CrewJoinRequest> joinRequests = new ArrayList<>();
 
