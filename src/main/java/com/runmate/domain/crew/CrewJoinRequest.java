@@ -18,7 +18,7 @@ public class CrewJoinRequest {
     private Long id;
 
     @JoinColumn(name = "user_id")
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private User user;
 
     @Setter
