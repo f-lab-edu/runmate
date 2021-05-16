@@ -38,7 +38,7 @@ public class Crew {
 
 
     @OneToMany(mappedBy = "crew")
-    private final List<CrewUser> userInfoInCrew=new ArrayList<>();
+    private final List<CrewUser> crewUsers =new ArrayList<>();
 
     @OneToMany(mappedBy = "crew")
     private final List<CrewJoinRequest> joinRequests = new ArrayList<>();
