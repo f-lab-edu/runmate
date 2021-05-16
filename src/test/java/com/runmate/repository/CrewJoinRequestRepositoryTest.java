@@ -2,13 +2,11 @@ package com.runmate.repository;
 
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
-import com.runmate.domain.user.Grade;
-import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
 import com.runmate.repository.crew.CrewRepository;
 import com.runmate.repository.user.UserRepository;
-import org.apache.tomcat.jni.Local;
+import com.runmate.texture.TextureMaker;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,17 +35,19 @@ public class CrewJoinRequestRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    TextureMaker textureMaker;
     @Test
     void When_Save_CrewJoinRequest_Expect_increasedCount() {
         //given
         final int numOfUser = 5;
         final int countBeforeSave = countOfCrewJoinRequest();
 
-        Crew crew = makeCrew();
+        Crew crew = textureMaker.makeCrew();
         for (int i = 0; i < numOfUser; i++) {
             final String email = "lambda" + i;
-            User user = makeUser(email);
-            makeRequest(crew, user);
+            User user = textureMaker.makeUser(email);
+            textureMaker.makeRequest(crew, user);
         }
 
         final int countAfterSave = countOfCrewJoinRequest();
@@ -58,9 +58,9 @@ public class CrewJoinRequestRepositoryTest {
 
     @Test
     void When_delete_CrewJoinRequest_Expect_SizeMinus1() {
-        Crew crew = makeCrew();
-        User user = makeUser("scv");
-        CrewJoinRequest request = makeRequest(crew, user);
+        Crew crew = textureMaker.makeCrew();
+        User user = textureMaker.makeUser("scv");
+        CrewJoinRequest request = textureMaker.makeRequest(crew, user);
 
         final int countBeforeDelete = countOfCrewJoinRequest();
 
@@ -78,11 +78,11 @@ public class CrewJoinRequestRepositoryTest {
         final int numOfRequest = 20;
         List<CrewJoinRequest> expect = new ArrayList<>();
 
-        Crew crew = makeCrew();
+        Crew crew = textureMaker.makeCrew();
 
         for (int i = 0; i < numOfRequest; i++) {
             final String email = "lambda" + i;
-            User user = makeUser(email);
+            User user = textureMaker.makeUser(email);
             CrewJoinRequest request;
 
             if (i % 2 == 0) {
@@ -105,36 +105,6 @@ public class CrewJoinRequestRepositoryTest {
         for (int i = 0; i < result.size(); i++) {
             checkSameCrewJoinRequest(expect.get(i), result.get(i));
         }
-    }
-
-    Crew makeCrew() {
-        Crew crew = Crew.builder()
-                .name("run")
-                .description("let's run")
-                .region(new Region("MySi", "MyGu", null))
-                .gradeLimit(Grade.UNRANKED)
-                .build();
-        crewRepository.save(crew);
-        return crew;
-    }
-
-    User makeUser(String email) {
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword("123");
-        user.setIntroduction("i'm lambda");
-        user.setRegion(new Region("MySi", "MyGu", null));
-        userRepository.save(user);
-        return user;
-    }
-
-    CrewJoinRequest makeRequest(Crew crew, User user) {
-        CrewJoinRequest request = CrewJoinRequest.builder()
-                .user(user)
-                .crew(crew)
-                .build();
-        crewJoinRequestRepository.save(request);
-        return request;
     }
 
     CrewJoinRequest makeRequestWithLocalDateTime(Crew crew, User user, LocalDateTime dateTime) {
