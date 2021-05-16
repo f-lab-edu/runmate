@@ -1,8 +1,7 @@
 package com.runmate.domain.crew;
 
 import com.runmate.domain.user.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -11,6 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "crew_join_request")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CrewJoinRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -29,4 +29,10 @@ public class CrewJoinRequest {
     @Column(name = "created_at", nullable = false)
     @CreatedDate
     private LocalDateTime createdAt;
+
+    @Builder
+    public CrewJoinRequest(User user,Crew crew){
+        this.user=user;
+        this.crew=crew;
+    }
 }
