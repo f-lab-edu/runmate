@@ -47,8 +47,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Activity> activities = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user")
-    private CrewJoinRequest crewJoinRequest;
+    @OneToMany(mappedBy = "user")
+    private List<CrewJoinRequest>joinRequests=new ArrayList<>();
 
     public boolean canUpgrade(float totalDistance) {
         return this.grade.canUpgrade(totalDistance);
