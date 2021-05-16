@@ -1,13 +1,17 @@
 package com.runmate.domain.crew;
 
 import com.runmate.domain.user.User;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
 @Table(name = "crew_user")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CrewUser {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +30,10 @@ public class CrewUser {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Builder
+    public CrewUser(User user,Crew crew){
+        this.user=user;
+        this.crew=crew;
+    }
 }
