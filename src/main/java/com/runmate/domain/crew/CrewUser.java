@@ -1,10 +1,7 @@
 package com.runmate.domain.crew;
 
 import com.runmate.domain.user.User;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -27,6 +24,7 @@ public class CrewUser {
     @ManyToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
     private Crew crew;
 
+    @Setter
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
