@@ -2,11 +2,14 @@ package com.runmate.texture;
 
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
+import com.runmate.domain.crew.CrewUser;
+import com.runmate.domain.crew.Role;
 import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
 import com.runmate.repository.crew.CrewRepository;
+import com.runmate.repository.crew.CrewUserRepository;
 import com.runmate.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +25,8 @@ public class TextureMaker {
     private CrewRepository crewRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CrewUserRepository crewUserRepository;
 
     public Crew makeCrew(){
         Crew crew = Crew.builder()
@@ -48,6 +53,7 @@ public class TextureMaker {
         user.setPassword("123");
         user.setIntroduction("i'm lambda");
         user.setRegion(new Region("MySi", "MyGu", null));
+        user.setUsername("lambda");
         userRepository.save(user);
         return user;
     }
@@ -59,5 +65,15 @@ public class TextureMaker {
                 .build();
         crewJoinRequestRepository.save(request);
         return request;
+    }
+
+    public CrewUser makeCrewUser(Crew crew, User user){
+        CrewUser crewUser = CrewUser.builder()
+                .crew(crew)
+                .user(user)
+                .build();
+        crewUser.setRole(Role.NORMAL);
+        crewUserRepository.save(crewUser);
+        return crewUser;
     }
 }
