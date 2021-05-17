@@ -119,7 +119,8 @@ public class CrewJoinRequestRepositoryTest {
             textureMaker.makeRequest(crew, user);
         }
 
-        CrewJoinRequest request = crewJoinRequestRepository.findCrewJoinRequestByCrewAndUser(crew, users.get(testUser));
+        CrewJoinRequest request = crewJoinRequestRepository.findCrewJoinRequestByCrewAndUser(crew, users.get(testUser))
+                .orElse(null);
 
         checkSameCrew(crew, request.getCrew());
         checkSameUser(users.get(testUser), request.getUser());

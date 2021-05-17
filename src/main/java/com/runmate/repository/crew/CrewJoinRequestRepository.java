@@ -9,10 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CrewJoinRequestRepository extends JpaRepository<CrewJoinRequest, Long> {
     @Query("SELECT CJR FROM CrewJoinRequest CJR where CJR.crew =:crew")
     List<CrewJoinRequest> findAllByCrewWithPageable(@Param("crew") Crew crew, Pageable request);
 
-    CrewJoinRequest findCrewJoinRequestByCrewAndUser(Crew crew, User user);
+    Optional<CrewJoinRequest> findCrewJoinRequestByCrewAndUser(Crew crew, User user);
 }
