@@ -37,6 +37,7 @@ public class CrewJoinRequestRepositoryTest {
 
     @Autowired
     TextureMaker textureMaker;
+
     @Test
     void When_Save_CrewJoinRequest_Expect_increasedCount() {
         //given
@@ -107,6 +108,23 @@ public class CrewJoinRequestRepositoryTest {
         }
     }
 
+    @Test
+    void When_findCrewJoinRequestByCrewAndUser_Expect_Return_SameUserAndCrew() {
+        final int numOfUser = 10;
+        final int testUser = 3;
+        Crew crew = textureMaker.makeCrew();
+        List<User> users = textureMaker.makeRandomUsers(numOfUser);
+
+        for (User user : users) {
+            textureMaker.makeRequest(crew, user);
+        }
+
+        CrewJoinRequest request = crewJoinRequestRepository.findCrewJoinRequestByCrewAndUser(crew, users.get(testUser));
+
+        checkSameCrew(crew, request.getCrew());
+        checkSameUser(users.get(testUser), request.getUser());
+    }
+
     CrewJoinRequest makeRequestWithLocalDateTime(Crew crew, User user, LocalDateTime dateTime) {
         CrewJoinRequest request = CrewJoinRequest.builder()
                 .user(user)
@@ -145,5 +163,13 @@ public class CrewJoinRequestRepositoryTest {
                 return 1;
             }
         });
+    }
+
+    void checkSameCrew(Crew one, Crew another) {
+        assertEquals(one.getId(), another.getId());
+    }
+
+    void checkSameUser(User one, User another) {
+        assertEquals(one.getId(), another.getId());
     }
 }
