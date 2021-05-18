@@ -6,11 +6,10 @@ import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.crew.Role;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
+import com.runmate.repository.crew.CrewRepository;
 import com.runmate.repository.crew.CrewUserRepository;
-import com.runmate.service.exception.BelongToSomeCrewException;
-import com.runmate.service.exception.DuplicatedCrewJoinRequestToSameCrewException;
-import com.runmate.service.exception.GradeLimitException;
-import com.runmate.service.exception.NotFoundCrewJoinRequestException;
+import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,8 +25,14 @@ import static org.springframework.data.domain.Sort.*;
 public class CrewJoinRequestService {
     private final CrewJoinRequestRepository crewJoinRequestRepository;
     private final CrewUserRepository crewUserRepository;
+    private final UserRepository userRepository;
+    private final CrewRepository crewRepository;
 
-    public boolean sendJoinRequest(Crew crew, User user) {
+    public void sendJoinRequest(Long crewId, String email) {
+        User user = userRepository.findByEmail(email);
+        Crew crew = crewRepository.findById(crewId)
+                .orElseThrow(NotFoundCrewException::new);
+
         if (canSendRequest(crew, user)) {
             CrewJoinRequest request = CrewJoinRequest.builder()
                     .user(user)
@@ -35,21 +40,27 @@ public class CrewJoinRequestService {
                     .build();
             crewJoinRequestRepository.save(request);
         }
-        return false;
     }
 
-    public List<CrewJoinRequest> searchJoinRequestByCrewWithPageable(Crew crew, int offset, int Limit) {
+    public List<CrewJoinRequest> searchJoinRequestByCrewWithPageable(Long crewId, int offset, int Limit) {
+        Crew crew = crewRepository.findById(crewId)
+                .orElseThrow(NotFoundCrewException::new);
+
         return crewJoinRequestRepository.findAllByCrewWithPageable(crew,
                 PageRequest.of(offset, Limit, by(Direction.DESC, "createdAt")));
     }
 
-    public void cancelJoinRequest(CrewJoinRequest crewJoinRequest) {
-        CrewJoinRequest request = crewJoinRequestRepository.findById(crewJoinRequest.getId())
+    public void cancelJoinRequest(Long crewJoinRequestId) {
+        CrewJoinRequest request = crewJoinRequestRepository.findById(crewJoinRequestId)
                 .orElseThrow(NotFoundCrewJoinRequestException::new);
+
         crewJoinRequestRepository.delete(request);
     }
 
-    public void acknowledgeJoinRequest(CrewJoinRequest request) {
+    public void acknowledgeJoinRequest(Long crewJoinRequestId) {
+        CrewJoinRequest request = crewJoinRequestRepository.findById(crewJoinRequestId)
+                .orElseThrow(NotFoundCrewJoinRequestException::new);
+
         CrewUser crewUser = CrewUser.builder()
                 .user(request.getUser())
                 .crew(request.getCrew())
