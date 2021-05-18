@@ -30,8 +30,9 @@ public class CrewUser {
     private Role role;
 
     @Builder
-    public CrewUser(User user,Crew crew){
+    public CrewUser(User user,Crew crew,Role role){
         this.user=user;
         this.crew=crew;
+        this.role=role;
     }
 }
