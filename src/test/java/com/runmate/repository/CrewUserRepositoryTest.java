@@ -2,10 +2,9 @@ package com.runmate.repository;
 
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
-import com.runmate.domain.crew.Role;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewUserRepository;
-import com.runmate.texture.TextureMaker;
+import com.runmate.texture.TextureFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,16 +23,16 @@ public class CrewUserRepositoryTest {
     CrewUserRepository crewUserRepository;
 
     @Autowired
-    TextureMaker textureMaker;
+    TextureFactory textureFactory;
 
     @Test
     void When_SaveCrewUser_Expect_IncreasedCount() {
         final String email = "Lambda@Lambda.com";
-        Crew crew = textureMaker.makeCrew();
-        User user = textureMaker.makeUser(email);
+        Crew crew = textureFactory.makeCrew(true);
+        User user = textureFactory.makeUser(email, true);
 
         final int countBeforeSave = countOfCrewUser();
-        CrewUser crewUser = textureMaker.makeCrewUser(crew, user);
+        CrewUser crewUser = textureFactory.makeCrewUser(crew, user, true);
 
         final int countAfterSave = countOfCrewUser();
         assertEquals(countBeforeSave + 1, countAfterSave);
@@ -42,10 +41,10 @@ public class CrewUserRepositoryTest {
     @Test
     void When_DeleteCrewUser_Expect_DecreasedCount() {
         final String email = "Lambda@Lambda.com";
-        Crew crew = textureMaker.makeCrew();
-        User user = textureMaker.makeUser(email);
+        Crew crew = textureFactory.makeCrew(true);
+        User user = textureFactory.makeUser(email, true);
 
-        CrewUser crewUser = textureMaker.makeCrewUser(crew, user);
+        CrewUser crewUser = textureFactory.makeCrewUser(crew, user, true);
         final int countBeforeDelete = countOfCrewUser();
 
         crewUserRepository.delete(crewUser);
@@ -58,26 +57,26 @@ public class CrewUserRepositoryTest {
     @Test
     void When_FindCrewUser_Expect() {
         final String email = "Lambda@Lambda.com";
-        Crew crew = textureMaker.makeCrew();
-        User user = textureMaker.makeUser(email);
-        CrewUser crewUser = textureMaker.makeCrewUser(crew, user);
+        Crew crew = textureFactory.makeCrew(true);
+        User user = textureFactory.makeUser(email, true);
+        CrewUser crewUser = textureFactory.makeCrewUser(crew, user, true);
 
-        CrewUser result=crewUserRepository.findByCrewAndUser(crew,user).orElse(null);
-        checkSameCrewUser(crewUser,result);
+        CrewUser result = crewUserRepository.findByCrewAndUser(crew, user).orElse(null);
+        checkSameCrewUser(crewUser, result);
     }
 
     @Test
     void When_FindCrewUsersWithCrew_Expect() {
-        final int numOfUser=20;
-        Crew crew=textureMaker.makeCrew();
-        List<User> users=textureMaker.makeRandomUsers(numOfUser);
+        final int numOfUser = 20;
+        Crew crew = textureFactory.makeCrew(true);
+        List<User> users = textureFactory.makeRandomUsers(numOfUser, true);
 
-        for(User user:users){
-            textureMaker.makeCrewUser(crew,user);
+        for (User user : users) {
+            textureFactory.makeCrewUser(crew, user, true);
         }
 
-        List<CrewUser>crewUsers=crewUserRepository.findAllByCrew(crew);
-        assertEquals(crewUsers.size(),numOfUser);
+        List<CrewUser> crewUsers = crewUserRepository.findAllByCrew(crew);
+        assertEquals(crewUsers.size(), numOfUser);
     }
 
     int countOfCrewUser() {
