@@ -4,6 +4,7 @@ import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
 import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.crew.Role;
+import com.runmate.domain.dto.crew.CrewJoinRequestGetDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
 import com.runmate.repository.crew.CrewRepository;
@@ -42,7 +43,7 @@ public class CrewJoinRequestService {
         }
     }
 
-    public List<CrewJoinRequest> searchJoinRequestByCrewWithPageable(Long crewId, int offset, int Limit) {
+    public List<CrewJoinRequestGetDto> searchJoinRequestByCrewWithPageable(Long crewId, int offset, int Limit) {
         Crew crew = crewRepository.findById(crewId)
                 .orElseThrow(NotFoundCrewException::new);
 
