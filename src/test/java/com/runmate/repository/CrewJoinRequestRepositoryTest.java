@@ -2,6 +2,7 @@ package com.runmate.repository;
 
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
+import com.runmate.domain.dto.crew.CrewJoinRequestGetDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
 import com.runmate.repository.crew.CrewRepository;
@@ -97,14 +98,14 @@ public class CrewJoinRequestRepositoryTest {
 
         final int pageSize = 10;
         //when
-        List<CrewJoinRequest> result = crewJoinRequestRepository.findAllByCrewWithPageable(crew,
+        List<CrewJoinRequestGetDto> result = crewJoinRequestRepository.findAllByCrewWithPageable(crew,
                 PageRequest.of(0, pageSize, Sort.by(Sort.Direction.DESC, "createdAt")));
 
         //then
         assertEquals(result.size(), pageSize);
         //result same order with sorted CJR List
         for (int i = 0; i < result.size(); i++) {
-            checkSameCrewJoinRequest(expect.get(i), result.get(i));
+            checkSameCrewJoinRequestWithDto(expect.get(i), result.get(i));
         }
     }
 
@@ -140,9 +141,10 @@ public class CrewJoinRequestRepositoryTest {
         return crewJoinRequestRepository.findAll().size();
     }
 
-    void checkSameCrewJoinRequest(CrewJoinRequest one, CrewJoinRequest another) {
-        assertEquals(one.getCrew().getId(), another.getCrew().getId());
-        assertEquals(one.getUser().getId(), another.getUser().getId());
+    void checkSameCrewJoinRequestWithDto(CrewJoinRequest request, CrewJoinRequestGetDto dto) {
+        assertEquals(request.getId(), dto.getId());
+        assertEquals(request.getUser().getEmail(), dto.getEmail());
+        assertEquals(request.getCrew().getId(), dto.getCrewId());
     }
 
     void deleteCrewJoinRequest(CrewJoinRequest request) {
