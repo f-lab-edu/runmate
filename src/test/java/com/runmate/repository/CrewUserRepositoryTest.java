@@ -62,7 +62,7 @@ public class CrewUserRepositoryTest {
         User user = textureMaker.makeUser(email);
         CrewUser crewUser = textureMaker.makeCrewUser(crew, user);
 
-        CrewUser result=crewUserRepository.findByCrewAndUser(crew,user);
+        CrewUser result=crewUserRepository.findByCrewAndUser(crew,user).orElse(null);
         checkSameCrewUser(crewUser,result);
     }
 
