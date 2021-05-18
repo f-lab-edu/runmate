@@ -3,6 +3,7 @@ package com.runmate.domain.user;
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.common.LocalDateTimeConverter;
 import com.runmate.domain.crew.CrewJoinRequest;
+import com.runmate.domain.crew.CrewUser;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -49,6 +50,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<CrewJoinRequest>joinRequests=new ArrayList<>();
+
+    @OneToOne(mappedBy = "user")
+    private CrewUser crewUser;
 
     public boolean canUpgrade(float totalDistance) {
         return this.grade.canUpgrade(totalDistance);
