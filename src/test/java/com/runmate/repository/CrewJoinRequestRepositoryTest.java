@@ -6,7 +6,7 @@ import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
 import com.runmate.repository.crew.CrewRepository;
 import com.runmate.repository.user.UserRepository;
-import com.runmate.texture.TextureMaker;
+import com.runmate.texture.TextureFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +36,7 @@ public class CrewJoinRequestRepositoryTest {
     UserRepository userRepository;
 
     @Autowired
-    TextureMaker textureMaker;
+    TextureFactory textureFactory;
 
     @Test
     void When_Save_CrewJoinRequest_Expect_increasedCount() {
@@ -44,11 +44,11 @@ public class CrewJoinRequestRepositoryTest {
         final int numOfUser = 5;
         final int countBeforeSave = countOfCrewJoinRequest();
 
-        Crew crew = textureMaker.makeCrew();
+        Crew crew = textureFactory.makeCrew(true);
         for (int i = 0; i < numOfUser; i++) {
             final String email = "lambda" + i;
-            User user = textureMaker.makeUser(email);
-            textureMaker.makeRequest(crew, user);
+            User user = textureFactory.makeUser(email, true);
+            textureFactory.makeRequest(crew, user, true);
         }
 
         final int countAfterSave = countOfCrewJoinRequest();
@@ -59,9 +59,9 @@ public class CrewJoinRequestRepositoryTest {
 
     @Test
     void When_delete_CrewJoinRequest_Expect_SizeMinus1() {
-        Crew crew = textureMaker.makeCrew();
-        User user = textureMaker.makeUser("scv");
-        CrewJoinRequest request = textureMaker.makeRequest(crew, user);
+        Crew crew = textureFactory.makeCrew(true);
+        User user = textureFactory.makeUser("scv", true);
+        CrewJoinRequest request = textureFactory.makeRequest(crew, user, true);
 
         final int countBeforeDelete = countOfCrewJoinRequest();
 
@@ -79,11 +79,11 @@ public class CrewJoinRequestRepositoryTest {
         final int numOfRequest = 20;
         List<CrewJoinRequest> expect = new ArrayList<>();
 
-        Crew crew = textureMaker.makeCrew();
+        Crew crew = textureFactory.makeCrew(true);
 
         for (int i = 0; i < numOfRequest; i++) {
             final String email = "lambda" + i;
-            User user = textureMaker.makeUser(email);
+            User user = textureFactory.makeUser(email, true);
             CrewJoinRequest request;
 
             if (i % 2 == 0) {
@@ -112,11 +112,11 @@ public class CrewJoinRequestRepositoryTest {
     void When_findCrewJoinRequestByCrewAndUser_Expect_Return_SameUserAndCrew() {
         final int numOfUser = 10;
         final int testUser = 3;
-        Crew crew = textureMaker.makeCrew();
-        List<User> users = textureMaker.makeRandomUsers(numOfUser);
+        Crew crew = textureFactory.makeCrew(true);
+        List<User> users = textureFactory.makeRandomUsers(numOfUser, true);
 
         for (User user : users) {
-            textureMaker.makeRequest(crew, user);
+            textureFactory.makeRequest(crew, user, true);
         }
 
         CrewJoinRequest request = crewJoinRequestRepository.findCrewJoinRequestByCrewAndUser(crew, users.get(testUser))

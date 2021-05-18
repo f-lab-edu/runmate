@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class TextureMaker {
+public class TextureFactory {
     @Autowired
     private CrewJoinRequestRepository crewJoinRequestRepository;
     @Autowired
@@ -28,52 +28,57 @@ public class TextureMaker {
     @Autowired
     private CrewUserRepository crewUserRepository;
 
-    public Crew makeCrew(){
+    public Crew makeCrew(boolean doPersist) {
         Crew crew = Crew.builder()
                 .name("run")
                 .description("let's run")
                 .region(new Region("MySi", "MyGu", null))
                 .gradeLimit(Grade.UNRANKED)
                 .build();
-        crewRepository.save(crew);
+        if (doPersist)
+            crewRepository.save(crew);
         return crew;
     }
 
-    public List<User> makeRandomUsers(int count){
-        List<User>users=new ArrayList<>();
-        for(int i=0; i<count; i++){
-            users.add(makeUser("Lambda"+i));
+    public List<User> makeRandomUsers(int count, boolean doPersist) {
+        List<User> users = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            users.add(makeUser("Lambda" + i, doPersist));
         }
         return users;
     }
 
-    public User makeUser(String email) {
+    public User makeUser(String email, boolean doPersist) {
         User user = new User();
         user.setEmail(email);
         user.setPassword("123");
         user.setIntroduction("i'm lambda");
         user.setRegion(new Region("MySi", "MyGu", null));
         user.setUsername("lambda");
-        userRepository.save(user);
+        if (doPersist)
+            userRepository.save(user);
         return user;
     }
 
-    public CrewJoinRequest makeRequest(Crew crew, User user) {
+    public CrewJoinRequest makeRequest(Crew crew, User user, boolean doPersist) {
         CrewJoinRequest request = CrewJoinRequest.builder()
                 .user(user)
                 .crew(crew)
                 .build();
-        crewJoinRequestRepository.save(request);
+        if (doPersist)
+            crewJoinRequestRepository.save(request);
         return request;
     }
 
-    public CrewUser makeCrewUser(Crew crew, User user){
+    public CrewUser makeCrewUser(Crew crew, User user, boolean doPersist) {
         CrewUser crewUser = CrewUser.builder()
                 .crew(crew)
                 .user(user)
                 .build();
         crewUser.setRole(Role.NORMAL);
-        crewUserRepository.save(crewUser);
+
+        if (doPersist)
+            crewUserRepository.save(crewUser);
         return crewUser;
     }
 }
