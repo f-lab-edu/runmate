@@ -4,4 +4,8 @@ public class NotFoundCrewJoinRequestException extends RuntimeException{
     public NotFoundCrewJoinRequestException(String message) {
         super(message);
     }
+
+    public NotFoundCrewJoinRequestException() {
+        super();
+    }
 }
