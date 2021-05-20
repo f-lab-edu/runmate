@@ -73,15 +73,10 @@ public class CrewJoinRequestService {
     }
 
     private boolean canSendRequest(Crew crew, User user) {
-        checkGradeLimit(crew, user);
+        user.checkGradeHigherThenCrewLimit(crew);
         checkDuplicatedRequestToSameCrew(crew, user);
         checkBelongToSomeCrew(crew, user);
         return true;
-    }
-
-    private void checkGradeLimit(Crew crew, User user) {
-        if (!user.getGrade().higherOrEqualThan(crew.getGradeLimit()))
-            throw new GradeLimitException("Your score is lower than the score limit set by the crew.");
     }
 
     private void checkDuplicatedRequestToSameCrew(Crew crew, User user) {

@@ -2,8 +2,10 @@ package com.runmate.domain.user;
 
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.common.LocalDateTimeConverter;
+import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
 import com.runmate.domain.crew.CrewUser;
+import com.runmate.service.exception.GradeLimitException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -49,13 +51,18 @@ public class User {
     private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<CrewJoinRequest>joinRequests=new ArrayList<>();
+    private List<CrewJoinRequest> joinRequests = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private CrewUser crewUser;
 
     public boolean canUpgrade(float totalDistance) {
         return this.grade.canUpgrade(totalDistance);
+    }
+
+    public void checkGradeHigherThenCrewLimit(Crew crew) {
+        if (!this.getGrade().higherOrEqualThan(crew.getGradeLimit()))
+            throw new GradeLimitException("Your score is lower than the score limit set by the crew.");
     }
 
     public void upgrade() {
