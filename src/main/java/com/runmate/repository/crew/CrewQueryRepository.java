@@ -1,10 +1,14 @@
 package com.runmate.repository.crew;
 
-import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.runmate.domain.activity.QActivity;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.QCrew;
+import com.runmate.domain.crew.QCrewUser;
+import com.runmate.domain.dto.crew.CrewGetDto;
+import com.runmate.domain.user.QUser;
 import com.runmate.domain.user.Region;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,12 +21,25 @@ import java.util.List;
 public class CrewQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<Crew> findByLocationWithSorted(Region region) {//paging,Sort condition 2가지 붙는다.
+    public List<CrewGetDto> findByLocationWithSorted(Region region, int offset, int limit) {
+
+        QActivity activity = QActivity.activity;
+        QUser user = QUser.user;
+        QCrewUser crewUser = QCrewUser.crewUser;
         QCrew crew = QCrew.crew;
-        return queryFactory.
-                select(crew).
-                from(crew).
-                where(eqSi(region.getSi()), eqGu(region.getGu()), eqGun(region.getGun())).fetch();
+
+        return queryFactory.select(Projections.constructor(CrewGetDto.class,
+                crew.id, crew.name, activity.distance.sum(), user.count(), crew.createdAt))
+                .from(activity)
+                .innerJoin(activity.user, user)
+                .innerJoin(user.crewUser, crewUser)
+                .innerJoin(crewUser.crew, crew)
+                .where(eqSi(region.getSi()), eqGu(region.getGu()), eqGun(region.getGun()))
+                .groupBy(crew.id)
+                .orderBy(activity.distance.sum().desc())
+                .offset(offset)
+                .limit(limit)
+                .fetch();
     }
 
     private BooleanExpression eqSi(String si) {
