@@ -29,7 +29,7 @@ public class CrewQueryRepository {
         QCrew crew = QCrew.crew;
 
         return queryFactory.select(Projections.constructor(CrewGetDto.class,
-                crew.id, crew.name, activity.distance.sum(), user.count(), crew.createdAt))
+                crew.id, crew.name, activity.distance.sum(), crew.createdAt))
                 .from(activity)
                 .innerJoin(activity.user, user)
                 .innerJoin(user.crewUser, crewUser)
