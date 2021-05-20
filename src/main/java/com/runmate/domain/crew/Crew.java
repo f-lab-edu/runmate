@@ -2,10 +2,7 @@ package com.runmate.domain.crew;
 
 import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.Region;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -14,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "crew")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,9 +34,8 @@ public class Crew {
     @Enumerated(EnumType.STRING)
     private Grade gradeLimit;
 
-
     @OneToMany(mappedBy = "crew")
-    private final List<CrewUser> crewUsers =new ArrayList<>();
+    private final List<CrewUser> crewUsers = new ArrayList<>();
 
     @OneToMany(mappedBy = "crew")
     private final List<CrewJoinRequest> joinRequests = new ArrayList<>();
@@ -56,11 +53,11 @@ public class Crew {
     }
 
     @Builder
-    public Crew(String name,String description, Region region, Grade gradeLimit){
-        this.name=name;
-        this.description=description;
-        this.region=region;
-        this.gradeLimit=gradeLimit;
+    public Crew(String name, String description, Region region, Grade gradeLimit) {
+        this.name = name;
+        this.description = description;
+        this.region = region;
+        this.gradeLimit = gradeLimit;
     }
 }
 
