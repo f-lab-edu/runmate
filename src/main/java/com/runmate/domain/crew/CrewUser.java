@@ -4,6 +4,7 @@ import com.runmate.domain.user.User;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Entity
@@ -28,6 +29,9 @@ public class CrewUser {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name="created_at")
+    private LocalDateTime createdAt;
 
     @Builder
     public CrewUser(User user,Crew crew,Role role){
