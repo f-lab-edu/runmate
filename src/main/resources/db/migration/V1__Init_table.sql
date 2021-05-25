@@ -34,6 +34,7 @@ create table crew
 (
     id          bigint primary key auto_increment,
     description varchar(255),
+    name        varchar(20),
     si          varchar(20),
     gu          varchar(20),
     gun         varchar(20),

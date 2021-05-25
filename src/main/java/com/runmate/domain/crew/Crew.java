@@ -2,7 +2,7 @@ package com.runmate.domain.crew;
 
 import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.Region;
-import lombok.Getter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "crew")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Crew {
     @Id
     @Column(name = "id")
@@ -33,6 +35,9 @@ public class Crew {
     private Grade gradeLimit;
 
     @OneToMany(mappedBy = "crew")
+    private final List<CrewUser> crewUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "crew")
     private final List<CrewJoinRequest> joinRequests = new ArrayList<>();
 
     @Column(name = "created_at")
@@ -45,6 +50,14 @@ public class Crew {
         }
         joinRequests.add(request);
         request.setCrew(this);
+    }
+
+    @Builder
+    public Crew(String name, String description, Region region, Grade gradeLimit) {
+        this.name = name;
+        this.description = description;
+        this.region = region;
+        this.gradeLimit = gradeLimit;
     }
 }
 

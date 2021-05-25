@@ -44,4 +44,14 @@ public enum Grade {
     public Grade getNext() {
         return this.next;
     }
+
+    public boolean higherOrEqualThan(Grade grade){
+        Grade copy=Grade.of(grade.getValue());
+        while(copy!=null){
+            if(copy==this)
+                return true;
+            copy=copy.next;
+        }
+        return false;
+    }
 }
