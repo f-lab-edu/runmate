@@ -31,7 +31,7 @@ public class CrewUserQueryRepository {
         QCrew crew = QCrew.crew;
 
         ConstructorExpression<CrewUserGetDto> crewUserGetDtoConstructor = Projections.constructor(CrewUserGetDto.class,
-                user.id, user.username, activity.distance.sum(), user.createdAt);
+                crewUser.id, activity.distance.sum(), crewUser.role, crewUser.user.username);
 
         return queryFactory.select(crewUserGetDtoConstructor)
                 .from(activity)
@@ -39,7 +39,7 @@ public class CrewUserQueryRepository {
                 .innerJoin(user.crewUser, crewUser)
                 .innerJoin(crewUser.crew, crew)
                 .where(crew.id.eq(crewId))
-                .groupBy(user)
+                .groupBy(crewUser)
                 .orderBy(activity.distance.sum().desc())
                 .offset(offset)
                 .limit(limit)
