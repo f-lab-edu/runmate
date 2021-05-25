@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 @ToString
 public class CrewUserGetDto {
     private Long id;
-    private String name;
     private float totalDistance;
-    private LocalDateTime createdAt;
+    private Role role;
+    private String username;
 
-    public CrewUserGetDto(Long id, String name, float totalDistance, LocalDateTime createdAt) {
+    public CrewUserGetDto(Long id, float totalDistance,Role role,String username) {
         this.id = id;
-        this.name = name;
         this.totalDistance = totalDistance;
-        this.createdAt = createdAt;
+        this.role=role;
+        this.username=username;
     }
 }
