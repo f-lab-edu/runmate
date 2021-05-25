@@ -31,7 +31,7 @@ public class CrewUserQueryRepository {
         QCrew crew = QCrew.crew;
 
         ConstructorExpression<CrewUserGetDto> crewUserGetDtoConstructor = Projections.constructor(CrewUserGetDto.class,
-                crewUser.id, activity.distance.sum(), crewUser.role, crewUser.user.username);
+                crewUser.id, activity.distance.sum(), crewUser.role, crewUser.user.username, crewUser.createdAt);
 
         return queryFactory.select(crewUserGetDtoConstructor)
                 .from(activity)
