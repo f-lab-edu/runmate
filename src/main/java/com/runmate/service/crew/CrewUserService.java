@@ -36,7 +36,7 @@ public class CrewUserService {
         crewUserRepository.delete(kickedCrewUser);
     }
 
-    public void withDrawSelf(Long crewUserId) {
+    public void withdrawSelf(Long crewUserId) {
         CrewUser crewUser = getCrewUserInRepo(crewUserId);
         crewUserRepository.delete(crewUser);
     }
