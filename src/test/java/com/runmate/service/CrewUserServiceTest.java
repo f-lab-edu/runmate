@@ -74,7 +74,7 @@ public class CrewUserServiceTest {
 
         when(crewUserRepository.findById(crewId)).thenReturn(Optional.of(crewUser));
 
-        crewUserService.withDrawSelf(crewId);
+        crewUserService.withdrawSelf(crewId);
         verify(crewUserRepository).delete(any(CrewUser.class));
     }
 
