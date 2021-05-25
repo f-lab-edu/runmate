@@ -14,13 +14,11 @@ public class CrewUserGetDto {
     private String name;
     private float totalDistance;
     private LocalDateTime createdAt;
-    private Role role;
 
-    public CrewUserGetDto(Long id, String name, float totalDistance, LocalDateTime createdAt, Role role) {
+    public CrewUserGetDto(Long id, String name, float totalDistance, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.totalDistance = totalDistance;
         this.createdAt = createdAt;
-        this.role = role;
     }
 }

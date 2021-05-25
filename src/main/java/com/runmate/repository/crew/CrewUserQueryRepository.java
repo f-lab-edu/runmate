@@ -1,6 +1,7 @@
 package com.runmate.repository.crew;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.runmate.domain.activity.Activity;
@@ -29,8 +30,10 @@ public class CrewUserQueryRepository {
         QCrewUser crewUser = QCrewUser.crewUser;
         QCrew crew = QCrew.crew;
 
-        return queryFactory.select(Projections.constructor(CrewUserGetDto.class,
-                crewUser.id, user.username, activity.distance.sum(), user.createdAt, crewUser.role))
+        ConstructorExpression<CrewUserGetDto> crewUserGetDtoConstructor = Projections.constructor(CrewUserGetDto.class,
+                user.id, user.username, activity.distance.sum(), user.createdAt);
+
+        return queryFactory.select(crewUserGetDtoConstructor)
                 .from(activity)
                 .innerJoin(activity.user, user)
                 .innerJoin(user.crewUser, crewUser)
