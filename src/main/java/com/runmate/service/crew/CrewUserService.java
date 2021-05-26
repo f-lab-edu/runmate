@@ -3,13 +3,13 @@ package com.runmate.service.crew;
 import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.crew.Role;
 import com.runmate.domain.dto.crew.CrewUserGetDto;
-import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewUserQueryRepository;
 import com.runmate.repository.crew.CrewUserRepository;
-import com.runmate.repository.user.UserRepository;
+import com.runmate.repository.spec.CrewUserOrderSpec;
 import com.runmate.service.exception.NotFoundCrewUserException;
 import com.runmate.service.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,10 +21,9 @@ import java.util.List;
 public class CrewUserService {
     private final CrewUserRepository crewUserRepository;
     private final CrewUserQueryRepository crewUserQueryRepository;
-    private final UserRepository userRepository;
 
-    public List<CrewUserGetDto> searchCrewUser(Long crewId, int offset, int limit) {
-        return crewUserQueryRepository.findCrewUserOrderByActivity(crewId, offset, limit);
+    public List<CrewUserGetDto> searchCrewUser(Long crewId, int offset, int limit, CrewUserOrderSpec crewUserOrderSpec) {
+        return crewUserQueryRepository.findCrewUserWithSorted(crewId, PageRequest.of(offset, limit), crewUserOrderSpec);
     }
 
     public void kickOutUser(Long adminCrewUserId, Long kickedCrewUserId) {

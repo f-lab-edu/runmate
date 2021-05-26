@@ -17,6 +17,7 @@ public class CrewUserGetDto {
     private String username;
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime createdAt;
+    private Long totalRunningSeconds;
 
     public CrewUserGetDto(Long id, float totalDistance, Role role, String username, LocalDateTime createdAt) {
         this.id = id;
@@ -24,5 +25,14 @@ public class CrewUserGetDto {
         this.role = role;
         this.username = username;
         this.createdAt = createdAt;
+    }
+
+    public CrewUserGetDto(Long id, float totalDistance, Role role, String username, LocalDateTime createdAt, Long totalRunningSeconds) {
+        this.id = id;
+        this.totalDistance = totalDistance;
+        this.role = role;
+        this.username = username;
+        this.createdAt = createdAt;
+        this.totalRunningSeconds = totalRunningSeconds;
     }
 }
