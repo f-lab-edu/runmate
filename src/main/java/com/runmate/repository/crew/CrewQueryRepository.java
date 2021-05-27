@@ -4,45 +4,50 @@ import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.runmate.domain.activity.QActivity;
-import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.QCrew;
-import com.runmate.domain.crew.QCrewUser;
 import com.runmate.domain.dto.crew.CrewGetDto;
-import com.runmate.domain.user.QUser;
 import com.runmate.domain.user.Region;
+import com.runmate.repository.spec.CrewOrderSpec;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+
+import static com.runmate.domain.activity.QActivity.activity;
+import static com.runmate.domain.user.QUser.user;
+import static com.runmate.domain.crew.QCrew.crew;
+import static com.runmate.domain.crew.QCrewUser.crewUser;
+import static com.runmate.repository.activity.ActivityRepository.getSumDistance;
+import static com.runmate.repository.activity.ActivityRepository.getSumSecondsOfRunningTime;
 
 @RequiredArgsConstructor
 @Repository
 public class CrewQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<CrewGetDto> findByLocationWithSorted(Region region, int offset, int limit) {
-
-        QActivity activity = QActivity.activity;
-        QUser user = QUser.user;
-        QCrewUser crewUser = QCrewUser.crewUser;
-        QCrew crew = QCrew.crew;
-
-        ConstructorExpression<CrewGetDto> crewGetDtoConstructor = Projections.constructor(CrewGetDto.class,
-                crew.id, crew.name, activity.distance.sum(), crew.createdAt);
-
-        return queryFactory.select(crewGetDtoConstructor)
+    public List<CrewGetDto> findByLocationWithSorted(Region region, Pageable pageable, CrewOrderSpec orderSpec) {
+        return queryFactory.select(getCrewGetDtoConstructor())
                 .from(activity)
                 .innerJoin(activity.user, user)
                 .innerJoin(user.crewUser, crewUser)
                 .innerJoin(crewUser.crew, crew)
                 .where(eqSi(region.getSi()), eqGu(region.getGu()), eqGun(region.getGun()))
                 .groupBy(crew.id)
-                .orderBy(activity.distance.sum().desc())
-                .offset(offset)
-                .limit(limit)
+                .orderBy(orderSpec.getSpecifier())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    private ConstructorExpression<CrewGetDto> getCrewGetDtoConstructor() {
+        return Projections.constructor(CrewGetDto.class,
+                crew.id,
+                crew.name,
+                getSumDistance(),
+                getSumSecondsOfRunningTime(),
+                crew.createdAt);
     }
 
     private BooleanExpression eqSi(String si) {
