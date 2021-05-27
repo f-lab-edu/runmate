@@ -5,6 +5,8 @@ import com.querydsl.core.types.OrderSpecifier;
 import java.util.Arrays;
 
 import static com.runmate.domain.crew.QCrewUser.crewUser;
+import static com.runmate.repository.activity.ActivityRepository.getSumDistance;
+import static com.runmate.repository.activity.ActivityRepository.getSumSecondsOfRunningTime;
 import static com.runmate.repository.crew.CrewUserQueryRepository.*;
 
 public enum CrewUserOrderSpec {
