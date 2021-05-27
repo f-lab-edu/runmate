@@ -17,6 +17,8 @@ import static com.runmate.domain.activity.QActivity.activity;
 import static com.runmate.domain.user.QUser.user;
 import static com.runmate.domain.crew.QCrew.crew;
 import static com.runmate.domain.crew.QCrewUser.crewUser;
+import static com.runmate.repository.activity.ActivityRepository.getSumDistance;
+import static com.runmate.repository.activity.ActivityRepository.getSumSecondsOfRunningTime;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,13 +47,5 @@ public class CrewUserQueryRepository {
                 crewUser.user.username,
                 crewUser.createdAt,
                 getSumSecondsOfRunningTime());
-    }
-
-    public static NumberExpression<Long> getSumSecondsOfRunningTime() {
-        return Expressions.numberTemplate(Long.class, "function('TIME_TO_SEC',{0})", activity.runningTime).sum();
-    }
-
-    public static NumberExpression<Float> getSumDistance() {
-        return activity.distance.sum();
     }
 }
