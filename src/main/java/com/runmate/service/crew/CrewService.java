@@ -9,9 +9,11 @@ import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewQueryRepository;
 import com.runmate.repository.crew.CrewRepository;
 import com.runmate.repository.crew.CrewUserRepository;
+import com.runmate.repository.spec.CrewOrderSpec;
 import com.runmate.repository.user.UserRepository;
 import com.runmate.service.exception.BelongToSomeCrewException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -35,8 +37,8 @@ public class CrewService {
         crewUserRepository.save(makeAdminUser(crew, user));
     }
 
-    public List<CrewGetDto> searchCrewByRegionOrderByActivityWithPageable(Region region, int offset, int limit) {
-        return crewQueryRepository.findByLocationWithSorted(region, offset, limit);
+    public List<CrewGetDto> searchCrewByRegionOrderByActivityWithPageable(Region region, int offset, int limit, CrewOrderSpec orderSpec) {
+        return crewQueryRepository.findByLocationWithSorted(region, PageRequest.of(offset, limit), orderSpec);
     }
 
     private void checkCanCreateCrew(Crew crew, User user) {
