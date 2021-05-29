@@ -1,19 +1,19 @@
 package com.runmate.repository;
 
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.activity.RunningTime;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
-import com.runmate.domain.crew.Role;
 import com.runmate.domain.dto.crew.CrewUserGetDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.crew.CrewUserQueryRepository;
 import com.runmate.repository.crew.CrewUserRepository;
+import com.runmate.repository.spec.CrewUserOrderSpec;
 import com.runmate.texture.TextureFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 import javax.transaction.Transactional;
 
@@ -95,7 +95,7 @@ public class CrewUserRepositoryTest {
     }
 
     @Test
-    void When_FindCrewUserOrderByActivity_Expect_SortedWithDistDesc() {
+    void When_FindCrewUserOrderByDistance_Expect_SortedWithDist_Desc() {
         //given
         final int numOfUser = 15;
         final int limit = 10;
@@ -128,12 +128,59 @@ public class CrewUserRepositoryTest {
         totalDistanceOrderByDesc.sort(Comparator.reverseOrder());
 
         //when
-        List<CrewUserGetDto> result = crewUserQueryRepository.findCrewUserOrderByActivity(crew.getId(), offset, limit);
+        List<CrewUserGetDto> result = crewUserQueryRepository.findCrewUserWithSorted(crew.getId(),
+                PageRequest.of(offset, limit),
+                CrewUserOrderSpec.DESC_DISTANCE);
 
         //then
         assertEquals(limit, result.size());
         for (int i = 0; i < limit; i++) {
             assertEquals(totalDistanceOrderByDesc.get(i), result.get(i).getTotalDistance());
+        }
+    }
+
+    @Test
+    void When_findCrewUserByRunningTime_OrderBy_TotalSeconds_Desc() {
+        //given
+        final int numOfUser = 5;
+        final int limit = 10;
+        final int offset = 0;
+        Crew crew = textureFactory.makeCrew(true);
+        List<User> users = textureFactory.makeRandomUsers(numOfUser, true);
+        for (User user : users) {
+            CrewUser crewUser = textureFactory.makeCrewUser(crew, user, true);
+        }
+
+        List<Long> totalRunningTimeSecondOrderByDesc = new ArrayList<>();
+        for (int i = 0; i < numOfUser; i++) {
+            final int numOfActivity = 5;
+            long totalRunningTimeSecondsForUser = 0;
+
+            for (int j = 0; j < numOfActivity; j++) {
+                Activity activity = Activity.builder()
+                        .runningTime(LocalTime.of(i + 1, (i * 5)))
+                        .distance((i + 1) * 3)
+                        .calories(100)
+                        .build();
+
+                totalRunningTimeSecondsForUser += (long) activity.getRunningTime().toSecondOfDay();
+
+                users.get(i).completeActivity(activity);
+                activityRepository.save(activity);
+            }
+            totalRunningTimeSecondOrderByDesc.add(totalRunningTimeSecondsForUser);
+        }
+        totalRunningTimeSecondOrderByDesc.sort(Comparator.reverseOrder());
+
+        //when
+        List<CrewUserGetDto> result = crewUserQueryRepository.findCrewUserWithSorted(crew.getId(),
+                PageRequest.of(offset, limit),
+                CrewUserOrderSpec.DESC_RUNNING_TIME);
+
+        //then
+        assertEquals(numOfUser, result.size());
+        for (int i = 0; i < result.size(); i++) {
+            assertEquals(totalRunningTimeSecondOrderByDesc.get(i), result.get(i).getTotalRunningSeconds());
         }
     }
 
