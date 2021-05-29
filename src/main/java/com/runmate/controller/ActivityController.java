@@ -1,4 +1,4 @@
-package com.runmate.controller.activity;
+package com.runmate.controller;
 
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.dto.activity.ActivityCreationDto;
