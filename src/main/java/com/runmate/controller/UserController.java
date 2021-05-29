@@ -1,4 +1,4 @@
-package com.runmate.controller.user;
+package com.runmate.controller;
 
 import com.runmate.domain.dto.user.UserGetDto;
 import com.runmate.domain.dto.user.UserModificationDto;

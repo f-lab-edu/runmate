@@ -1,4 +1,4 @@
-package com.runmate.controller.auth;
+package com.runmate.controller;
 
 
 import com.runmate.configure.jwt.JwtProvider;
