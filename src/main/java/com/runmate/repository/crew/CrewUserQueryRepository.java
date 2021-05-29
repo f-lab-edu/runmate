@@ -2,10 +2,8 @@ package com.runmate.repository.crew;
 
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.runmate.domain.dto.crew.CrewUserGetDto;
+import com.runmate.dto.crew.CrewUserGetDto;
 import com.runmate.repository.spec.CrewUserOrderSpec;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

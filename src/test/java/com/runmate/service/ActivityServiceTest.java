@@ -2,8 +2,8 @@ package com.runmate.service;
 
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.activity.RunningTime;
-import com.runmate.domain.dto.activity.ActivityDto;
-import com.runmate.domain.dto.activity.ActivityStatisticsDto;
+import com.runmate.dto.activity.ActivityDto;
+import com.runmate.dto.activity.ActivityStatisticsDto;
 import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityRepository;

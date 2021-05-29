@@ -1,4 +1,4 @@
-package com.runmate.domain.dto;
+package com.runmate.dto;
 
 import lombok.Data;
 

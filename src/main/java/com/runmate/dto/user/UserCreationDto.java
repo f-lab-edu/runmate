@@ -1,4 +1,4 @@
-package com.runmate.domain.dto.user;
+package com.runmate.dto.user;
 
 import com.runmate.domain.user.Region;
 import lombok.*;

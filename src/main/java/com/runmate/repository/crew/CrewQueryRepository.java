@@ -5,7 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.runmate.domain.crew.QCrew;
-import com.runmate.domain.dto.crew.CrewGetDto;
+import com.runmate.dto.crew.CrewGetDto;
 import com.runmate.domain.user.Region;
 import com.runmate.repository.spec.CrewOrderSpec;
 import lombok.RequiredArgsConstructor;

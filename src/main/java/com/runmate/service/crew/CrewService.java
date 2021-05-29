@@ -3,7 +3,7 @@ package com.runmate.service.crew;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.crew.Role;
-import com.runmate.domain.dto.crew.CrewGetDto;
+import com.runmate.dto.crew.CrewGetDto;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewQueryRepository;
