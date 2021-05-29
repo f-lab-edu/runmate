@@ -28,13 +28,13 @@ public class CrewService {
     private final CrewUserRepository crewUserRepository;
     private final UserRepository userRepository;
 
-    public void createCrew(Crew crew, String email) {
+    public Crew createCrew(Crew crew, String email) {
         User user = userRepository.findByEmail(email);
 
         checkCanCreateCrew(crew, user);
 
-        crewRepository.save(crew);
         crewUserRepository.save(makeAdminUser(crew, user));
+        return crewRepository.save(crew);
     }
 
     public List<CrewGetDto> searchCrewByRegionOrderByActivityWithPageable(Region region, int offset, int limit, CrewOrderSpec orderSpec) {
@@ -47,12 +47,11 @@ public class CrewService {
     }
 
     private CrewUser makeAdminUser(Crew crew, User user) {
-        CrewUser crewUser = CrewUser.builder()
+        return CrewUser.builder()
                 .crew(crew)
                 .user(user)
                 .role(Role.ADMIN)
                 .build();
-        return crewUser;
     }
 
     private void checkBelongToSomeCrew(Crew crew, User user) {
