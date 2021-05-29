@@ -1,10 +1,10 @@
 package com.runmate.controller;
 
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.dto.activity.ActivityCreationDto;
+import com.runmate.dto.activity.ActivityCreationDto;
 import com.runmate.utils.JsonWrapper;
-import com.runmate.domain.dto.activity.ActivityDto;
-import com.runmate.domain.dto.activity.ActivityStatisticsDto;
+import com.runmate.dto.activity.ActivityDto;
+import com.runmate.dto.activity.ActivityStatisticsDto;
 import com.runmate.service.activity.ActivityService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

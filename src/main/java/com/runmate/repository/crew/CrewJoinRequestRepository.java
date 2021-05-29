@@ -2,7 +2,7 @@ package com.runmate.repository.crew;
 
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
-import com.runmate.domain.dto.crew.CrewJoinRequestGetDto;
+import com.runmate.dto.crew.CrewJoinRequestGetDto;
 import com.runmate.domain.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

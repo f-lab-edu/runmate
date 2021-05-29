@@ -1,7 +1,7 @@
 package com.runmate.controller;
 
-import com.runmate.domain.dto.user.UserGetDto;
-import com.runmate.domain.dto.user.UserModificationDto;
+import com.runmate.dto.user.UserGetDto;
+import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
 import com.runmate.utils.JsonWrapper;

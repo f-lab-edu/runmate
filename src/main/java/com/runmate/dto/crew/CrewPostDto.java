@@ -1,4 +1,4 @@
-package com.runmate.domain.dto.crew;
+package com.runmate.dto.crew;
 
 import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.Region;

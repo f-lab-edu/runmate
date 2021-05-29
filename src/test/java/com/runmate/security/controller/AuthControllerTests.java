@@ -3,7 +3,7 @@ package com.runmate.security.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
-import com.runmate.domain.dto.AuthRequest;
+import com.runmate.dto.AuthRequest;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;

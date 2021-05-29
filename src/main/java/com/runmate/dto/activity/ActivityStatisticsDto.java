@@ -1,7 +1,5 @@
-package com.runmate.domain.dto.activity;
+package com.runmate.dto.activity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonValue;
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.activity.RunningTime;
 import lombok.Getter;

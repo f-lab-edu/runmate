@@ -3,7 +3,7 @@ package com.runmate.repository;
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
-import com.runmate.domain.dto.crew.CrewUserGetDto;
+import com.runmate.dto.crew.CrewUserGetDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.crew.CrewUserQueryRepository;

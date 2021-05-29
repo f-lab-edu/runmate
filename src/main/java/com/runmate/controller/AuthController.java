@@ -2,8 +2,8 @@ package com.runmate.controller;
 
 import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.configure.oauth.kakao.KakaoApi;
-import com.runmate.domain.dto.AuthRequest;
-import com.runmate.domain.dto.user.UserCreationDto;
+import com.runmate.dto.AuthRequest;
+import com.runmate.dto.user.UserCreationDto;
 import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
 import lombok.RequiredArgsConstructor;
