@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.activity.RunningTime;
 import com.runmate.domain.dto.activity.ActivityDto;
 import com.runmate.domain.dto.activity.ActivityStatisticsDto;
 import com.runmate.domain.dto.AuthRequest;
@@ -27,7 +26,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.*;
@@ -128,9 +126,10 @@ public class ActivityControllerTest {
 
     @Test
     public void When_Search_ActivityStatistics_Expect_Status_OK_Body_JsonWrapper() throws Exception {
+        final ActivityStatisticsDto activityStatisticsDto = new ActivityStatisticsDto(1, 1, 3600L, 200, 100);
         //given
         when(activityService.findStatisticsDuringPeriod(anyString(), ArgumentMatchers.any(LocalDate.class), ArgumentMatchers.any(LocalDate.class)))
-                .thenReturn(ActivityStatisticsDto.of(0, 0, RunningTime.of(2, 30, 0), LocalTime.of(2, 30, 0), 0));
+                .thenReturn(activityStatisticsDto);
 
         LocalDate from = LocalDate.of(2020, 12, 04);
         LocalDate to = LocalDate.of(2021, 03, 20);

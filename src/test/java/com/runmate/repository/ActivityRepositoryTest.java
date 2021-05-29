@@ -1,9 +1,13 @@
 package com.runmate.repository;
 
 import com.runmate.domain.activity.Activity;
+import com.runmate.domain.dto.activity.ActivityDto;
+import com.runmate.domain.dto.activity.ActivityStatisticsDto;
 import com.runmate.domain.user.User;
+import com.runmate.repository.activity.ActivityQueryRepository;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.texture.TextureFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +18,7 @@ import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
 import java.time.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +34,10 @@ public class ActivityRepositoryTest {
     ActivityRepository activityRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ActivityQueryRepository activityQueryRepository;
+    @Autowired
+    TextureFactory textureFactory;
 
     static final String ADDRESS = "you@you.com";
     User user;
@@ -145,5 +154,87 @@ public class ActivityRepositoryTest {
         //then
         assertNotNull(activities);
         assertThat(activities.size()).isEqualTo(0);
+    }
+
+    @Test
+    void When_findAllByUserWithPagination_Expect_ActivityDto_pageSize() {
+        //given
+        final int numOfActivity = 25;
+        final int pageSize = 10;
+        final int offset = 0;
+        User user = textureFactory.makeUser("Lambda@Lambda.com", true);
+
+        for (int i = 0; i < numOfActivity; i++) {
+            Activity activity = Activity.builder()
+                    .distance(10)
+                    .calories(10)
+                    .runningTime(LocalTime.of(1, 10))
+                    .build();
+            activity.setUser(user);
+
+            activityRepository.save(activity);
+        }
+
+        //then
+        assertEquals(pageSize, activityQueryRepository.findAllByUserWithPagination(user.getEmail(), PageRequest.of(offset, pageSize)).size());
+    }
+
+    @Test
+    void When_findAllByUserAndBetweenDates_Expect_ActivityStatisticsDto_With_BetweenDates() {
+        //given
+        int expectCount = 0;
+        float expectDistance = 0;
+        long expectRunningSeconds = 0;
+        int expectCalories = 0;
+
+        final int numOfBetweenActivity = 10;
+        final int numOfNotBetweenActivity = 10;
+
+        final LocalDate from = LocalDate.of(2020, 03, 1);
+        final LocalDate to = LocalDate.of(2020, 03, 8);
+        User user = textureFactory.makeUser("Lambda@Lambda.com", true);
+
+        for (int i = 0; i < numOfBetweenActivity; i++) {
+            Activity betweenActivity = Activity.builder()
+                    .distance(i + 1)
+                    .runningTime(LocalTime.of(1, 0, 0))
+                    .calories(100)
+                    .build();
+            betweenActivity.setCreatedAt(LocalDateTime.of(LocalDate.of(2020, 3, 2), LocalTime.of(0, 0)));
+
+            expectCount++;
+            expectDistance += betweenActivity.getDistance();
+            expectRunningSeconds += betweenActivity.getRunningTime().toSecondOfDay();
+            expectCalories += betweenActivity.getCalories();
+
+            betweenActivity.setUser(user);
+            activityRepository.save(betweenActivity);
+        }
+
+        for (int i = 0; i < numOfNotBetweenActivity; i++) {
+            Activity notBetweenActivity = Activity.builder()
+                    .distance(i + 1)
+                    .runningTime(LocalTime.of(1, 0, 0))
+                    .calories(100)
+                    .build();
+            notBetweenActivity.setCreatedAt(LocalDateTime.of(LocalDate.of(2004, 7, 7), LocalTime.of(0, 0)));
+
+            notBetweenActivity.setUser(user);
+            activityRepository.save(notBetweenActivity);
+        }
+
+        ActivityStatisticsDto expect = new ActivityStatisticsDto(expectCount, expectDistance, expectRunningSeconds, expectRunningSeconds / expectDistance, expectCalories);
+        //when
+        ActivityStatisticsDto result = activityQueryRepository.findAllByUserAndBetweenDates(user.getEmail(), from, to);
+        //then
+        checkSameActivityStatisticsDto(expect, result);
+    }
+
+    void checkSameActivityStatisticsDto(ActivityStatisticsDto one, ActivityStatisticsDto another) {
+        assertEquals(one.getCount(), another.getCount());
+        assertEquals(one.getCalories(), another.getCalories());
+        assertEquals(one.getDistance(), another.getDistance());
+        assertEquals(one.getRunningTime(), another.getRunningTime());
+        assertEquals(one.getAveragePace(), another.getAveragePace());
     }
 }

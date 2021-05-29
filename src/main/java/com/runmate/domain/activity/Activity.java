@@ -4,12 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.runmate.domain.common.LocalDateTimeConverter;
 import com.runmate.domain.common.LocalTimeConverter;
 import com.runmate.domain.user.User;
-import com.runmate.utils.TimeUtils;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -42,12 +39,6 @@ public class Activity {
     @Column(name = "created_at")
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime createdAt;
-
-    public LocalTime calculatePace() {
-        long totalSeconds = TimeUtils.timeToSeconds(runningTime);
-        long secondsPerKilometer = (long) (totalSeconds / distance);
-        return TimeUtils.secondsToTime(secondsPerKilometer);
-    }
 
     @Builder
     public Activity(float distance, LocalTime runningTime, int calories, LocalDateTime createdAt) {
