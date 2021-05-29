@@ -12,6 +12,9 @@ import com.runmate.repository.crew.CrewUserRepository;
 import com.runmate.repository.spec.CrewOrderSpec;
 import com.runmate.repository.user.UserRepository;
 import com.runmate.service.exception.BelongToSomeCrewException;
+import com.runmate.service.exception.NotFoundCrewException;
+import com.runmate.service.exception.NotFoundCrewUserException;
+import com.runmate.service.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -37,13 +40,16 @@ public class CrewService {
         return crewRepository.save(crew);
     }
 
-    public List<CrewGetDto> searchCrewByRegionOrderByActivityWithPageable(Region region, int offset, int limit, CrewOrderSpec orderSpec) {
-        return crewQueryRepository.findByLocationWithSorted(region, PageRequest.of(offset, limit), orderSpec);
-    }
-
     private void checkCanCreateCrew(Crew crew, User user) {
         user.checkGradeHigherThenCrewLimit(crew);
         checkBelongToSomeCrew(crew, user);
+    }
+
+    private void checkBelongToSomeCrew(Crew crew, User user) {
+        crewUserRepository.findByCrewAndUser(crew, user)
+                .ifPresent(crewUser -> {
+                    throw new BelongToSomeCrewException("you have already belong to crew:" + crewUser.getCrew().getName());
+                });
     }
 
     private CrewUser makeAdminUser(Crew crew, User user) {
@@ -54,10 +60,21 @@ public class CrewService {
                 .build();
     }
 
-    private void checkBelongToSomeCrew(Crew crew, User user) {
-        crewUserRepository.findByCrewAndUser(crew, user)
-                .ifPresent(crewUser -> {
-                    throw new BelongToSomeCrewException("you have already belong to crew:" + crewUser.getCrew().getName());
-                });
+    public void deleteCrew(long crewId, String email) {
+        Crew crew = crewRepository.findById(crewId).orElseThrow(NotFoundCrewException::new);
+        User deleteRequestedUser = userRepository.findByEmail(email);
+
+        CrewUser crewUser = crewUserRepository.findByCrewAndUser(crew, deleteRequestedUser)
+                .orElseThrow(() -> new NotFoundCrewUserException("you are not member of the given crew"));
+
+        if (!crewUser.isAdmin()) {
+            throw new UnAuthorizedException("only admin can request to delete crew");
+        }
+
+        crewRepository.delete(crew);
+    }
+
+    public List<CrewGetDto> searchCrewByRegionOrderByActivityWithPageable(Region region, int offset, int limit, CrewOrderSpec orderSpec) {
+        return crewQueryRepository.findByLocationWithSorted(region, PageRequest.of(offset, limit), orderSpec);
     }
 }

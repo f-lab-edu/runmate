@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -32,6 +29,13 @@ public class CrewController {
         return ResponseEntity.created(uri).body("success");
     }
 
+    @DeleteMapping("/{crewId}")
+    public ResponseEntity<?> delete(@PathVariable("crewId") long crewId,
+                                 @RequestBody String email) {
+
+        crewService.deleteCrew(crewId, email);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }
