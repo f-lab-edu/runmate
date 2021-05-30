@@ -71,9 +71,7 @@ public class ActivityControllerTest {
                 .build();
         user = userRepository.findByEmail(ADDRESS);
 
-        AuthRequest authRequest = new AuthRequest();
-        authRequest.setEmail(user.getEmail());
-        authRequest.setPassword(user.getPassword());
+        AuthRequest authRequest = new AuthRequest(user.getEmail(), user.getPassword());
 
         String jsonBody = mapper.writeValueAsString(authRequest);
 
@@ -90,7 +88,7 @@ public class ActivityControllerTest {
     public void When_Complete_Activity_Expect_Status_OK_Body_success() throws Exception {
         String jsonBody = "{\n" +
                 "  \"distance\": 12.0,\n" +
-                "  \"runningTime\": \"02:30:30\",\n" +
+                "  \"running_time\": \"02:30:30\",\n" +
                 "  \"calories\": 1200\n" +
                 "}";
 
@@ -134,10 +132,6 @@ public class ActivityControllerTest {
 
         LocalDate from = LocalDate.of(2020, 12, 04);
         LocalDate to = LocalDate.of(2021, 03, 20);
-
-
-        System.out.println(from.toString());
-        System.out.println(to.toString());
 
         //when
         mockMvc.perform(get("/api/users/" + user.getEmail() + "/activities/statistics?from=" + from + "&to=" + to)

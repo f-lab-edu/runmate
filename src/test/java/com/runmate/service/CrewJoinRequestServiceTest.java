@@ -158,10 +158,10 @@ public class CrewJoinRequestServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(user);
     }
 
-    void crewJoinRequestRepositoryWillReturn(Optional<CrewJoinRequest>request){
+    void crewJoinRequestRepositoryWillReturn(Optional<CrewJoinRequest> request){
         when(crewJoinRequestRepository.findCrewJoinRequestByCrewAndUser(any(Crew.class), any(User.class))).thenReturn(request);
     }
-    void crewUserRepositoryWillReturn(Optional<CrewUser>crewUser){
+    void crewUserRepositoryWillReturn(Optional<CrewUser> crewUser){
         when(crewUserRepository.findByCrewAndUser(any(Crew.class), any(User.class))).thenReturn(crewUser);
     }
 }
