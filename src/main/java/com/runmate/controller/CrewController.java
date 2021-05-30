@@ -1,10 +1,9 @@
 package com.runmate.controller;
 
 import com.runmate.domain.crew.Crew;
-import com.runmate.dto.crew.CrewCreationDto;
-import com.runmate.dto.crew.CrewGetDto;
-import com.runmate.dto.crew.CrewSearchRequest;
+import com.runmate.dto.crew.*;
 import com.runmate.repository.spec.CrewOrderSpec;
+import com.runmate.repository.spec.CrewUserOrderSpec;
 import com.runmate.service.crew.CrewService;
 import com.runmate.service.crew.CrewUserService;
 import com.runmate.utils.JsonWrapper;
@@ -44,16 +43,28 @@ public class CrewController {
     }
 
     @GetMapping
-    public ResponseEntity<JsonWrapper> searchCrewsWithLocation(@RequestParam @Positive int pageNumber,
-                                                               @RequestParam @Positive int limitCount,
-                                                               @RequestBody CrewSearchRequest request) {
+    public ResponseEntity<JsonWrapper> findCrewsWithLocation(@RequestParam @Positive int pageNumber,
+                                                             @RequestParam @Positive int limitCount,
+                                                             @RequestBody CrewSearchRequest request) {
 
-        CrewOrderSpec crewOrderSpec = CrewOrderSpec.of(request.getSortBy(), request.isAscending());
+        CrewOrderSpec crewOrderSpec = CrewOrderSpec.of(request.isAscending(), request.getSortBy());
         List<CrewGetDto> crews = crewService.searchCrewByRegionOrderByActivityWithPageable(request.getLocation(), pageNumber, limitCount, crewOrderSpec);
         JsonWrapper response = JsonWrapper.success(crews);
 
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/{crewId}/members")
+    public ResponseEntity<JsonWrapper> findAllCrewMembers(@PathVariable("crewId") long crewId,
+                                                          @RequestParam @Positive int pageNumber,
+                                                          @RequestParam @Positive int limitCount,
+                                                          @RequestBody CrewUserSearchRequest request) {
+
+        CrewUserOrderSpec crewUserOrderSpec = CrewUserOrderSpec.of(request.isAscending(), request.getSortBy());
+        List<CrewUserGetDto> crewUsers = crewUserService.searchCrewUser(crewId, pageNumber, limitCount, crewUserOrderSpec);
+        JsonWrapper response = JsonWrapper.success(crewUsers);
+
+        return ResponseEntity.ok().body(response);
+    }
 
 }
