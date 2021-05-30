@@ -45,7 +45,7 @@ public class CrewUserService {
                 .orElseThrow(NotFoundCrewUserException::new);
     }
 
-    void checkAdminUser(CrewUser crewUser) {
+    private void checkAdminUser(CrewUser crewUser) {
         if (crewUser.isAdmin()) {
             throw new UnAuthorizedException("you are not admin user");
         }

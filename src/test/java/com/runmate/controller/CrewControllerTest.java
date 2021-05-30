@@ -3,10 +3,13 @@ package com.runmate.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
+import com.runmate.domain.crew.CrewJoinRequest;
 import com.runmate.domain.user.User;
 import com.runmate.dto.AuthRequest;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.crew.CrewJoinRequestService;
 import com.runmate.service.crew.CrewService;
+import com.runmate.service.crew.CrewUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +26,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.Objects;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,6 +46,10 @@ class CrewControllerTest {
 
     @Autowired
     CrewService crewService;
+    @Autowired
+    CrewUserService crewUserService;
+    @Autowired
+    CrewJoinRequestService crewJoinRequestService;
 
     User noCrewUser;
     User withCrewUser;
@@ -97,6 +106,7 @@ class CrewControllerTest {
     @Test
     @DisplayName("크루에 속하지 않은 회원의 정상적인 크루 생성 요청은 처리되고 201 Created 응답을 받음")
     void When_CreateCrew_WithNotBelongToAnyCrew_Expect_Status_Created_Body_success() throws Exception {
+        //given
         String requestBody = "{\n" +
                 "  \"email\": \"" + NO_CREW_USER_EMAIL + "\", \n" +
                 "  \"data\": {\n" +
@@ -111,12 +121,14 @@ class CrewControllerTest {
                 "  }\n" +
                 "}";
 
+        //when
         mockMvc.perform(
                 post("/api/crews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .header("Authorization", "Bearer " + noCrewToken)
         )
+                //then
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().string("success"));
@@ -125,6 +137,7 @@ class CrewControllerTest {
     @Test
     @DisplayName("크루에 이미 속한 회원의 크루 생성 요청은 403 Forbidden 응답을 받음")
     void When_CreateCrew_WithBelongToCrew_Expect_Status_Forbidden() throws Exception {
+        //given
         String requestBody = "{\n" +
                 "  \"email\": \"" + WITH_CREW_USER_EMAIL + "\", \n" +
                 "  \"data\": {\n" +
@@ -139,19 +152,22 @@ class CrewControllerTest {
                 "  }\n" +
                 "}";
 
+        //when
         mockMvc.perform(
                 post("/api/crews")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .header("Authorization", "Bearer " + withCrewToken)
         )
+                //then
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("자신의 등급보다 높은 등급 제한을 가진 크루 생성 요청은 403 Forbidden 응답을 받음")
-    void When_CreateCrew_SettingGradeLimit_WithUpperThanOwnGrade_Expect_Forbidden() throws Exception {
+    void When_CreateCrew_SettingGradeLimit_WithUpperThanOwnGrade_Expect_Status_Forbidden() throws Exception {
+        //given
         String requestBody = "{\n" +
                 "  \"email\": \"" + NO_CREW_USER_EMAIL + "\", \n" +
                 "  \"data\": {\n" +
@@ -166,17 +182,59 @@ class CrewControllerTest {
                 "  }\n" +
                 "}";
 
+        //when
         mockMvc.perform(
                 post("/api/crews")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .header("Authorization", "Bearer " + withCrewToken)
         )
+                //then
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    void delete() {
+    @DisplayName("크루장의 크루 삭제 요청은 204 No Content 응답을 받음")
+    void When_DeleteCrew_AdminUserRequest_Expect_Status_NoContent() throws Exception {
+        //given
+        Long ownCrewId = withCrewUser.getCrewUser().getCrew().getId();
+
+        //when
+        mockMvc.perform(
+                delete("/api/crews/" + ownCrewId)
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(WITH_CREW_USER_EMAIL)
+                .header("Authorization", "Bearer " + withCrewToken)
+        )
+                //then
+                .andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("일반 크루원의 크루 삭제 요청은 403 Forbidden 응답을 받음")
+    void When_DeleteCrew_NormalUserRequest_Expect_Status_Forbidden() throws Exception {
+        //given
+        CrewJoinRequest joinRequest = noCrewUser.getJoinRequests().stream()
+                .filter(request -> request.getCrew().getId().equals(withCrewUser.getCrewUser().getCrew().getId()))
+                .findAny()
+                .orElse(null);
+
+        Long crewId = withCrewUser.getCrewUser().getCrew().getId();
+
+        assertThat(joinRequest).isNotNull();
+        crewJoinRequestService.acknowledgeJoinRequest(joinRequest.getId());
+
+        //when
+        mockMvc.perform(
+                delete("/api/crews/" + crewId)
+                .contentType(MediaType.TEXT_PLAIN)
+                .content(NO_CREW_USER_EMAIL)
+                .header("Authorization", "Bearer " + noCrewToken)
+        )
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
     }
 }
