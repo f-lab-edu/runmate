@@ -4,6 +4,7 @@ import com.runmate.domain.crew.Crew;
 import com.runmate.dto.crew.*;
 import com.runmate.repository.spec.CrewOrderSpec;
 import com.runmate.repository.spec.CrewUserOrderSpec;
+import com.runmate.service.crew.CrewJoinRequestService;
 import com.runmate.service.crew.CrewService;
 import com.runmate.service.crew.CrewUserService;
 import com.runmate.utils.JsonWrapper;
@@ -24,6 +25,7 @@ public class CrewController {
 
     private final CrewService crewService;
     private final CrewUserService crewUserService;
+    private final CrewJoinRequestService crewJoinRequestService;
     private final ModelMapper modelMapper;
 
     @PostMapping
@@ -66,5 +68,17 @@ public class CrewController {
 
         return ResponseEntity.ok().body(response);
     }
+
+
+    @GetMapping("/{crewId}/requests")
+    public ResponseEntity<JsonWrapper> findAllJoinRequests(@PathVariable("crewId") long crewId,
+                                                           @RequestParam @Positive int pageNumber,
+                                                           @RequestParam @Positive int limitCount) {
+
+        List<CrewJoinRequestGetDto> joinRequests = crewJoinRequestService.searchJoinRequestByCrewWithPageable(crewId, pageNumber, limitCount);
+        JsonWrapper response = JsonWrapper.success(joinRequests);
+        return ResponseEntity.ok().body(response);
+    }
+
 
 }
