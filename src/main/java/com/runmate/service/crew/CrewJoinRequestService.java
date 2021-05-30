@@ -59,9 +59,13 @@ public class CrewJoinRequestService {
         crewJoinRequestRepository.delete(request);
     }
 
-    public void acknowledgeJoinRequest(Long crewJoinRequestId) {
+    public CrewUser approveJoinRequest(Long crewId, Long crewJoinRequestId) {
         CrewJoinRequest request = crewJoinRequestRepository.findById(crewJoinRequestId)
                 .orElseThrow(NotFoundCrewJoinRequestException::new);
+
+        if (!request.isRequestForCrew(crewId)) {
+            throw new IllegalArgumentException("request is not matched to crew");
+        }
 
         CrewUser crewUser = CrewUser.builder()
                 .user(request.getUser())
@@ -70,7 +74,7 @@ public class CrewJoinRequestService {
                 .build();
 
         crewJoinRequestRepository.delete(request);
-        crewUserRepository.save(crewUser);
+        return crewUserRepository.save(crewUser);
     }
 
     private void checkCanSendRequest(Crew crew, User user) {
