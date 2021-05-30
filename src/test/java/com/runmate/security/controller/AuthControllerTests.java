@@ -52,11 +52,17 @@ public class AuthControllerTests {
 
     @Test
     public void joinAndLogin() throws Exception {
-        User user = new User();
-        user.setEmail("kyo@kyo.com");
-        user.setPassword("1234");
-        user.setRegion(new Region("si", "gu", "gun"));
-        user.setUsername("kyo");
+        Region region = Region.of()
+                .si("si")
+                .gu("gu")
+                .gun("gun")
+                .build();
+        User user = User.of()
+                .email("kyo@kyo.com")
+                .password("1234")
+                .region(region)
+                .username("kyo")
+                .build();
 
         String jsonBody = mapper.writeValueAsString(user);
 

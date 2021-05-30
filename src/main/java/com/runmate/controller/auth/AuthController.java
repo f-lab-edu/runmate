@@ -1,6 +1,5 @@
 package com.runmate.controller.auth;
 
-
 import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.configure.oauth.kakao.KakaoApi;
 import com.runmate.domain.dto.AuthRequest;
@@ -8,7 +7,6 @@ import com.runmate.domain.dto.user.UserCreationDto;
 import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -60,8 +58,9 @@ public class AuthController {
         } else {
             String email = kakaoApi.getEmail(code);
             if (userService.getUser(email) == null) {
-                User user = new User();
-                user.setEmail(email);
+                User user = User.of()
+                        .email(email)
+                        .build();
                 userService.join(user);
             }
             return ResponseEntity.ok()

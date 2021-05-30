@@ -49,13 +49,18 @@ public class TextureFactory {
     }
 
     public User makeUser(String email, boolean doPersist) {
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword("123");
-        user.setIntroduction("i'm lambda");
-        user.setRegion(new Region("MySi", "MyGu", null));
-        user.setUsername("lambda");
-        if (doPersist)
+        Region region=Region.of()
+                .si("seoul")
+                .gu("nowon")
+                .build();
+        User user=User.of()
+                .email(email)
+                .password("123")
+                .introduction("intro")
+                .region(region)
+                .username("MyName")
+                .build();
+        if(doPersist)
             userRepository.save(user);
         return user;
     }

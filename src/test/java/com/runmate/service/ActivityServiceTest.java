@@ -62,9 +62,10 @@ public class ActivityServiceTest {
         activities.add(activity1);
         activities.add(activity2);
 
-        user = new User();
-        user.setGrade(Grade.UNRANKED);
-        user.setEmail("ppp@ppp.com");
+        user = User.ofGrade()
+                .grade(Grade.UNRANKED)
+                .email("ppp@ppp.com")
+                .build();
         user.setActivities(activities);
 
         Activity activity3 = Activity.builder()
