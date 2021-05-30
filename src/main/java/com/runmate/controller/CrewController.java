@@ -99,4 +99,13 @@ public class CrewController {
         URI uri = WebMvcLinkBuilder.linkTo(CrewController.class).slash(crewId).slash("members").slash(crewUser.getId()).toUri();
         return ResponseEntity.created(uri).body("success");
     }
+
+    @DeleteMapping("/{crewId}/members/{crewUserId}")
+    public ResponseEntity<?> deleteCrewMember(@PathVariable("crewId") long crewId,
+                                              @PathVariable("crewUserId") long crewUserId,
+                                              @RequestBody String requestUserEmail) {
+
+        crewUserService.delete(crewId, crewUserId, requestUserEmail);
+        return ResponseEntity.noContent().build();
+    }
 }
