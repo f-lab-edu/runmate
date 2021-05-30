@@ -24,10 +24,7 @@ public class UserController {
     public ResponseEntity<JsonWrapper> get(@PathVariable("passedEmail") String passedEmail) {
         User user = userService.getUser(passedEmail);
 
-        JsonWrapper jsonWrapper = JsonWrapper.builder()
-                .data(modelMapper.map(user, UserGetDto.class))
-                .error(null)
-                .build();
+        JsonWrapper jsonWrapper = JsonWrapper.success(modelMapper.map(user, UserGetDto.class));
 
         return ResponseEntity.ok()
                 .body(jsonWrapper);

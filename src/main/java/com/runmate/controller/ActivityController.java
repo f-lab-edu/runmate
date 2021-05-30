@@ -42,10 +42,7 @@ public class ActivityController {
                                                             @RequestParam int offset,
                                                             @RequestParam int limit) {
         List<ActivityDto> activities = service.findActivitiesWithPagination(passedEmail, offset, limit);
-        JsonWrapper jsonWrapper = JsonWrapper.builder()
-                .data(activities)
-                .error(null)
-                .build();
+        JsonWrapper jsonWrapper = JsonWrapper.success(activities);
         return ResponseEntity.ok().body(jsonWrapper);
     }
 
@@ -56,10 +53,7 @@ public class ActivityController {
                                                                   @RequestParam
                                                                   @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         ActivityStatisticsDto dto = service.findStatisticsDuringPeriod(passedEmail, from, to);
-        JsonWrapper response = JsonWrapper.builder()
-                .data(dto)
-                .error(null)
-                .build();
+        JsonWrapper response = JsonWrapper.success(dto);
 
         return ResponseEntity.ok().body(response);
     }
