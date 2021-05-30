@@ -11,22 +11,22 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CrewPostDto {
+public class CrewCreationDto {
     @Email
     private String email;
 
     @NotNull
-    private CrewPostData data;
+    private CrewCreationData data;
 
     @Builder
-    public CrewPostDto(@Email String email, @NotNull CrewPostData data) {
+    public CrewCreationDto(@Email String email, @NotNull CrewCreationData data) {
         this.email = email;
         this.data = data;
     }
 }
 
 @Getter
-class CrewPostData {
+class CrewCreationData {
     @NotBlank(message = "Field can't be blank")
     private final String name;
 
@@ -39,7 +39,7 @@ class CrewPostData {
     private final Grade gradeLimit;
 
     @Builder
-    public CrewPostData(String name, String description, Region region, Grade gradeLimit) {
+    public CrewCreationData(String name, String description, Region region, Grade gradeLimit) {
         this.name = name;
         this.description = description;
         this.region = region;

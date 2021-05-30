@@ -9,40 +9,41 @@ import static com.runmate.repository.activity.ActivityRepository.getSumDistance;
 import static com.runmate.repository.activity.ActivityRepository.getSumSecondsOfRunningTime;
 
 public enum CrewOrderSpec {
-    ASC_CREATED_AT("ASC", "createdAt", crew.createdAt.asc()),
-    ASC_RUNNING_TIME("ASC", "runningTime", getSumSecondsOfRunningTime().asc()),
-    ASC_DISTANCE("ASC", "distance", getSumDistance().asc()),
+    ASC_CREATED_AT(true, "created_at", crew.createdAt.asc()),
+    ASC_RUNNING_TIME(true, "running_time", getSumSecondsOfRunningTime().asc()),
+    ASC_DISTANCE(true, "distance", getSumDistance().asc()),
 
-    DESC_CREATED_AT("DESC", "createdAt", crew.createdAt.desc()),
-    DESC_RUNNING_TIME("DESC", "runningTime", getSumSecondsOfRunningTime().desc()),
-    DESC_DISTANCE("DESC", "distance", getSumDistance().desc());
+    DESC_CREATED_AT(false, "created_at", crew.createdAt.desc()),
+    DESC_RUNNING_TIME(false, "running_time", getSumSecondsOfRunningTime().desc()),
+    DESC_DISTANCE(false, "distance", getSumDistance().desc());
 
-    private OrderSpecifier orderSpec;
-    private String direction;
-    private String property;
+    private final OrderSpecifier specifier;
+    private final boolean isAscending;
+    private final String property;
 
-    CrewOrderSpec(String direction, String property, OrderSpecifier orderSpec) {
-        this.direction = direction;
+    CrewOrderSpec(boolean isAscending, String property, OrderSpecifier specifier) {
+        this.isAscending = isAscending;
         this.property = property;
-        this.orderSpec = orderSpec;
+        this.specifier = specifier;
+    }
+
+    public static CrewOrderSpec of(String sortBy, boolean isAscending) {
+        return Arrays.stream(values())
+                .filter(crewOrderSpec -> crewOrderSpec.isAscending == isAscending)
+                .filter(crewOrderSpec -> crewOrderSpec.property.equals(sortBy))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("invalid sorting parameter"));
     }
 
     public OrderSpecifier getSpecifier() {
-        return this.orderSpec;
+        return specifier;
     }
 
-    public String getDirection() {
-        return this.direction;
+    public boolean isAscending() {
+        return isAscending;
     }
 
     public String getProperty() {
-        return this.property;
-    }
-
-    public CrewOrderSpec of(String direction, String property) {
-        return Arrays.stream(CrewOrderSpec.values())
-                .filter(orderSpec -> orderSpec.getDirection().equals(direction) &&
-                        orderSpec.getProperty().equals(property))
-                .findFirst().orElseThrow(IllegalArgumentException::new);
+        return property;
     }
 }

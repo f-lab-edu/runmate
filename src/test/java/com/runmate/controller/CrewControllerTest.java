@@ -217,7 +217,7 @@ class CrewControllerTest {
     void When_DeleteCrew_NormalUserRequest_Expect_Status_Forbidden() throws Exception {
         //given
         CrewJoinRequest joinRequest = noCrewUser.getJoinRequests().stream()
-                .filter(request -> request.getCrew().getId().equals(withCrewUser.getCrewUser().getCrew().getId()))
+                .filter(request -> withCrewUser.isRequestOfBelongingCrew(request))
                 .findAny()
                 .orElse(null);
 
