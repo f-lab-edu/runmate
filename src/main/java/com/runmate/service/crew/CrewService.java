@@ -42,11 +42,11 @@ public class CrewService {
 
     private void checkCanCreateCrew(Crew crew, User user) {
         user.checkGradeHigherThenCrewLimit(crew);
-        checkBelongToSomeCrew(crew, user);
+        checkBelongToSomeCrew(user);
     }
 
-    private void checkBelongToSomeCrew(Crew crew, User user) {
-        crewUserRepository.findByCrewAndUser(crew, user)
+    private void checkBelongToSomeCrew(User user) {
+        crewUserRepository.findByUser(user)
                 .ifPresent(crewUser -> {
                     throw new BelongToSomeCrewException("you have already belong to crew:" + crewUser.getCrew().getName());
                 });
