@@ -12,6 +12,7 @@ import com.runmate.repository.crew.CrewUserRepository;
 import com.runmate.repository.spec.CrewOrderSpec;
 import com.runmate.repository.user.UserRepository;
 import com.runmate.service.exception.BelongToSomeCrewException;
+import com.runmate.service.exception.GradeLimitException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,8 @@ public class CrewService {
     }
 
     private void checkCanCreateCrew(Crew crew, User user) {
-        user.checkGradeHigherThenCrewLimit(crew);
+        if (!user.isGradeHigherOrEqualThanCrewGradeLimit(crew))
+            throw new GradeLimitException("Admin's grade less then crew's Grade Limit");
         checkBelongToSomeCrew(crew, user);
     }
 

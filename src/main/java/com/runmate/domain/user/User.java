@@ -60,11 +60,10 @@ public class User {
         return this.grade.canUpgrade(totalDistance);
     }
 
-    public void checkGradeHigherThenCrewLimit(Crew crew) {
-        if (!this.getGrade().higherOrEqualThan(crew.getGradeLimit()))
-            throw new GradeLimitException("Your score is lower than the score limit set by the crew.");
+    public boolean isGradeHigherOrEqualThanCrewGradeLimit(Crew crew) {
+        return this.getGrade().higherOrEqualThan(crew.getGradeLimit());
     }
-
+    
     public void upgrade() {
         this.grade = this.grade.getNext();
     }
