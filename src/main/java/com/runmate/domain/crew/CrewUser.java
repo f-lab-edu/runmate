@@ -40,7 +40,11 @@ public class CrewUser {
         this.role=role;
     }
 
-    public boolean isAdmin() {
-        return role == Role.ADMIN;
+    public boolean isNormal() {
+        return !role.equals(Role.ADMIN);
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
     }
 }

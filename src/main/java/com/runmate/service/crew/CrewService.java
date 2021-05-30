@@ -67,7 +67,7 @@ public class CrewService {
         CrewUser crewUser = crewUserRepository.findByCrewAndUser(crew, deleteRequestedUser)
                 .orElseThrow(() -> new NotFoundCrewUserException("you are not member of the given crew"));
 
-        if (!crewUser.isAdmin()) {
+        if (crewUser.isNormal()) {
             throw new UnAuthorizedException("only admin can request to delete crew");
         }
 
