@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface CrewJoinRequestRepository extends JpaRepository<CrewJoinRequest, Long> {
     @Query("SELECT " +
-            "new com.runmate.domain.dto.crew.CrewJoinRequestGetDto(CJR.id, CJR.crew, CJR.user, CJR.createdAt) " +
+            "new com.runmate.dto.crew.CrewJoinRequestGetDto(CJR.id, CJR.crew, CJR.user, CJR.createdAt) " +
             "FROM CrewJoinRequest CJR where CJR.crew =:crew")
     List<CrewJoinRequestGetDto> findAllByCrewWithPageable(@Param("crew") Crew crew, Pageable request);
 

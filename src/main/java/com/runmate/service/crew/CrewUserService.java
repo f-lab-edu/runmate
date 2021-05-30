@@ -46,7 +46,8 @@ public class CrewUserService {
     }
 
     void checkAdminUser(CrewUser crewUser) {
-        if (crewUser.getRole() != Role.ADMIN)
+        if (crewUser.isAdmin()) {
             throw new UnAuthorizedException("you are not admin user");
+        }
     }
 }

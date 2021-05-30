@@ -12,22 +12,34 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CrewPostDto {
-    @Email(message = "Field must be a email format")
+    @Email
     private String email;
 
-    @NotBlank(message = "Field can't be blank")
-    private String name;
-
-    private String description;
-
     @NotNull
-    private Region region;
-
-    private Grade gradeLimit;
+    private CrewPostData data;
 
     @Builder
-    public CrewPostDto(String email, String name, String description, Region region, Grade gradeLimit) {
+    public CrewPostDto(@Email String email, @NotNull CrewPostData data) {
         this.email = email;
+        this.data = data;
+    }
+}
+
+@Getter
+class CrewPostData {
+    @NotBlank(message = "Field can't be blank")
+    private final String name;
+
+    private final String description;
+
+    @NotNull
+    private final Region region;
+
+    @NotNull
+    private final Grade gradeLimit;
+
+    @Builder
+    public CrewPostData(String name, String description, Region region, Grade gradeLimit) {
         this.name = name;
         this.description = description;
         this.region = region;

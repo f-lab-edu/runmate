@@ -34,8 +34,8 @@ create table crew
 (
     id          bigint primary key auto_increment,
     description varchar(255),
-    name        varchar(20),
-    si          varchar(20),
+    name        varchar(20) not null,
+    si          varchar(20) not null,
     gu          varchar(20),
     gun         varchar(20),
     grade_limit varchar(20) not null default 'UNRANKED',
@@ -104,14 +104,14 @@ values (5, 120.195, '12:15:30', 10526, addtime(now(), '10'));
 insert into activity(user_id, distance, running_time, calories, created_at)
 values (5, 128, '11:47:30', 10555, addtime(now(), '100'));
 
-insert into crew(description, si, gu, grade_limit, created_at)
-values ('첫 크루입니다.', 'seoul', 'gangbuk', 'BRONZE', now());
+insert into crew(description, name, si, gu, grade_limit, created_at)
+values ('첫 크루입니다.', '강북크루', 'seoul', 'gangbuk', 'BRONZE', now());
 
-insert into crew(description, si, gu, grade_limit, created_at)
-values ('1등 크루입니다.', 'seoul', 'gangnam', 'SILVER', now());
+insert into crew(description, name, si, gu, grade_limit, created_at)
+values ('1등 크루입니다.', '강남크루', 'seoul', 'gangnam', 'SILVER', now());
 
-insert into crew(description, si, gu, grade_limit, created_at)
-values ('쩌리 크루입니다', 'seoul', 'nowon', 'UNRANKED', now());
+insert into crew(description, name, si, gu, grade_limit, created_at)
+values ('쩌리 크루입니다', '노원크루', 'seoul', 'nowon', 'UNRANKED', now());
 
 insert into crew_user(user_id, crew_id, role)
 values (2, 1, 'ADMIN');

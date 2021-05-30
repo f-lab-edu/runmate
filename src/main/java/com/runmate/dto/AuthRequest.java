@@ -1,9 +1,11 @@
 package com.runmate.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-@Data
+@Getter
+@RequiredArgsConstructor
 public class AuthRequest {
-    private String email;
-    private String password;
+    private final String email;
+    private final String password;
 }

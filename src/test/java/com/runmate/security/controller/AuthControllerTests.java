@@ -73,9 +73,7 @@ public class AuthControllerTests {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        AuthRequest authRequest = new AuthRequest();
-        authRequest.setEmail("kyo@kyo.com");
-        authRequest.setPassword("1234");
+        AuthRequest authRequest = new AuthRequest("kyo@kyo.com", "1234");
 
         jsonBody = mapper.writeValueAsString(authRequest);
 

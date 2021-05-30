@@ -19,6 +19,8 @@ spring:
     username: root
     password: 3504httdA*
 
+  jackson:
+    property-naming-strategy: SNAKE_CASE
   jpa:
     hibernate:
       ddl-auto: none #create update none
