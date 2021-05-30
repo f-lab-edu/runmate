@@ -29,18 +29,19 @@ public class CrewJoinRequestService {
     private final UserRepository userRepository;
     private final CrewRepository crewRepository;
 
-    public void sendJoinRequest(Long crewId, String email) {
+    public CrewJoinRequest sendJoinRequest(Long crewId, String email) {
         User user = userRepository.findByEmail(email);
         Crew crew = crewRepository.findById(crewId)
                 .orElseThrow(NotFoundCrewException::new);
 
-        if (canSendRequest(crew, user)) {
-            CrewJoinRequest request = CrewJoinRequest.builder()
-                    .user(user)
-                    .crew(crew)
-                    .build();
-            crewJoinRequestRepository.save(request);
-        }
+        checkCanSendRequest(crew, user);
+        CrewJoinRequest request = CrewJoinRequest.builder()
+                .user(user)
+                .crew(crew)
+                .build();
+
+        return crewJoinRequestRepository.save(request);
+
     }
 
     public List<CrewJoinRequestGetDto> searchJoinRequestByCrewWithPageable(Long crewId, int offset, int Limit) {
@@ -72,11 +73,10 @@ public class CrewJoinRequestService {
         crewUserRepository.save(crewUser);
     }
 
-    private boolean canSendRequest(Crew crew, User user) {
+    private void checkCanSendRequest(Crew crew, User user) {
         user.checkGradeHigherThenCrewLimit(crew);
         checkDuplicatedRequestToSameCrew(crew, user);
         checkBelongToSomeCrew(crew, user);
-        return true;
     }
 
     private void checkDuplicatedRequestToSameCrew(Crew crew, User user) {
