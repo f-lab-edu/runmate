@@ -129,7 +129,7 @@ public class CrewJoinRequestServiceTest {
 
         when(crewJoinRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
 
-        crewJoinRequestService.acknowledgeJoinRequest(requestId);
+        crewJoinRequestService.approveJoinRequest(crew.getId(), requestId);
 
         verify(crewJoinRequestRepository, atLeastOnce()).delete(any(CrewJoinRequest.class));
         verify(crewUserRepository, atLeastOnce()).save(any(CrewUser.class));

@@ -224,7 +224,7 @@ class CrewControllerTest {
         Long crewId = withCrewUser.getCrewUser().getCrew().getId();
 
         assertThat(joinRequest).isNotNull();
-        crewJoinRequestService.acknowledgeJoinRequest(joinRequest.getId());
+        crewJoinRequestService.approveJoinRequest(crewId, joinRequest.getId());
 
         //when
         mockMvc.perform(

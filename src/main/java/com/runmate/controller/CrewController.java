@@ -2,6 +2,7 @@ package com.runmate.controller;
 
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
+import com.runmate.domain.crew.CrewUser;
 import com.runmate.dto.crew.*;
 import com.runmate.repository.spec.CrewOrderSpec;
 import com.runmate.repository.spec.CrewUserOrderSpec;
@@ -83,10 +84,19 @@ public class CrewController {
 
     @PostMapping("/{crewId}/requests")
     public ResponseEntity<String> sendJoinRequest(@PathVariable("crewId") long crewId,
-                                             @RequestBody String email) {
+                                                  @RequestBody String email) {
 
         CrewJoinRequest joinRequest = crewJoinRequestService.sendJoinRequest(crewId, email);
         URI uri = WebMvcLinkBuilder.linkTo(CrewController.class).slash(crewId).slash("requests").slash(joinRequest.getId()).toUri();
+        return ResponseEntity.created(uri).body("success");
+    }
+
+    @PostMapping("/{crewId}/members")
+    public ResponseEntity<String> approveJoinRequest(@PathVariable("crewId") long crewId,
+                                                     @RequestBody long requestId) {
+
+        CrewUser crewUser = crewJoinRequestService.approveJoinRequest(crewId, requestId);
+        URI uri = WebMvcLinkBuilder.linkTo(CrewController.class).slash(crewId).slash("members").slash(crewUser.getId()).toUri();
         return ResponseEntity.created(uri).body("success");
     }
 }
