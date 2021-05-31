@@ -1,5 +1,6 @@
 package com.runmate.dto.crew;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.runmate.domain.user.Region;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ public class CrewSearchRequest {
     private final Region location;
     @NotNull
     private final String sortBy;
-
+    @JsonProperty
     private final boolean isAscending;
 
     @Builder

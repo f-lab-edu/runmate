@@ -19,16 +19,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import java.net.URI;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -235,6 +236,32 @@ class CrewControllerTest {
         )
                 .andDo(print())
                 .andExpect(status().isForbidden());
-
     }
+
+    @Test
+    @DisplayName("서울시 검색 조건으로 크루 목록 조회시 200 OK 응답을 받고, 서울에 존재하는 크루만 출력됨")
+    void When_CrewsWithLocation_WithSeoulSi_Expect_Status_OK_Body_CrewsInSeoul() throws Exception {
+        //given
+        String requestBody = "{\n" +
+                "  \"location\": {\n" +
+                "      \"si\" : \"seoul\",\n" +
+                "      \"gu\" : null,\n" +
+                "      \"gun\" : null\n" +
+                "    },\n" +
+                "  \"sort_by\" : \"distance\",\n" +
+                "  \"is_ascending\" : true\n" +
+                "}";
+
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews?pageNumber=1&limitCount=5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print());
+    }
+
 }

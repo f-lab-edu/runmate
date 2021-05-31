@@ -52,7 +52,7 @@ public class CrewController {
                                                              @RequestBody CrewSearchRequest request) {
 
         CrewOrderSpec crewOrderSpec = CrewOrderSpec.of(request.isAscending(), request.getSortBy());
-        List<CrewGetDto> crews = crewService.searchCrewByRegionOrderByActivityWithPageable(request.getLocation(), pageNumber, limitCount, crewOrderSpec);
+        List<CrewGetDto> crews = crewService.searchCrewByRegionOrderByActivityWithPageable(request.getLocation(), calculateOffset(pageNumber, limitCount), limitCount, crewOrderSpec);
         JsonWrapper response = JsonWrapper.success(crews);
 
         return ResponseEntity.ok().body(response);
@@ -65,10 +65,14 @@ public class CrewController {
                                                           @RequestBody CrewUserSearchRequest request) {
 
         CrewUserOrderSpec crewUserOrderSpec = CrewUserOrderSpec.of(request.isAscending(), request.getSortBy());
-        List<CrewUserGetDto> crewUsers = crewUserService.searchCrewUser(crewId, pageNumber, limitCount, crewUserOrderSpec);
+        List<CrewUserGetDto> crewUsers = crewUserService.searchCrewUser(crewId, calculateOffset(pageNumber, limitCount), limitCount, crewUserOrderSpec);
         JsonWrapper response = JsonWrapper.success(crewUsers);
 
         return ResponseEntity.ok().body(response);
+    }
+
+    private int calculateOffset(int pageNumber, int limitCount) {
+        return (pageNumber - 1) * limitCount;
     }
 
 
