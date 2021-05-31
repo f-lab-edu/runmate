@@ -1,7 +1,6 @@
 package com.runmate.dto.activity;
 
-import com.runmate.domain.activity.Activity;
-import com.runmate.domain.activity.RunningTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -9,29 +8,20 @@ import java.time.LocalTime;
 
 @Getter
 public class ActivityDto {
-
     private final Long id;
-
     private final float distance;
-
-    private final RunningTime runningTime;
-
+    private final long runningTime;
+    @JsonFormat(pattern = "hh:mm:ss")
     private final LocalTime averagePace;
-
     private final int calories;
-
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private final LocalDateTime createdAt;
 
-    public static ActivityDto of(Activity source) {
-        return new ActivityDto(source.getId(), source.getDistance(), RunningTime.from(source.getRunningTime()),
-                source.calculatePace(), source.getCalories(), source.getCreatedAt());
-    }
-
-    private ActivityDto(Long id, float distance, RunningTime runningTime, LocalTime averagePace, int calories, LocalDateTime createdAt) {
+    public ActivityDto(long id, float distance, long runningTime, double averagePace, int calories, LocalDateTime createdAt) {
         this.id = id;
         this.distance = distance;
         this.runningTime = runningTime;
-        this.averagePace = averagePace;
+        this.averagePace = LocalTime.ofSecondOfDay((long) averagePace);
         this.calories = calories;
         this.createdAt = createdAt;
     }

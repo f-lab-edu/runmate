@@ -25,8 +25,12 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
             "WHERE u.id = :userId")
     List<Activity> findAllByUserWithPagination(Long userId, Pageable pageable);
 
+    public static NumberExpression<Long> getSecondsOfRunningTime() {
+        return Expressions.numberTemplate(Long.class, "function('TIME_TO_SEC',{0})", activity.runningTime);
+    }
+
     public static NumberExpression<Long> getSumSecondsOfRunningTime() {
-        return Expressions.numberTemplate(Long.class, "function('TIME_TO_SEC',{0})", activity.runningTime).sum();
+        return getSecondsOfRunningTime().sum();
     }
 
     public static NumberExpression<Float> getSumDistance() {

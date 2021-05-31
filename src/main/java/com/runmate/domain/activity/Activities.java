@@ -1,9 +1,5 @@
 package com.runmate.domain.activity;
 
-import com.runmate.dto.activity.ActivityStatisticsDto;
-import com.runmate.utils.TimeUtils;
-
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,17 +31,5 @@ public class Activities {
                 .map(Activity::getCalories)
                 .reduce(Integer::sum)
                 .orElse(0);
-    }
-
-    public ActivityStatisticsDto toStatistics() {
-        float totalDistance = calculateTotalDistance();
-        RunningTime totalRunningTime = calculateTotalRunningTime();
-        int totalCalories = calculateTotalCalories();
-
-        long totalSeconds = TimeUtils.runningTimeToSeconds(totalRunningTime);
-        long secondsPerKilometer = (long) (totalSeconds / totalDistance);
-        LocalTime averagePace = TimeUtils.secondsToTime(secondsPerKilometer);
-
-        return ActivityStatisticsDto.of(activities.size(), totalDistance, totalRunningTime, averagePace, totalCalories);
     }
 }
