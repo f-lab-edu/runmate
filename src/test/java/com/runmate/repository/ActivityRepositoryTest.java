@@ -1,9 +1,8 @@
 package com.runmate.repository;
 
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.dto.activity.ActivityDto;
-import com.runmate.domain.dto.activity.ActivityStatisticsDto;
 import com.runmate.domain.user.User;
+import com.runmate.dto.activity.ActivityStatisticsDto;
 import com.runmate.repository.activity.ActivityQueryRepository;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.user.UserRepository;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
 import java.time.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

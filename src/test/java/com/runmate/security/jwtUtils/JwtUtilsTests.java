@@ -14,21 +14,24 @@ public class JwtUtilsTests {
     JwtProvider jwtProvider;
 
     @Test
-    public void createTokenAndValidate(){
-        User user=new User();
-        user.setEmail("anny@anny.com");
+    public void createTokenAndValidate() {
+        User user = User.of()
+                .email("anny@anny.com")
+                .build();
 
-        String token= jwtProvider.createToken(user.getEmail());
+        String token = jwtProvider.createToken(user.getEmail());
         System.out.println(token);
 
-        assertEquals(jwtProvider.validate(token),true);
+        assertEquals(jwtProvider.validate(token), true);
     }
-    @Test
-    public void getClaim(){
-        User user=new User();
-        user.setEmail("anny@anny.com");
 
-        String token= jwtProvider.createToken(user.getEmail());
-        assertEquals(jwtProvider.getClaim(token),user.getEmail());
+    @Test
+    public void getClaim() {
+        User user = User.of()
+                .email("anny@anny.com")
+                .build();
+
+        String token = jwtProvider.createToken(user.getEmail());
+        assertEquals(jwtProvider.getClaim(token), user.getEmail());
     }
 }

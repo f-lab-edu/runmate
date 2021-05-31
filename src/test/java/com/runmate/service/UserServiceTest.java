@@ -1,7 +1,6 @@
 package com.runmate.service;
 
-import com.runmate.domain.dto.user.UserModificationDto;
-import com.runmate.domain.user.Region;
+import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
 import com.runmate.service.user.UserService;

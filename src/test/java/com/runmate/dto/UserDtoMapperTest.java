@@ -1,8 +1,8 @@
-package com.runmate.domain.dto;
+package com.runmate.dto;
 
-import com.runmate.domain.dto.user.UserCreationDto;
-import com.runmate.domain.dto.user.UserGetDto;
-import com.runmate.domain.dto.user.UserModificationDto;
+import com.runmate.dto.user.UserCreationDto;
+import com.runmate.dto.user.UserGetDto;
+import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;

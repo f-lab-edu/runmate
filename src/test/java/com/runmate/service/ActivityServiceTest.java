@@ -1,6 +1,7 @@
 package com.runmate.service;
 
 import com.runmate.domain.activity.Activity;
+
 import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityQueryRepository;
@@ -58,9 +59,10 @@ public class ActivityServiceTest {
         activities.add(activity1);
         activities.add(activity2);
 
-        user = new User();
-        user.setGrade(Grade.UNRANKED);
-        user.setEmail("ppp@ppp.com");
+        user = User.ofGrade()
+                .grade(Grade.UNRANKED)
+                .email("ppp@ppp.com")
+                .build();
         user.setActivities(activities);
 
         Activity activity3 = Activity.builder()

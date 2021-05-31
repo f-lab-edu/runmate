@@ -1,4 +1,4 @@
-package com.runmate.domain.dto.activity;
+package com.runmate.dto.activity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

@@ -1,12 +1,11 @@
 package com.runmate.service.user;
 
-import com.runmate.domain.dto.AuthRequest;
-import com.runmate.domain.dto.user.UserModificationDto;
+import com.runmate.dto.AuthRequest;
+import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -33,14 +32,14 @@ public class UserService {
         return true;
     }
 
-    public User getUser(String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    public void modify(String email, UserModificationDto modificationDto) {
-        User user = userRepository.findById(modificationDto.getId()).orElseThrow(IllegalArgumentException::new);
+    public User modify(String email, UserModificationDto modificationDto) {
+        User user = userRepository.findByEmail(email);
         modelMapper.map(modificationDto, user);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public boolean delete(String email) {

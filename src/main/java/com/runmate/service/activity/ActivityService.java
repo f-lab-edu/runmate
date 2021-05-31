@@ -2,21 +2,19 @@ package com.runmate.service.activity;
 
 import com.runmate.domain.activity.Activities;
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.dto.activity.ActivityDto;
-import com.runmate.domain.dto.activity.ActivityStatisticsDto;
+import com.runmate.dto.activity.ActivityDto;
+import com.runmate.dto.activity.ActivityStatisticsDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityQueryRepository;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
