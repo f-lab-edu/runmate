@@ -1,4 +1,4 @@
-package com.runmate.domain.dto.crew;
+package com.runmate.dto.crew;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.runmate.domain.crew.Crew;

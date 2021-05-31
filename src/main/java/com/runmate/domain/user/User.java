@@ -92,4 +92,8 @@ public class User {
         this.activities.add(activity);
         activity.setUser(this);
     }
+
+    public boolean isRequestOfBelongingCrew(CrewJoinRequest request) {
+        return crewUser.getCrew().equals(request.getCrew());
+    }
 }

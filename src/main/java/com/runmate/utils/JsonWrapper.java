@@ -16,4 +16,18 @@ public class JsonWrapper {
         this.data = data;
         this.error = error;
     }
+
+    public static JsonWrapper success(Object data) {
+        return JsonWrapper.builder()
+                .data(data)
+                .error(null)
+                .build();
+    }
+
+    public static JsonWrapper error(String error) {
+        return JsonWrapper.builder()
+                .data(null)
+                .error(error)
+                .build();
+    }
 }

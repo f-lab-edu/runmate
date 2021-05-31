@@ -1,7 +1,7 @@
-package com.runmate.domain.dto;
+package com.runmate.dto;
 
 import com.runmate.domain.activity.Activity;
-import com.runmate.domain.dto.activity.ActivityCreationDto;
+import com.runmate.dto.activity.ActivityCreationDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;

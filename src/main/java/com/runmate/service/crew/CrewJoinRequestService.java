@@ -4,7 +4,7 @@ import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
 import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.crew.Role;
-import com.runmate.domain.dto.crew.CrewJoinRequestGetDto;
+import com.runmate.dto.crew.CrewJoinRequestGetDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
 import com.runmate.repository.crew.CrewRepository;
@@ -29,18 +29,19 @@ public class CrewJoinRequestService {
     private final UserRepository userRepository;
     private final CrewRepository crewRepository;
 
-    public void sendJoinRequest(Long crewId, String email) {
+    public CrewJoinRequest sendJoinRequest(Long crewId, String email) {
         User user = userRepository.findByEmail(email);
         Crew crew = crewRepository.findById(crewId)
                 .orElseThrow(NotFoundCrewException::new);
 
-        if (canSendRequest(crew, user)) {
-            CrewJoinRequest request = CrewJoinRequest.builder()
-                    .user(user)
-                    .crew(crew)
-                    .build();
-            crewJoinRequestRepository.save(request);
-        }
+        checkCanSendRequest(crew, user);
+        CrewJoinRequest request = CrewJoinRequest.builder()
+                .user(user)
+                .crew(crew)
+                .build();
+
+        return crewJoinRequestRepository.save(request);
+
     }
 
     public List<CrewJoinRequestGetDto> searchJoinRequestByCrewWithPageable(Long crewId, int offset, int Limit) {
@@ -58,9 +59,13 @@ public class CrewJoinRequestService {
         crewJoinRequestRepository.delete(request);
     }
 
-    public void acknowledgeJoinRequest(Long crewJoinRequestId) {
+    public CrewUser approveJoinRequest(Long crewId, Long crewJoinRequestId) {
         CrewJoinRequest request = crewJoinRequestRepository.findById(crewJoinRequestId)
                 .orElseThrow(NotFoundCrewJoinRequestException::new);
+
+        if (!request.isRequestForCrew(crewId)) {
+            throw new IllegalArgumentException("request is not matched to crew");
+        }
 
         CrewUser crewUser = CrewUser.builder()
                 .user(request.getUser())
@@ -69,14 +74,13 @@ public class CrewJoinRequestService {
                 .build();
 
         crewJoinRequestRepository.delete(request);
-        crewUserRepository.save(crewUser);
+        return crewUserRepository.save(crewUser);
     }
 
-    private boolean canSendRequest(Crew crew, User user) {
+    private void checkCanSendRequest(Crew crew, User user) {
         user.checkGradeHigherThenCrewLimit(crew);
         checkDuplicatedRequestToSameCrew(crew, user);
         checkBelongToSomeCrew(crew, user);
-        return true;
     }
 
     private void checkDuplicatedRequestToSameCrew(Crew crew, User user) {

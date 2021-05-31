@@ -2,7 +2,7 @@ package com.runmate.repository;
 
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
-import com.runmate.domain.dto.crew.CrewJoinRequestGetDto;
+import com.runmate.dto.crew.CrewJoinRequestGetDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
 import com.runmate.repository.crew.CrewRepository;

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CrewUser {
 
+    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @Id
@@ -38,5 +39,13 @@ public class CrewUser {
         this.user=user;
         this.crew=crew;
         this.role=role;
+    }
+
+    public boolean isNormal() {
+        return !role.equals(Role.ADMIN);
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
     }
 }

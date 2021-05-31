@@ -1,6 +1,6 @@
 package com.runmate.domain.activity;
 
-import com.runmate.domain.dto.activity.ActivityStatisticsDto;
+import com.runmate.dto.activity.ActivityStatisticsDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
