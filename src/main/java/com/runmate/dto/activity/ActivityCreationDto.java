@@ -1,4 +1,4 @@
-package com.runmate.domain.dto.activity;
+package com.runmate.dto.activity;
 
 import lombok.*;
 

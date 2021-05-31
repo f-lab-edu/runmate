@@ -3,7 +3,7 @@ package com.runmate.security.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
-import com.runmate.domain.dto.AuthRequest;
+import com.runmate.dto.AuthRequest;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
@@ -52,11 +52,17 @@ public class AuthControllerTests {
 
     @Test
     public void joinAndLogin() throws Exception {
-        User user = new User();
-        user.setEmail("kyo@kyo.com");
-        user.setPassword("1234");
-        user.setRegion(new Region("si", "gu", "gun"));
-        user.setUsername("kyo");
+        Region region = Region.of()
+                .si("si")
+                .gu("gu")
+                .gun("gun")
+                .build();
+        User user = User.of()
+                .email("kyo@kyo.com")
+                .password("1234")
+                .region(region)
+                .username("kyo")
+                .build();
 
         String jsonBody = mapper.writeValueAsString(user);
 
@@ -67,9 +73,7 @@ public class AuthControllerTests {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        AuthRequest authRequest = new AuthRequest();
-        authRequest.setEmail("kyo@kyo.com");
-        authRequest.setPassword("1234");
+        AuthRequest authRequest = new AuthRequest("kyo@kyo.com", "1234");
 
         jsonBody = mapper.writeValueAsString(authRequest);
 

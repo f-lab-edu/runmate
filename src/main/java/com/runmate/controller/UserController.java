@@ -1,7 +1,7 @@
-package com.runmate.controller.user;
+package com.runmate.controller;
 
-import com.runmate.domain.dto.user.UserGetDto;
-import com.runmate.domain.dto.user.UserModificationDto;
+import com.runmate.dto.user.UserGetDto;
+import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
 import com.runmate.utils.JsonWrapper;
@@ -22,12 +22,9 @@ public class UserController {
 
     @GetMapping("/{passedEmail}")
     public ResponseEntity<JsonWrapper> get(@PathVariable("passedEmail") String passedEmail) {
-        User user = userService.getUser(passedEmail);
+        User user = userService.findByEmail(passedEmail);
 
-        JsonWrapper jsonWrapper = JsonWrapper.builder()
-                .data(modelMapper.map(user, UserGetDto.class))
-                .error(null)
-                .build();
+        JsonWrapper jsonWrapper = JsonWrapper.success(modelMapper.map(user, UserGetDto.class));
 
         return ResponseEntity.ok()
                 .body(jsonWrapper);

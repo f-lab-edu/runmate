@@ -35,4 +35,8 @@ public class CrewJoinRequest {
         this.user = user;
         this.crew = crew;
     }
+
+    public boolean isRequestForCrew(Long crewId) {
+        return crew.getId().equals(crewId);
+    }
 }

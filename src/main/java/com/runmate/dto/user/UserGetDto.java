@@ -1,4 +1,4 @@
-package com.runmate.domain.dto.user;
+package com.runmate.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.runmate.domain.user.Grade;

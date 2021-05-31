@@ -1,5 +1,6 @@
 package com.runmate.controller.exception;
 
+import com.runmate.service.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,20 +13,37 @@ import java.net.URISyntaxException;
 @RestController
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    public static final String INVALID_CODE_MESSAGE = "failed to get access token:invalid Code";
 
-    @ExceptionHandler(InvalidCodeException.class)
-    public ResponseEntity<String> handleInvalidCodeException(InvalidCodeException e) {
+    @ExceptionHandler({
+            InvalidCodeException.class
+    })
+    public ResponseEntity<String> handleUnauthorizedException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(INVALID_CODE_MESSAGE);
+                .body(e.getMessage());
     }
 
-    @ExceptionHandler(URISyntaxException.class)
-    public ResponseEntity<String> handleURISyntaxException(URISyntaxException e) {
+    @ExceptionHandler({
+            UnAuthorizedException.class,
+            BelongToSomeCrewException.class,
+            GradeLimitException.class
+    })
+    public ResponseEntity<String> handleForbiddenException(RuntimeException e) {
         return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("server error");
+                .status(HttpStatus.FORBIDDEN)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler({
+            NotFoundCrewUserException.class,
+            NotFoundCrewException.class,
+            NotFoundCrewJoinRequestException.class,
+            IllegalArgumentException.class
+    })
+    public ResponseEntity<String> handleNotFoundException(RuntimeException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
     }
 
     //invalid Request Body
@@ -34,6 +52,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(createErrorMessage(e));
+    }
+
+    @ExceptionHandler(URISyntaxException.class)
+    public ResponseEntity<String> handleURISyntaxException(URISyntaxException e) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("server error");
     }
 
     private String createErrorMessage(MethodArgumentNotValidException e) {
