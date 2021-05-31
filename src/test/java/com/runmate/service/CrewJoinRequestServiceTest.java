@@ -121,11 +121,14 @@ public class CrewJoinRequestServiceTest {
     @Test
     void When_acknowledgeRequest_Expect_Call_crewJoinRequest_Delete_crewUser_Save() {
         final String email = "Lambda@Lambda.com";
+        final Long crewId = 1L;
         Crew crew = textureFactory.makeCrew(false);
+        crew.setId(crewId);
         User user = textureFactory.makeUser(email, false);
 
         final Long requestId = 1L;
         CrewJoinRequest request = textureFactory.makeRequest(crew, user, false);
+        request.setId(requestId);
 
         when(crewJoinRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
 

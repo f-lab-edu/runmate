@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CrewUser {
 
+    @Setter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @Id

@@ -37,7 +37,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             NotFoundCrewUserException.class,
             NotFoundCrewException.class,
-            NotFoundCrewJoinRequestException.class
+            NotFoundCrewJoinRequestException.class,
+            IllegalArgumentException.class
     })
     public ResponseEntity<String> handleNotFoundException(RuntimeException e) {
         return ResponseEntity
