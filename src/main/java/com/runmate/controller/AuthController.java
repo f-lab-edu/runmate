@@ -57,7 +57,7 @@ public class AuthController {
             return new ResponseEntity(httpHeaders, HttpStatus.SEE_OTHER);
         } else {
             String email = kakaoApi.getEmail(code);
-            if (userService.getUser(email) == null) {
+            if (userService.findByEmail(email) == null) {
                 User user = User.of()
                         .email(email)
                         .build();

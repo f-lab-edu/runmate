@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping("/{passedEmail}")
     public ResponseEntity<JsonWrapper> get(@PathVariable("passedEmail") String passedEmail) {
-        User user = userService.getUser(passedEmail);
+        User user = userService.findByEmail(passedEmail);
 
         JsonWrapper jsonWrapper = JsonWrapper.success(modelMapper.map(user, UserGetDto.class));
 
