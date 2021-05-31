@@ -32,14 +32,14 @@ public class UserService {
         return true;
     }
 
-    public User getUser(String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    public void modify(String email, UserModificationDto modificationDto) {
-        User user = userRepository.findById(modificationDto.getId()).orElseThrow(IllegalArgumentException::new);
+    public User modify(String email, UserModificationDto modificationDto) {
+        User user = userRepository.findByEmail(email);
         modelMapper.map(modificationDto, user);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public boolean delete(String email) {
