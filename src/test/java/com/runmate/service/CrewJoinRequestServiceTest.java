@@ -143,10 +143,11 @@ public class CrewJoinRequestServiceTest {
     }
 
     User makeUserWithGrade(String email, Grade grade) {
-        User user = new User();
-        user.setUsername("Lambda");
-        user.setEmail(email);
-        user.setGrade(grade);
+        User user = User.ofGrade()
+                .username("Lambda")
+                .email(email)
+                .grade(grade)
+                .build();
         return user;
     }
 
@@ -158,10 +159,11 @@ public class CrewJoinRequestServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(user);
     }
 
-    void crewJoinRequestRepositoryWillReturn(Optional<CrewJoinRequest>request){
+    void crewJoinRequestRepositoryWillReturn(Optional<CrewJoinRequest> request) {
         when(crewJoinRequestRepository.findCrewJoinRequestByCrewAndUser(any(Crew.class), any(User.class))).thenReturn(request);
     }
-    void crewUserRepositoryWillReturn(Optional<CrewUser>crewUser){
+
+    void crewUserRepositoryWillReturn(Optional<CrewUser> crewUser) {
         when(crewUserRepository.findByCrewAndUser(any(Crew.class), any(User.class))).thenReturn(crewUser);
     }
 }
