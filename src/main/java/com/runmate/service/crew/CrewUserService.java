@@ -32,19 +32,20 @@ public class CrewUserService {
         return crewUserQueryRepository.findCrewUserWithSorted(crewId, PageRequest.of(offset, limit), crewUserOrderSpec);
     }
 
-    public void delete(Long crewId, Long crewUserId, String email) {
+    public void delete(Long crewId, Long deletedCrewUserId, String email) {
         User deleteRequestUser = userRepository.findByEmail(email);
         Crew crew = crewRepository.findById(crewId).orElseThrow(NotFoundCrewException::new);
 
-        CrewUser deletedMember = crewUserRepository.findByCrewAndUser(crew, deleteRequestUser).orElseThrow(NotFoundCrewUserException::new);
-        checkAuthorization(deletedMember, crewUserId);
+        CrewUser deletedMember = crewUserRepository.findById(deletedCrewUserId).orElseThrow(NotFoundCrewUserException::new);
+        CrewUser deleteRequestMember = crewUserRepository.findByCrewAndUser(crew, deleteRequestUser).orElseThrow(NotFoundCrewUserException::new);
+        checkAuthorization(deleteRequestMember, deletedMember);
 
         crewUserRepository.delete(deletedMember);
     }
 
-    private void checkAuthorization(CrewUser crewUser, Long crewUserId) {
-        if (crewUser.isNormal() && !crewUser.isSameId(crewUserId)) {
-            throw new UnAuthorizedException("not authorized to delete " + crewUserId + " member");
+    private void checkAuthorization(CrewUser requestUser, CrewUser deletedMember) {
+        if (requestUser.isNormal() && !requestUser.equals(deletedMember)) {
+            throw new UnAuthorizedException("not authorized to delete " + deletedMember.getId() + " member");
         }
     }
 }
