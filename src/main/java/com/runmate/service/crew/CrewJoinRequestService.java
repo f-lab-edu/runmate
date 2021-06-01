@@ -14,8 +14,8 @@ import com.runmate.service.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.springframework.data.domain.Sort.*;
@@ -44,37 +44,31 @@ public class CrewJoinRequestService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<CrewJoinRequestGetDto> showJoinRequestByCrewWithPageable(Long crewId, String email, int offset, int Limit) {
         User showRequestUser = userRepository.findByEmail(email);
         Crew crew = crewRepository.findById(crewId)
                 .orElseThrow(NotFoundCrewException::new);
 
-        checkAuthorization(crewId, showRequestUser, crew);
+        checkBrowsingJoinRequestsAuthorization(crewId, showRequestUser, crew);
 
         return crewJoinRequestRepository.findAllByCrewWithPageable(crew,
                 PageRequest.of(offset, Limit, by(Direction.DESC, "createdAt")));
     }
 
-    private void checkAuthorization(Long crewId, User user, Crew crew) {
+    private void checkBrowsingJoinRequestsAuthorization(Long crewId, User user, Crew crew) {
         if (!user.isMemberOfCrew(crewId) || user.getCrewUser().isNormal()) {
             throw new UnAuthorizedException("you can't browse for " + crew.getName() + " crew");
         }
     }
 
-    public void cancelJoinRequest(Long crewJoinRequestId) {
+    public CrewUser approveJoinRequest(String email, Long crewId, Long crewJoinRequestId) {
         CrewJoinRequest request = crewJoinRequestRepository.findById(crewJoinRequestId)
                 .orElseThrow(NotFoundCrewJoinRequestException::new);
 
-        crewJoinRequestRepository.delete(request);
-    }
-
-    public CrewUser approveJoinRequest(Long crewId, Long crewJoinRequestId) {
-        CrewJoinRequest request = crewJoinRequestRepository.findById(crewJoinRequestId)
-                .orElseThrow(NotFoundCrewJoinRequestException::new);
-
-        if (!request.isRequestForCrew(crewId)) {
-            throw new IllegalArgumentException("request is not matched to crew");
-        }
+        CrewUser admin = crewUserRepository.findAdmin(crewId).orElseThrow(NotFoundCrewException::new);
+        checkRightRequestForProcessingJoinRequests(crewId, request);
+        checkAuthorizationForHandlingJoinRequest(email, admin);
 
         CrewUser crewUser = CrewUser.builder()
                 .user(request.getUser())
@@ -86,9 +80,35 @@ public class CrewJoinRequestService {
         return crewUserRepository.save(crewUser);
     }
 
+    public void cancelJoinRequest(String email, Long crewId, Long crewJoinRequestId) {
+        CrewJoinRequest request = crewJoinRequestRepository.findById(crewJoinRequestId)
+                .orElseThrow(NotFoundCrewJoinRequestException::new);
+
+        CrewUser admin = crewUserRepository.findAdmin(crewId).orElseThrow(NotFoundCrewException::new);
+        checkRightRequestForProcessingJoinRequests(crewId, request);
+        checkAuthorizationForHandlingJoinRequest(email, admin);
+
+        checkRightRequestForProcessingJoinRequests(crewId, request);
+
+        crewJoinRequestRepository.delete(request);
+    }
+
+    private void checkRightRequestForProcessingJoinRequests(Long crewId, CrewJoinRequest request) {
+        if (!request.isRequestForCrew(crewId)) {
+            throw new IllegalArgumentException("request is not matched to crew");
+        }
+    }
+
+    private void checkAuthorizationForHandlingJoinRequest(String email, CrewUser admin) {
+        if (!admin.isEqualEmail(email)) {
+            throw new UnAuthorizedException("you can't handle join requests for this crew");
+        }
+    }
+
     private void checkCanSendRequest(Crew crew, User user) {
-        if (!user.isGradeHigherOrEqualThanCrewGradeLimit(crew))
+        if (!user.isGradeHigherOrEqualThanCrewGradeLimit(crew)) {
             throw new GradeLimitException("User's Grade lower than Crew's Grade Limit");
+        }
         checkDuplicatedRequestToSameCrew(crew, user);
         checkBelongToSomeCrew(crew, user);
     }

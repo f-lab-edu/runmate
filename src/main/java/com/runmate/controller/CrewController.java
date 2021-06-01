@@ -3,6 +3,7 @@ package com.runmate.controller;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewJoinRequest;
 import com.runmate.domain.crew.CrewUser;
+import com.runmate.dto.crew.JoinRequestApproveDto;
 import com.runmate.dto.crew.*;
 import com.runmate.repository.spec.CrewOrderSpec;
 import com.runmate.repository.spec.CrewUserOrderSpec;
@@ -98,11 +99,20 @@ public class CrewController {
 
     @PostMapping("/{crewId}/members")
     public ResponseEntity<String> approveJoinRequest(@PathVariable("crewId") long crewId,
-                                                     @RequestBody long requestId) {
+                                                     @RequestBody JoinRequestApproveDto request) {
 
-        CrewUser crewUser = crewJoinRequestService.approveJoinRequest(crewId, requestId);
+        CrewUser crewUser = crewJoinRequestService.approveJoinRequest(request.getEmail(), crewId, request.getRequestId());
         URI uri = WebMvcLinkBuilder.linkTo(CrewController.class).slash(crewId).slash("members").slash(crewUser.getId()).toUri();
         return ResponseEntity.created(uri).body("success");
+    }
+
+    @DeleteMapping("/{crewId}/requests/{requestId}")
+    public ResponseEntity<String> cancelJoinRequest(@PathVariable("crewId") long crewId,
+                                                    @PathVariable("requestId") long requestId,
+                                                    @RequestBody String email) {
+
+        crewJoinRequestService.cancelJoinRequest(email, crewId, requestId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{crewId}/members/{crewUserId}")
