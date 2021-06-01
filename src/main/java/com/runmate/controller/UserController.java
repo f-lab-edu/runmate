@@ -1,7 +1,5 @@
 package com.runmate.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runmate.dto.user.UserGetDto;
 import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
@@ -35,7 +33,7 @@ public class UserController {
     @PutMapping("/{passedEmail}")
     public ResponseEntity<JsonWrapper> modify(@RequestParam("email") String tokenEmail,
                                          @PathVariable("passedEmail") String passedEmail,
-                                         @Valid @RequestBody UserModificationDto modificationDto) throws JsonProcessingException {
+                                         @Valid @RequestBody UserModificationDto modificationDto) {
         if (!tokenEmail.equals(passedEmail)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(JsonWrapper.error("it's not your email"));
