@@ -790,4 +790,68 @@ class CrewControllerTest {
                 .andExpect(jsonPath("$.error", is("request is not matched to crew")));
     }
 
+    @Test
+    @DisplayName("관리자가 일반 사용자를 제명 요청 성공시 204 No Content 응답을 받음")
+    void When_deleteCrewUser_ByAdminEmail_Then_Status_NoContent() throws Exception {
+        //when
+        ResultActions resultActions = mockMvc.perform(
+                delete("/api/crews/3/members/4")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(WITH_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        resultActions.andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("일반 사용자가 자신이 속한 크루에 대한 탈퇴 요청 성공시 204 No Content 응답을 받음")
+    void When_deleteCrewUser_ByOwnEmailForBelongingCrew_Then_Status_NoContent() throws Exception {
+        //given
+        String notAdminEmail = "one@gmail.com";
+        String notAdminPassword = "1234";
+        String loginRequestBody = mapper.writeValueAsString(new AuthRequest(notAdminEmail, notAdminPassword));
+        MvcResult authorization = getAuthorization(loginRequestBody);
+        String token = getToken(authorization);
+
+        //when
+        ResultActions result = mockMvc.perform(
+                delete("/api/crews/3/members/4")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(notAdminEmail)
+                        .header("Authorization", "Bearer " + token)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("일반 사용자는 자신이 아닌 사용자에 대해 탈퇴 요청을 하면 403 Forbidden 응답을 받음")
+    void When_deleteCrewUser_ByOtherUserEmail_Then_Status_Forbidden() throws Exception {
+        //given
+        String notAdminEmail = "one@gmail.com";
+        String notAdminPassword = "1234";
+        String loginRequestBody = mapper.writeValueAsString(new AuthRequest(notAdminEmail, notAdminPassword));
+        MvcResult authorization = getAuthorization(loginRequestBody);
+        String token = getToken(authorization);
+
+        //when
+        ResultActions result = mockMvc.perform(
+                delete("/api/crews/3/members/5")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(notAdminEmail)
+                        .header("Authorization", "Bearer " + token)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", startsWith("not authorized to delete ")));
+    }
 }
