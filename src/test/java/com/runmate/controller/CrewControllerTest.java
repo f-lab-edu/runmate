@@ -7,6 +7,7 @@ import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.domain.crew.CrewJoinRequest;
 import com.runmate.domain.user.User;
 import com.runmate.dto.AuthRequest;
+import com.runmate.dto.crew.JoinRequestApproveDto;
 import com.runmate.service.crew.CrewJoinRequestService;
 import com.runmate.service.crew.CrewService;
 import com.runmate.service.crew.CrewUserService;
@@ -652,14 +653,14 @@ class CrewControllerTest {
     }
 
     @Test
-    @DisplayName("다은 크루에 이미 속한 사용자의 가입 요청시 403 Forbidden 응답을 받음")
+    @DisplayName("크루에 이미 속한 사용자의 가입 요청시 403 Forbidden 응답을 받음")
     void When_sendJoinRequest_UserBelongingToOtherCrew_Status_Forbidden() throws Exception {
         //when
         ResultActions result = mockMvc.perform(
                 post("/api/crews/1/requests")
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(WITH_CREW_USER_EMAIL)
-                        .header("Authorization", "Bearer " + noCrewToken)
+                        .header("Authorization", "Bearer " + withCrewToken)
         );
 
         //then
@@ -669,4 +670,124 @@ class CrewControllerTest {
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(jsonPath("$.error", startsWith("you have already belong to crew:")));
     }
+
+    @Test
+    @DisplayName("크루 가입 요청 승인시 201 Created 응답과 함께 해당 크루 멤버 리소스의 Redirected URL을 받음")
+    void When_approveJoinRequest_ByAdminEmail_Status_Created_WithRedirectedURL() throws Exception {
+        //given
+        String jsonBody = mapper.writeValueAsString(new JoinRequestApproveDto(WITH_CREW_USER_EMAIL, 1L));
+
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/api/crews/3/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().string("success"))
+                .andExpect(redirectedUrlPattern("**/api/crews/3/members/*"));
+    }
+
+    @Test
+    @DisplayName("관리자가 아닌 사용자가 가입 요청 승인시 403 Forbidden 응답을 받음")
+    void When_approveJoinRequest_ByNormalUser_Status_Forbidden() throws Exception {
+        //given
+        String jsonBody = mapper.writeValueAsString(new JoinRequestApproveDto("one@gmail.com", 1L));
+
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/api/crews/3/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", is("you can't handle join requests for this crew")));
+    }
+
+    @Test
+    @DisplayName("해당 크루의 요청이 아닌 가입 요청을 승인 요청시 404 Not Found 응답을 받음")
+    void When_approveJoinRequest_ForUnmatchedCrew_Then_Status_NotFound() throws Exception {
+        //given
+        String jsonBody = mapper.writeValueAsString(new JoinRequestApproveDto(WITH_CREW_USER_EMAIL, 1L));
+
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/api/crews/1/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBody)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", is("request is not matched to crew")));
+    }
+
+    @Test
+    @DisplayName("크루 가입 요청 취소 성공시 204 No Content 응답을 받음")
+    void When_cancelJoinRequest_ByAdminEmail_Then_Status_NoContent() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                delete("/api/crews/3/requests/1")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(WITH_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("관리자가 아닌 사용자가 가입 요청 취소시 403 Forbidden 응답을 받음")
+    void When_cancelJoinRequest_ByNormalUser_Then_Status_Forbidden() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                delete("/api/crews/3/requests/1")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content("one@gmail.com")
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", is("you can't handle join requests for this crew")));
+    }
+
+    @Test
+    @DisplayName("해당 크루의 요청이 아닌 가입 요청을 취소 요청시 404 Not Found 응답을 받음")
+    void When_cancelJoinRequest_ForUnmatchedCrew_Then_Status_NotFound() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                delete("/api/crews/1/requests/1")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(WITH_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", is("request is not matched to crew")));
+    }
+
 }

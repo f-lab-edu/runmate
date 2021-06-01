@@ -87,8 +87,6 @@ public class CrewJoinRequestService {
         checkRightRequestForProcessingJoinRequests(crewId, request);
         checkAuthorizationForHandlingJoinRequest(email, admin);
 
-        checkRightRequestForProcessingJoinRequests(crewId, request);
-
         crewJoinRequestRepository.delete(request);
     }
 
