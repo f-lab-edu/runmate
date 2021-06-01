@@ -33,11 +33,15 @@ public class User {
     @Column(name = "name", length = 20)
     private String username;
 
+    @OneToOne(mappedBy = "user")
+    private CrewUser crewUser;
+
     @Embedded
     private Region region;
 
     @Column(name = "introduction", length = 255)
     private String introduction;
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "grade")
@@ -47,14 +51,13 @@ public class User {
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime createdAt;
 
+
     @OneToMany(mappedBy = "user")
     private List<Activity> activities = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
     private List<CrewJoinRequest> joinRequests = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user")
-    private CrewUser crewUser;
 
     @Builder(builderMethodName = "of")
     public User(String email, String password, Region region, String introduction, String username) {
@@ -93,6 +96,6 @@ public class User {
     }
 
     public boolean isRequestOfBelongingCrew(CrewJoinRequest request) {
-        return crewUser.getCrew().equals(request.getCrew());
+        return crewUser.getCrew().getId().equals(request.getCrew().getId());
     }
 }
