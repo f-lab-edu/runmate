@@ -31,8 +31,7 @@ public class CrewJoinRequestService {
 
     public CrewJoinRequest sendJoinRequest(Long crewId, String email) {
         User user = userRepository.findByEmail(email);
-        Crew crew = crewRepository.findById(crewId)
-                .orElseThrow(NotFoundCrewException::new);
+        Crew crew = crewRepository.findById(crewId).orElseThrow(NotFoundCrewException::new);
 
         checkCanSendRequest(crew, user);
         CrewJoinRequest request = CrewJoinRequest.builder()
@@ -116,12 +115,12 @@ public class CrewJoinRequestService {
     private void checkDuplicatedRequestToSameCrew(Crew crew, User user) {
         crewJoinRequestRepository.findCrewJoinRequestByCrewAndUser(crew, user)
                 .ifPresent(request -> {
-                    throw new DuplicatedCrewJoinRequestToSameCrewException("You have already sent a CrewJoinRequest:" + request.getCrew().getName());
+                    throw new DuplicatedCrewJoinRequestToSameCrewException("You have already sent a join request:" + request.getCrew().getName());
                 });
     }
 
     private void checkBelongToSomeCrew(Crew crew, User user) {
-        crewUserRepository.findByCrewAndUser(crew, user)
+        crewUserRepository.findByUser(user)
                 .ifPresent(crewUser -> {
                     throw new BelongToSomeCrewException("you have already belong to crew:" + crewUser.getCrew().getName());
                 });
