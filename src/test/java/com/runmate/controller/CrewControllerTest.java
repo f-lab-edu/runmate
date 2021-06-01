@@ -1,5 +1,6 @@
 package com.runmate.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
@@ -10,6 +11,8 @@ import com.runmate.service.crew.CrewJoinRequestService;
 import com.runmate.service.crew.CrewService;
 import com.runmate.service.crew.CrewUserService;
 import com.runmate.service.user.UserService;
+import org.hamcrest.Matcher;
+import org.hamcrest.core.StringStartsWith;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +31,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -481,5 +485,97 @@ class CrewControllerTest {
                 .andExpect(jsonPath("$.data[2].created_at").exists());
     }
 
+    @Test
+    @DisplayName("크루의 관리자가 가입 요청 목록 조회 요청시 200 OK 응답을 받고, 그 크루에 해당하는 모든 가입 요청이 페이징되어 최근순으로 출력됨")
+    void When_findAllJoinRequests_WithAdminEmail_Expect_Status_OK_Body_RequestsInRecentOrder() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews/3/requests?pageNumber=1&limitCount=5")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(WITH_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
 
+        //then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()", is(2)))
+                //첫번째
+                .andExpect(jsonPath("$.data[0].id", is(4)))
+                .andExpect(jsonPath("$.data[0].email", is("jan@naver.com")))
+                .andExpect(jsonPath("$.data[0].location.si", is("seoul")))
+                .andExpect(jsonPath("$.data[0].location.gu", is("gangnam")))
+                .andExpect(jsonPath("$.data[0].location.gun", nullValue()))
+                .andExpect(jsonPath("$.data[0].grade", is("BRONZE")))
+                .andExpect(jsonPath("$.data[0].created_at").exists())
+                //두번째
+                .andExpect(jsonPath("$.data[1].id", is(1)))
+                .andExpect(jsonPath("$.data[1].email", is("min@gmail.com")))
+                .andExpect(jsonPath("$.data[1].location.si", is("seoul")))
+                .andExpect(jsonPath("$.data[1].location.gu", is("nowon")))
+                .andExpect(jsonPath("$.data[1].location.gun", nullValue()))
+                .andExpect(jsonPath("$.data[1].grade", is("UNRANKED")))
+                .andExpect(jsonPath("$.data[1].created_at").exists());
+    }
+
+    @Test
+    @DisplayName("크루의 일반 사용자는 가입 요청 목록 조회시 403 Forbidden 응답을 받음")
+    void When_findAllJoinRequests_WithNormalEmail_Expect_Status_Forbidden() throws Exception {
+        //given
+        String notAdminEmail = "one@gmail.com";
+        String notAdminPassword = "1234";
+        String loginRequestBody = mapper.writeValueAsString(new AuthRequest(notAdminEmail, notAdminPassword));
+        MvcResult authorization = getAuthorization(loginRequestBody);
+        String token = getToken(authorization);
+
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews/3/requests?pageNumber=1&limitCount=5")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(notAdminEmail)
+                        .header("Authorization", "Bearer " + token)
+        );
+
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", is(StringStartsWith.startsWith("you can't browse for"))));
+    }
+
+    @Test
+    @DisplayName("해당 크루원이 아닌 사용자는 가입 요청 목록 조회시 403 Forbidden 응답을 받음")
+    void When_findAllJoinRequests_WithNotCrewUserEmail_Expect_Status_Forbidden() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews/3/requests?pageNumber=1&limitCount=5")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(NO_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + noCrewToken)
+        );
+
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", is(StringStartsWith.startsWith("you can't browse for"))));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 크루 id로 가입 요청 목록 조회시 404 Not Found 응답을 받음")
+    void When_findAllJoinRequests_WithNotExistsCrewId_Expect_Status_NotFound() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews/3000/requests?pageNumber=1&limitCount=5")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(WITH_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", is("cannot found for such crew")));
+    }
 }

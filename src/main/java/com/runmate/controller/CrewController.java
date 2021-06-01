@@ -83,7 +83,8 @@ public class CrewController {
                                                            @RequestParam @Positive int limitCount,
                                                            @RequestBody String requestEmail) {
 
-        List<CrewJoinRequestGetDto> joinRequests = crewJoinRequestService.showJoinRequestByCrewWithPageable(crewId, requestEmail, pageNumber, limitCount);
+        List<CrewJoinRequestGetDto> joinRequests =
+                crewJoinRequestService.showJoinRequestByCrewWithPageable(crewId, requestEmail, calculateOffset(pageNumber, limitCount), limitCount);
         JsonWrapper response = JsonWrapper.success(joinRequests);
         return ResponseEntity.ok().body(response);
     }

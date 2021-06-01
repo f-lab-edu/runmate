@@ -58,7 +58,7 @@ public class CrewJoinRequestService {
 
     private void checkBrowsingJoinRequestsAuthorization(Long crewId, User user, Crew crew) {
         if (!user.isMemberOfCrew(crewId) || user.getCrewUser().isNormal()) {
-            throw new UnAuthorizedException("you can't browse for " + crew.getName() + " crew");
+            throw new UnAuthorizedException("you can't browse for " + crew.getName() + " requests");
         }
     }
 

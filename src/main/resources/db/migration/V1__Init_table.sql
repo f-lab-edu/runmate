@@ -82,7 +82,7 @@ insert into user(email, introduction, name, password, si, gu, grade)
 values ('jan@naver.com', '같이 뛰실분 쪽지 주세요', 'james', '1234', 'seoul', 'gangnam', 'BRONZE');
 
 insert into user(email, introduction, name, password, si, gu, grade)
-values ('one@gamil.com', '소개', 'one', '1234', 'seoul', 'mapo', 'SILVER');
+values ('one@gmail.com', '소개', 'one', '1234', 'seoul', 'mapo', 'SILVER');
 
 insert into user(email, introduction, name, password, si, gu, grade)
 values ('two@gmail.com', '소개', 'two', '1234', 'seoul', 'dongjak', 'UNRANKED');
@@ -148,10 +148,12 @@ insert into crew_user(user_id, crew_id, role)
 values (7, 3, 'NORMAL');
 
 #crew_join_requests
-insert into crew_join_request(user_id, crew_id)
-values (4, 3);
+insert into crew_join_request(user_id, crew_id, created_at)
+values (4, 3, now());
 
 insert into crew_join_request(user_id, crew_id)
 values (5, 1);
 insert into crew_join_request(user_id, crew_id)
 values (5, 2);
+insert into crew_join_request(user_id, crew_id, created_at)
+values (5, 3, addtime(now(), 100));
