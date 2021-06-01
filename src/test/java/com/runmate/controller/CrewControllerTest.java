@@ -32,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.is;
 
 @Transactional
 @SpringBootTest
@@ -240,7 +241,7 @@ class CrewControllerTest {
 
     @Test
     @DisplayName("서울시 검색 조건으로 크루 목록 조회시 200 OK 응답을 받고, 서울에 존재하는 크루만 출력됨")
-    void When_CrewsWithLocation_WithSeoulSi_Expect_Status_OK_Body_CrewsInSeoul() throws Exception {
+    void When_CrewsWithLocation_InSeoulSi_Expect_Status_OK_Body_CrewsInSeoul() throws Exception {
         //given
         String requestBody = "{\n" +
                 "  \"location\": {\n" +
@@ -261,7 +262,179 @@ class CrewControllerTest {
         );
 
         //then
-        result.andDo(print());
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()", is(3)))
+                //첫번째 크루 조회 결과
+                .andExpect(jsonPath("$.data[0].id", is(3)))
+                .andExpect(jsonPath("$.data[0].name", is("노원크루")))
+                .andExpect(jsonPath("$.data[0].total_distance", is(18.7)))
+                .andExpect(jsonPath("$.data[0].total_running_seconds", is(5377)))
+                .andExpect(jsonPath("$.data[0].created_at").exists())
+                //두번째
+                .andExpect(jsonPath("$.data[1].id", is(1)))
+                .andExpect(jsonPath("$.data[1].name", is("강북크루")))
+                .andExpect(jsonPath("$.data[1].total_distance", is(84.39)))
+                .andExpect(jsonPath("$.data[1].total_running_seconds", is(29820)))
+                .andExpect(jsonPath("$.data[1].created_at").exists())
+                //세번째
+                .andExpect(jsonPath("$.data[2].id", is(2)))
+                .andExpect(jsonPath("$.data[2].name", is("강남크루")))
+                .andExpect(jsonPath("$.data[2].total_distance", is(328.39)))
+                .andExpect(jsonPath("$.data[2].total_running_seconds", is(116310)))
+                .andExpect(jsonPath("$.data[2].created_at").exists());
+
     }
 
+    @Test
+    @DisplayName("서울시 검색 조건과 결과 크기 제한 2로 크루 목록 조회시 200 OK 응답을 받고, 서울에 존재하는 2개의 크루만 출력됨")
+    void When_CrewsWithLocation_WithLimitCount_2_Expect_Status_OK_Body_TwoResults() throws Exception {
+        //given
+        String requestBody = "{\n" +
+                "  \"location\": {\n" +
+                "      \"si\" : \"seoul\",\n" +
+                "      \"gu\" : null,\n" +
+                "      \"gun\" : null\n" +
+                "    },\n" +
+                "  \"sort_by\" : \"distance\",\n" +
+                "  \"is_ascending\" : true\n" +
+                "}";
+
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews?pageNumber=1&limitCount=2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()", is(2)))
+                //첫번째 크루 조회 결과
+                .andExpect(jsonPath("$.data[0].id", is(3)))
+                .andExpect(jsonPath("$.data[0].name", is("노원크루")))
+                .andExpect(jsonPath("$.data[0].total_distance", is(18.7)))
+                .andExpect(jsonPath("$.data[0].total_running_seconds", is(5377)))
+                .andExpect(jsonPath("$.data[0].created_at").exists())
+                //두번째
+                .andExpect(jsonPath("$.data[1].id", is(1)))
+                .andExpect(jsonPath("$.data[1].name", is("강북크루")))
+                .andExpect(jsonPath("$.data[1].total_distance", is(84.39)))
+                .andExpect(jsonPath("$.data[1].total_running_seconds", is(29820)))
+                .andExpect(jsonPath("$.data[1].created_at").exists());
+    }
+
+    @Test
+    @DisplayName("서울시 강남구 조건으로 크루 목록 조회시 200 OK 응답을 받고, 서울시 강남구에 존재하는 크루만 조회됨")
+    void When_CrewsWithLocation_InSeoulSiGangNamGu_Expect_Status_OK_Body_CrewsInSeoulAndGangNam() throws Exception {
+        //given
+        String requestBody = "{\n" +
+                "  \"location\": {\n" +
+                "      \"si\" : \"seoul\",\n" +
+                "      \"gu\" : \"gangnam\",\n" +
+                "      \"gun\" : null\n" +
+                "    },\n" +
+                "  \"sort_by\" : \"distance\",\n" +
+                "  \"is_ascending\" : true\n" +
+                "}";
+
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews?pageNumber=1&limitCount=5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()", is(1)))
+                .andExpect(jsonPath("$.data[0].id", is(2)))
+                .andExpect(jsonPath("$.data[0].name", is("강남크루")))
+                .andExpect(jsonPath("$.data[0].total_distance", is(328.39)))
+                .andExpect(jsonPath("$.data[0].total_running_seconds", is(116310)))
+                .andExpect(jsonPath("$.data[0].created_at").exists());
+    }
+
+    @Test
+    @DisplayName("달린 시간 내림차순 조건으로 크루 목록 조회시 200 OK 응답을 받고, total_running_seconds의 내림차순으로 정렬되어 조회됨")
+    void When_CrewsWithLocation_WithSortingCondition_Expect_Status_OK_Body_ProperlySortingCrews() throws Exception {
+        //given
+        String requestBody = "{\n" +
+                "  \"location\": {\n" +
+                "      \"si\" : \"seoul\",\n" +
+                "      \"gu\" : null,\n" +
+                "      \"gun\" : null\n" +
+                "    },\n" +
+                "  \"sort_by\" : \"running_time\",\n" +
+                "  \"is_ascending\" : false\n" +
+                "}";
+
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews?pageNumber=1&limitCount=5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()", is(3)))
+                //첫번째
+                .andExpect(jsonPath("$.data[0].id", is(2)))
+                .andExpect(jsonPath("$.data[0].name", is("강남크루")))
+                .andExpect(jsonPath("$.data[0].total_distance", is(328.39)))
+                .andExpect(jsonPath("$.data[0].total_running_seconds", is(116310)))
+                .andExpect(jsonPath("$.data[0].created_at").exists())
+                //두번째
+                .andExpect(jsonPath("$.data[1].id", is(1)))
+                .andExpect(jsonPath("$.data[1].name", is("강북크루")))
+                .andExpect(jsonPath("$.data[1].total_distance", is(84.39)))
+                .andExpect(jsonPath("$.data[1].total_running_seconds", is(29820)))
+                .andExpect(jsonPath("$.data[1].created_at").exists())
+                //세번째
+                .andExpect(jsonPath("$.data[2].id", is(3)))
+                .andExpect(jsonPath("$.data[2].name", is("노원크루")))
+                .andExpect(jsonPath("$.data[2].total_distance", is(18.7)))
+                .andExpect(jsonPath("$.data[2].total_running_seconds", is(5377)))
+                .andExpect(jsonPath("$.data[2].created_at").exists());
+    }
+
+    @Test
+    @DisplayName("어느 크루에도 해당되지 않는 지역 조건으로 크루 목록 조회시 200 OK 응답을 받고, 결과 크기가 0으로 조회됨")
+    void When_CrewsWithLocation_WithNoResultsLocationCondition_Expect_Status_OK_Body_ResultSizeIsZero() throws Exception {
+        //given
+        String requestBody = "{\n" +
+                "  \"location\": {\n" +
+                "      \"si\" : \"incheon\",\n" +
+                "      \"gu\" : null,\n" +
+                "      \"gun\" : null\n" +
+                "    },\n" +
+                "  \"sort_by\" : \"running_time\",\n" +
+                "  \"is_ascending\" : false\n" +
+                "}";
+
+        //when
+        ResultActions result = mockMvc.perform(
+                get("/api/crews?pageNumber=1&limitCount=5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody)
+                        .header("Authorization", "Bearer " + withCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()", is(0)));
+    }
 }
