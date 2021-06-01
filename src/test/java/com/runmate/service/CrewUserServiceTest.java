@@ -51,7 +51,7 @@ public class CrewUserServiceTest {
 
         User kickedUser = textureFactory.makeUser("kicked@kicked.com", false);
 
-        when(userRepository.findByEmail(normalUser.getEmail())).thenReturn(normalUser);
+        when(userRepository.findByEmail(normalUser.getEmail())).thenReturn(Optional.of(normalUser));
         when(crewRepository.findById(crew.getId())).thenReturn(Optional.of(crew));
         when(crewUserRepository.findByCrewAndUser(crew, normalUser)).thenReturn(Optional.of(makeNormalCrewUser(crew, normalUser)));
         when(crewUserRepository.findById(KICKED_CrewUser_ID)).thenReturn(Optional.of(makeNormalCrewUser(crew, kickedUser)));
@@ -75,7 +75,7 @@ public class CrewUserServiceTest {
         CrewUser wantToDelete = makeNormalCrewUser(crew, kickedUser);
         wantToDelete.setId(KICKED_CrewUser_ID);
 
-        when(userRepository.findByEmail(normalUser.getEmail())).thenReturn(normalUser);
+        when(userRepository.findByEmail(normalUser.getEmail())).thenReturn(Optional.of(normalUser));
         when(crewRepository.findById(crew.getId())).thenReturn(Optional.of(crew));
         when(crewUserRepository.findByCrewAndUser(crew, normalUser)).thenReturn(Optional.of(makeAdminCrewUser(crew, normalUser)));
         when(crewUserRepository.findById(KICKED_CrewUser_ID)).thenReturn(Optional.of(wantToDelete));
@@ -100,7 +100,7 @@ public class CrewUserServiceTest {
         CrewUser crewUser = textureFactory.makeCrewUser(crew, user, false);
         crewUser.setId(crewUserId);
 
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(crewRepository.findById(crewId)).thenReturn(Optional.of(crew));
         when(crewUserRepository.findById(crewId)).thenReturn(Optional.of(crewUser));
         when(crewUserRepository.findByCrewAndUser(crew, user)).thenReturn(Optional.of(crewUser));

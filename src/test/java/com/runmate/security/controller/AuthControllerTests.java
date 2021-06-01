@@ -89,7 +89,7 @@ public class AuthControllerTests {
         assertEquals(jwtProvider.validate(token), true);
         assertEquals(jwtProvider.getClaim(token), user.getEmail());
 
-        assertNotNull(userRepository.findByEmail(user.getEmail()));
+        assertNotNull(userRepository.findByEmail(user.getEmail()).orElse(null));
     }
 
     @Test

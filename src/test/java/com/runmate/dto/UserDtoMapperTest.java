@@ -6,6 +6,7 @@ import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ public class UserDtoMapperTest {
 
     @BeforeEach
     public void setUp() {
-        user = userRepository.findByEmail(ADDRESS);
+        user = userRepository.findByEmail(ADDRESS).orElseThrow(NotFoundUserEmailException::new);
     }
 
     @DisplayName("User 에서 변경 되지 않는 필드도 그대로 남는다.")

@@ -5,6 +5,7 @@ import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class UserControllerTest {
                 .addFilter(new CharacterEncodingFilter("UTF-8"))
                 .build();
 
-        user = userRepository.findByEmail(ADDRESS);
+        user = userRepository.findByEmail(ADDRESS).orElseThrow(NotFoundUserEmailException::new);
 
         String jsonBody = "{\n" +
                 "\t\"email\":\"you@you.com\",\n" +
@@ -107,8 +108,6 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data", is(notNullValue())))
-                .andExpect(jsonPath("$.error", is(nullValue())));
+                .andExpect(status().isCreated());
     }
 }

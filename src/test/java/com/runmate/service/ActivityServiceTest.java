@@ -86,7 +86,7 @@ public class ActivityServiceTest {
     public void When_CompleteActivity_Expect_Upgrade() {
         //given
         Mockito.when(userRepository.findByEmail(user.getEmail()))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
 
         completedActivity = Activity.builder().distance(5).build();
 
@@ -101,7 +101,7 @@ public class ActivityServiceTest {
     public void When_CompleteActivity_Expect_DoNotUpgrade() {
         //given
         Mockito.when(userRepository.findByEmail(user.getEmail()))
-                .thenReturn(user);
+                .thenReturn(Optional.of(user));
 
         completedActivity = Activity.builder().distance(4).build();
 

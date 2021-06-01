@@ -47,7 +47,7 @@ public class CrewServiceTest {
         User user = textureFactory.makeUser(email, false);
         user.setGrade(Grade.RUBY);
 
-        when(userRepository.findByEmail(email)).thenReturn(user);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(crewUserRepository.findByCrewAndUser(crew, user)).thenReturn(Optional.empty());
 
         crewService.createCrew(crew, email);
@@ -65,7 +65,7 @@ public class CrewServiceTest {
         User user = textureFactory.makeUser(email, false);
         user.setGrade(Grade.UNRANKED);
 
-        when(userRepository.findByEmail(email)).thenReturn(user);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
         when(crewUserRepository.findByCrewAndUser(crew, user)).thenReturn(Optional.empty());
 
         assertThrows(GradeLimitException.class, () -> {
