@@ -93,3 +93,12 @@ subprojects {
         useJUnitPlatform()
     }
 }
+project(':runmate-domain'){
+
+}
+project(":runmate-api"){
+    dependencies {
+        compile project(':runmate-domain')
+//        testCompile project(':runmate-domain')
+    }
+}
