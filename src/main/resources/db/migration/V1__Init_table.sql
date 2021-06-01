@@ -65,21 +65,29 @@ create table crew_join_request
     foreign key (crew_id) references crew(id) on delete cascade
 ) default character set utf8;
 
+#users
 insert into user(email, introduction, name, password, si, gu, grade)
-values ('you@you.com', '메일 뛰자!', 'you', 1234, 'seoul', 'nowon', 'UNRANKED');
+values ('you@you.com', '메일 뛰자!', 'you', '1234', 'seoul', 'nowon', 'UNRANKED');
 
 insert into user(email, introduction, name, password, si, gu, grade)
-values ('ann@ann.com', '같이 뛰자!', 'ann', 1234, 'seoul', 'gangbuk', 'BRONZE');
+values ('ann@ann.com', '같이 뛰자!', 'ann', '1234', 'seoul', 'gangbuk', 'BRONZE');
 
 insert into user(email, introduction, name, password, si, gu, grade)
-values ('sung@sung.com', '오래 뛰자!', 'sung', 1234, 'seoul', 'gangnam', 'SILVER');
+values ('sung@sung.com', '오래 뛰자!', 'sung', '1234', 'seoul', 'gangnam', 'SILVER');
 
 insert into user(email, introduction, name, password, si, gu, grade)
-values ('min@gmail.com', '친구 구해요!', 'kim', 1234, 'seoul', 'nowon', 'UNRANKED');
+values ('min@gmail.com', '친구 구해요!', 'kim', '1234', 'seoul', 'nowon', 'UNRANKED');
 
 insert into user(email, introduction, name, password, si, gu, grade)
-values ('jan@naver.com', '같이 뛰실분 쪽지 주세요', 'james', 1234, 'seoul', 'gangnam', 'BRONZE');
+values ('jan@naver.com', '같이 뛰실분 쪽지 주세요', 'james', '1234', 'seoul', 'gangnam', 'BRONZE');
 
+insert into user(email, introduction, name, password, si, gu, grade)
+values ('one@gamil.com', '소개', 'one', '1234', 'seoul', 'mapo', 'SILVER');
+
+insert into user(email, introduction, name, password, si, gu, grade)
+values ('two@gmail.com', '소개', 'two', '1234', 'seoul', 'dongjak', 'UNRANKED');
+
+#activities
 insert into activity(user_id, distance, running_time, calories)
 values (1, 10.5, '00:50:45', 500);
 insert into activity(user_id, distance, running_time, calories)
@@ -104,6 +112,16 @@ values (5, 120.195, '12:15:30', 10526, addtime(now(), '10'));
 insert into activity(user_id, distance, running_time, calories, created_at)
 values (5, 128, '11:47:30', 10555, addtime(now(), '100'));
 
+insert into activity(user_id, distance, running_time, calories, created_at)
+values (6, 11.1, '00:54:10', 784, now());
+insert into activity(user_id, distance, running_time, calories, created_at)
+values (6, 32.1, '03:01:32', 2540, addtime(now(), '10'));
+insert into activity(user_id, distance, running_time, calories, created_at)
+values (6, 128, '11:47:30', 10231, addtime(now(), '100'));
+insert into activity(user_id, distance, running_time, calories, created_at)
+values (6, 23.13, '02:10:23', 1764, addtime(now(), '1000'));
+
+#crews
 insert into crew(description, name, si, gu, grade_limit, created_at)
 values ('첫 크루입니다.', '강북크루', 'seoul', 'gangbuk', 'BRONZE', now());
 
@@ -113,6 +131,7 @@ values ('1등 크루입니다.', '강남크루', 'seoul', 'gangnam', 'SILVER', n
 insert into crew(description, name, si, gu, grade_limit, created_at)
 values ('쩌리 크루입니다', '노원크루', 'seoul', 'nowon', 'UNRANKED', now());
 
+#crew_users
 insert into crew_user(user_id, crew_id, role)
 values (2, 1, 'ADMIN');
 
@@ -122,6 +141,13 @@ values (3, 2, 'ADMIN');
 insert into crew_user(user_id, crew_id, role)
 values (1, 3, 'ADMIN');
 
+insert into crew_user(user_id, crew_id, role)
+values (6, 3, 'NORMAL');
+
+insert into crew_user(user_id, crew_id, role)
+values (7, 3, 'NORMAL');
+
+#crew_join_requests
 insert into crew_join_request(user_id, crew_id)
 values (4, 3);
 
