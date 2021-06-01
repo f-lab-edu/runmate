@@ -98,4 +98,11 @@ public class User {
     public boolean isRequestOfBelongingCrew(CrewJoinRequest request) {
         return crewUser.getCrew().getId().equals(request.getCrew().getId());
     }
+
+    public boolean isMemberOfCrew(Long crewId) {
+        if (crewUser == null) {
+            return false;
+        }
+        return crewUser.getCrew().getId().equals(crewId);
+    }
 }

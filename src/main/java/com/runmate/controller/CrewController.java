@@ -79,9 +79,10 @@ public class CrewController {
     @GetMapping("/{crewId}/requests")
     public ResponseEntity<JsonWrapper> findAllJoinRequests(@PathVariable("crewId") long crewId,
                                                            @RequestParam @Positive int pageNumber,
-                                                           @RequestParam @Positive int limitCount) {
+                                                           @RequestParam @Positive int limitCount,
+                                                           @RequestBody String requestEmail) {
 
-        List<CrewJoinRequestGetDto> joinRequests = crewJoinRequestService.searchJoinRequestByCrewWithPageable(crewId, pageNumber, limitCount);
+        List<CrewJoinRequestGetDto> joinRequests = crewJoinRequestService.showJoinRequestByCrewWithPageable(crewId, requestEmail, pageNumber, limitCount);
         JsonWrapper response = JsonWrapper.success(joinRequests);
         return ResponseEntity.ok().body(response);
     }

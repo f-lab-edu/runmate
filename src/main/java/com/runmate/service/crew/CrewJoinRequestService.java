@@ -44,12 +44,21 @@ public class CrewJoinRequestService {
 
     }
 
-    public List<CrewJoinRequestGetDto> searchJoinRequestByCrewWithPageable(Long crewId, int offset, int Limit) {
+    public List<CrewJoinRequestGetDto> showJoinRequestByCrewWithPageable(Long crewId, String email, int offset, int Limit) {
+        User showRequestUser = userRepository.findByEmail(email);
         Crew crew = crewRepository.findById(crewId)
                 .orElseThrow(NotFoundCrewException::new);
 
+        checkAuthorization(crewId, showRequestUser, crew);
+
         return crewJoinRequestRepository.findAllByCrewWithPageable(crew,
                 PageRequest.of(offset, Limit, by(Direction.DESC, "createdAt")));
+    }
+
+    private void checkAuthorization(Long crewId, User user, Crew crew) {
+        if (!user.isMemberOfCrew(crewId) || user.getCrewUser().isNormal()) {
+            throw new UnAuthorizedException("you can't browse for " + crew.getName() + " crew");
+        }
     }
 
     public void cancelJoinRequest(Long crewJoinRequestId) {
