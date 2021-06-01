@@ -39,8 +39,7 @@ public class AuthController {
 
     @PostMapping("/local/new")
     public ResponseEntity<String> join(@RequestBody @Valid UserCreationDto creationDto) {
-        User userJoinRequest = userService.join(modelMapper.map(creationDto, User.class));
-        User joined = userService.join(userJoinRequest);
+        User joined = userService.join(modelMapper.map(creationDto, User.class));
         URI uri = WebMvcLinkBuilder.linkTo(UserController.class).slash(joined.getId()).toUri();
         return ResponseEntity.created(uri).body("success");
     }
