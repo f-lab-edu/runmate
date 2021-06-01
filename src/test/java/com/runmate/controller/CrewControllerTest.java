@@ -95,7 +95,7 @@ class CrewControllerTest {
         return mockMvc.perform(post("/api/auth/local/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(header().exists("Authorization"))
                 .andReturn();
     }

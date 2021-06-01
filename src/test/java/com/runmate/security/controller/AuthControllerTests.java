@@ -57,8 +57,9 @@ public class AuthControllerTests {
                 .gu("gu")
                 .gun("gun")
                 .build();
+
         User user = User.of()
-                .email("kyo@kyo.com")
+                .email("four@gmail.com")
                 .password("1234")
                 .region(region)
                 .username("kyo")
@@ -71,9 +72,10 @@ public class AuthControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated())
+                .andExpect(redirectedUrlPattern("**/api/users/*"));
 
-        AuthRequest authRequest = new AuthRequest("kyo@kyo.com", "1234");
+        AuthRequest authRequest = new AuthRequest("four@gmail.com", "1234");
 
         jsonBody = mapper.writeValueAsString(authRequest);
 
@@ -82,11 +84,13 @@ public class AuthControllerTests {
                 .characterEncoding("UTF-8")
                 .content(jsonBody))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(header().exists("Authorization")).andReturn();
+                .andExpect(status().isCreated())
+                .andExpect(redirectedUrlPattern("**/api/users/*"))
+                .andExpect(header().exists("Authorization"))
+                .andReturn();
 
         String token = mvcResult.getResponse().getHeader("Authorization").replace("Bearer ", "");
-        assertEquals(jwtProvider.validate(token), true);
+        assertTrue(jwtProvider.validate(token));
         assertEquals(jwtProvider.getClaim(token), user.getEmail());
 
         assertNotNull(userRepository.findByEmail(user.getEmail()).orElse(null));

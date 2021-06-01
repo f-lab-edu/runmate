@@ -77,9 +77,10 @@ public class ActivityControllerTest {
         MvcResult result = mockMvc.perform(post("/api/auth/local/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(header().exists("Authorization"))
                 .andReturn();
+
         token = result.getResponse().getHeader("Authorization").replace("Bearer ", "");
     }
 

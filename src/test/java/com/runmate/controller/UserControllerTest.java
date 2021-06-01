@@ -57,7 +57,7 @@ public class UserControllerTest {
         MvcResult result = mockMvc.perform(post("/api/auth/local/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         token = result.getResponse().getHeader("Authorization").replace("Bearer ", "");
@@ -82,7 +82,14 @@ public class UserControllerTest {
                 .content(requestBody)
                 .header("Authorization", "Bearer " + token))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", notNullValue()))
+                .andExpect(jsonPath("$.data.id", is(1)))
+                .andExpect(jsonPath("$.data.username", is("you")))
+                .andExpect(jsonPath("$.data.region.si", is("seoul")))
+                .andExpect(jsonPath("$.data.region.gu", is("nowon")))
+                .andExpect(jsonPath("$.data.region.gun", nullValue()))
+                .andExpect(jsonPath("$.data.introduction", is("메일 뛰자!")));
     }
 
     @Test
@@ -108,6 +115,6 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token))
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
     }
 }
