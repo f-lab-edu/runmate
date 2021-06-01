@@ -2,6 +2,7 @@ package com.runmate.repository;
 
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.user.User;
+import com.runmate.dto.activity.ActivityDto;
 import com.runmate.dto.activity.ActivityStatisticsDto;
 import com.runmate.repository.activity.ActivityQueryRepository;
 import com.runmate.repository.activity.ActivityRepository;
@@ -174,7 +175,9 @@ public class ActivityRepositoryTest {
         }
 
         //then
-        assertEquals(pageSize, activityQueryRepository.findAllByUserWithPagination(user.getEmail(), PageRequest.of(offset, pageSize)).size());
+        List<ActivityDto> results = activityQueryRepository.findAllByUserWithPagination(user.getEmail(), PageRequest.of(offset, pageSize));
+
+        assertEquals(pageSize, results.size());
     }
 
     @Test
