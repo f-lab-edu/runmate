@@ -95,4 +95,8 @@ public class User {
     public boolean isRequestOfBelongingCrew(CrewJoinRequest request) {
         return crewUser.getCrew().equals(request.getCrew());
     }
+
+    public boolean isMatchedPassword(String password) {
+        return this.password.equals(password);
+    }
 }

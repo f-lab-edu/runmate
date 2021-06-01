@@ -8,6 +8,7 @@ import com.runmate.domain.user.User;
 import com.runmate.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,43 +30,40 @@ public class AuthController {
 
     @PostMapping("/local/login")
     public ResponseEntity<String> login(@RequestBody AuthRequest request) {
-        if (userService.login(request))
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtProvider.createToken(request.getEmail()))
-                    .body("success");
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        User loginUser = userService.login(request);
+        URI uri = WebMvcLinkBuilder.linkTo(UserController.class).slash(loginUser.getId()).toUri();
+        return ResponseEntity.created(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtProvider.createToken(request.getEmail()))
+                .body("success");
     }
 
     @PostMapping("/local/new")
     public ResponseEntity<String> join(@RequestBody @Valid UserCreationDto creationDto) {
-        if (userService.join(modelMapper.map(creationDto, User.class))) {
-            return ResponseEntity.ok()
-                    .body("success");
-        } else {
-            return ResponseEntity.ok()
-                    .body("failed");
-        }
+        User userJoinRequest = userService.join(modelMapper.map(creationDto, User.class));
+        User joined = userService.join(userJoinRequest);
+        URI uri = WebMvcLinkBuilder.linkTo(UserController.class).slash(joined.getId()).toUri();
+        return ResponseEntity.created(uri).body("success");
     }
 
     @RequestMapping("/kakao/login")
-    public ResponseEntity kakaoLogin(@RequestParam(name = "code", required = false) String code) throws URISyntaxException {
+    public ResponseEntity<?> kakaoLogin(@RequestParam(name = "code", required = false) String code) throws URISyntaxException {
         if (code == null) {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setLocation(new URI(kakaoApi.getRedirectionUri()));
 
-            return new ResponseEntity(httpHeaders, HttpStatus.SEE_OTHER);
-        } else {
-            String email = kakaoApi.getEmail(code);
-            if (userService.findByEmail(email) == null) {
-                User user = User.of()
-                        .email(email)
-                        .build();
-                userService.join(user);
-            }
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtProvider.createToken(email))
-                    .build();
+            return new ResponseEntity<>(httpHeaders, HttpStatus.SEE_OTHER);
         }
+
+        String email = kakaoApi.getEmail(code);
+        if (userService.findByEmail(email) == null) {
+            User user = User.of()
+                    .email(email)
+                    .build();
+            userService.join(user);
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtProvider.createToken(email))
+                .build();
     }
 }
