@@ -2,6 +2,8 @@ package com.runmate.dto.crew;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.runmate.domain.crew.Crew;
+import com.runmate.domain.user.Grade;
+import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,18 +11,21 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 public class CrewJoinRequestGetDto {
-    private Long id;
-    private Long crewId;
-    private String email;
+    private final Long id;
+    private final String email;
+    private final String name;
+    private final Region location;
+    private final Grade grade;
     @JsonFormat(pattern = "YYYY-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
-    public CrewJoinRequestGetDto(Long id, Crew crew, User user, LocalDateTime createdAt) {
+    public CrewJoinRequestGetDto(Long id, User user, LocalDateTime createdAt) {
         this.id = id;
-        this.crewId = crew.getId();
         this.email = user.getEmail();
+        this.name = user.getUsername();
+        this.location = user.getRegion();
+        this.grade = user.getGrade();
         this.createdAt = createdAt;
     }
 }
