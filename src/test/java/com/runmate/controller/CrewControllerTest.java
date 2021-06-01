@@ -31,11 +31,10 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.is;
 
 @Transactional
 @SpringBootTest
@@ -127,16 +126,18 @@ class CrewControllerTest {
                 "}";
 
         //when
-        mockMvc.perform(
+        ResultActions result = mockMvc.perform(
                 post("/api/crews")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .header("Authorization", "Bearer " + noCrewToken)
-        )
-                //then
-                .andDo(print())
+        );
+
+        //then
+        result.andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(content().string("success"));
+                .andExpect(content().string("success"))
+                .andExpect(redirectedUrlPattern("**/api/crews/*"));
     }
 
     @Test
@@ -158,15 +159,20 @@ class CrewControllerTest {
                 "}";
 
         //when
-        mockMvc.perform(
+        ResultActions result = mockMvc.perform(
                 post("/api/crews")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .header("Authorization", "Bearer " + withCrewToken)
-        )
-                //then
-                .andDo(print())
-                .andExpect(status().isForbidden());
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error").isString());
+
     }
 
     @Test
@@ -188,15 +194,19 @@ class CrewControllerTest {
                 "}";
 
         //when
-        mockMvc.perform(
+        ResultActions result = mockMvc.perform(
                 post("/api/crews")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
                         .header("Authorization", "Bearer " + withCrewToken)
-        )
-                //then
-                .andDo(print())
-                .andExpect(status().isForbidden());
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error").isString());
     }
 
     @Test
@@ -206,14 +216,15 @@ class CrewControllerTest {
         Long ownCrewId = withCrewUser.getCrewUser().getCrew().getId();
 
         //when
-        mockMvc.perform(
+        ResultActions result = mockMvc.perform(
                 delete("/api/crews/" + ownCrewId)
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(WITH_CREW_USER_EMAIL)
                         .header("Authorization", "Bearer " + withCrewToken)
-        )
-                //then
-                .andDo(print())
+        );
+
+        //result
+        result.andDo(print())
                 .andExpect(status().isNoContent());
     }
 
@@ -232,14 +243,19 @@ class CrewControllerTest {
         crewJoinRequestService.approveJoinRequest(WITH_CREW_USER_EMAIL, crewId, joinRequest.getId());
 
         //when
-        mockMvc.perform(
+        ResultActions result = mockMvc.perform(
                 delete("/api/crews/" + crewId)
                         .contentType(MediaType.TEXT_PLAIN)
                         .content(NO_CREW_USER_EMAIL)
                         .header("Authorization", "Bearer " + noCrewToken)
-        )
-                .andDo(print())
-                .andExpect(status().isForbidden());
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error").isString());
     }
 
     @Test
@@ -514,7 +530,7 @@ class CrewControllerTest {
                 .andExpect(jsonPath("$.data[1].location.si", is("seoul")))
                 .andExpect(jsonPath("$.data[1].location.gu", is("nowon")))
                 .andExpect(jsonPath("$.data[1].location.gun", nullValue()))
-                .andExpect(jsonPath("$.data[1].grade", is("UNRANKED")))
+                .andExpect(jsonPath("$.data[1].grade", is("BRONZE")))
                 .andExpect(jsonPath("$.data[1].created_at").exists());
     }
 
@@ -577,5 +593,80 @@ class CrewControllerTest {
                 .andExpect(jsonPath("$.data", nullValue()))
                 .andExpect(jsonPath("$.error").exists())
                 .andExpect(jsonPath("$.error", is("cannot found for such crew")));
+    }
+
+    @Test
+    @DisplayName("크루 가입 요청 성공시 201 Created 응답을 받고 해당 리소스를 Redirected URL로 받음")
+    void When_sendJoinRequest_ForExistingCrew_Expect_Status_Created() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/api/crews/1/requests")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(NO_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + noCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().string("success"))
+                .andExpect(redirectedUrlPattern("**/api/crews/1/requests/*"));
+    }
+
+    @Test
+    @DisplayName("자신보다 높은 등급 제한이 있는 크루는 가입 요청시 403 Forbidden 응답을 받음")
+    void When_sendJoinRequest_ToCrewHasGradeLimitUpperThanOwnGrade_Status_Forbidden() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/api/crews/2/requests")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(NO_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + noCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", is("User's Grade lower than Crew's Grade Limit")));
+    }
+
+    @Test
+    @DisplayName("이미 가입 요청을 보낸 크루에 가입 요청시 403 Forbidden 응답을 받음")
+    void When_sendJoinRequest_ToDuplicateCrew_Status_Forbidden() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/api/crews/3/requests")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(NO_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + noCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", startsWith("You have already sent a join request:")));
+    }
+
+    @Test
+    @DisplayName("다은 크루에 이미 속한 사용자의 가입 요청시 403 Forbidden 응답을 받음")
+    void When_sendJoinRequest_UserBelongingToOtherCrew_Status_Forbidden() throws Exception {
+        //when
+        ResultActions result = mockMvc.perform(
+                post("/api/crews/1/requests")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(WITH_CREW_USER_EMAIL)
+                        .header("Authorization", "Bearer " + noCrewToken)
+        );
+
+        //then
+        result.andDo(print())
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error", startsWith("you have already belong to crew:")));
     }
 }

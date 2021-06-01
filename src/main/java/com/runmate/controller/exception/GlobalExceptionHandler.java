@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             UnAuthorizedException.class,
+            DuplicatedCrewJoinRequestToSameCrewException.class,
             BelongToSomeCrewException.class,
             GradeLimitException.class
     })
