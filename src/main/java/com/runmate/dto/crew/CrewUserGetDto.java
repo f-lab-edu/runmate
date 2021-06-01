@@ -12,27 +12,27 @@ import java.time.LocalDateTime;
 @ToString
 public class CrewUserGetDto {
     private Long id;
-    private float totalDistance;
-    private Role role;
     private String username;
+    private Role role;
+    private float totalDistance;
+    private Long totalRunningSeconds;
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     private LocalDateTime createdAt;
-    private Long totalRunningSeconds;
 
-    public CrewUserGetDto(Long id, float totalDistance, Role role, String username, LocalDateTime createdAt) {
+    public CrewUserGetDto(Long id, String username, Role role, float totalDistance, LocalDateTime createdAt) {
         this.id = id;
-        this.totalDistance = totalDistance;
-        this.role = role;
         this.username = username;
+        this.role = role;
+        this.totalDistance = totalDistance;
         this.createdAt = createdAt;
     }
 
-    public CrewUserGetDto(Long id, float totalDistance, Role role, String username, LocalDateTime createdAt, Long totalRunningSeconds) {
+    public CrewUserGetDto(Long id, String username, Role role, float totalDistance, Long totalRunningSeconds, LocalDateTime createdAt) {
         this.id = id;
-        this.totalDistance = totalDistance;
-        this.role = role;
         this.username = username;
-        this.createdAt = createdAt;
+        this.role = role;
+        this.totalDistance = totalDistance;
         this.totalRunningSeconds = totalRunningSeconds;
+        this.createdAt = createdAt;
     }
 }

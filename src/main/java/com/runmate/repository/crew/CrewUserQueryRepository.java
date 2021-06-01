@@ -40,11 +40,11 @@ public class CrewUserQueryRepository {
     private ConstructorExpression<CrewUserGetDto> getCrewUserGetDtoConstructorExpression() {
         return Projections.constructor(CrewUserGetDto.class,
                 crewUser.id,
-                getSumDistance().coalesce(0f),
-                crewUser.role,
                 crewUser.user.username,
-                crewUser.createdAt,
-                getSumSecondsOfRunningTime().coalesce(0L)
+                crewUser.role,
+                getSumDistance().coalesce(0f),
+                getSumSecondsOfRunningTime().coalesce(0L),
+                crewUser.createdAt
         );
     }
 }
