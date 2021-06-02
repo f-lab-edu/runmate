@@ -1,6 +1,7 @@
 package com.runmate.controller.exception;
 
 import com.runmate.service.exception.*;
+import com.runmate.utils.JsonWrapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,21 +18,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             InvalidCodeException.class
     })
-    public ResponseEntity<String> handleUnauthorizedException(RuntimeException e) {
+    public ResponseEntity<JsonWrapper> handleUnauthorizedException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(e.getMessage());
+                .body(JsonWrapper.error(e.getMessage()));
     }
 
     @ExceptionHandler({
             UnAuthorizedException.class,
+            DuplicatedCrewJoinRequestToSameCrewException.class,
             BelongToSomeCrewException.class,
             GradeLimitException.class
     })
-    public ResponseEntity<String> handleForbiddenException(RuntimeException e) {
+    public ResponseEntity<JsonWrapper> handleForbiddenException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
-                .body(e.getMessage());
+                .body(JsonWrapper.error(e.getMessage()));
     }
 
     @ExceptionHandler({
@@ -40,25 +42,25 @@ public class GlobalExceptionHandler {
             NotFoundCrewJoinRequestException.class,
             IllegalArgumentException.class
     })
-    public ResponseEntity<String> handleNotFoundException(RuntimeException e) {
+    public ResponseEntity<JsonWrapper> handleNotFoundException(RuntimeException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+                .body(JsonWrapper.error(e.getMessage()));
     }
 
     //invalid Request Body
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<JsonWrapper> handleNotValidException(MethodArgumentNotValidException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(createErrorMessage(e));
+                .body(JsonWrapper.error(createErrorMessage(e)));
     }
 
     @ExceptionHandler(URISyntaxException.class)
-    public ResponseEntity<String> handleURISyntaxException(URISyntaxException e) {
+    public ResponseEntity<JsonWrapper> handleURISyntaxException(URISyntaxException e) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("server error");
+                .body(JsonWrapper.error("server error"));
     }
 
     private String createErrorMessage(MethodArgumentNotValidException e) {

@@ -26,7 +26,7 @@ public class CrewUserQueryRepository {
     public List<CrewUserGetDto> findCrewUserWithSorted(Long crewId, Pageable pageable, CrewUserOrderSpec orderSpec) {
         return queryFactory.select(getCrewUserGetDtoConstructorExpression())
                 .from(activity)
-                .innerJoin(activity.user, user)
+                .rightJoin(activity.user, user)
                 .innerJoin(user.crewUser, crewUser)
                 .innerJoin(crewUser.crew, crew)
                 .where(crew.id.eq(crewId))
@@ -40,10 +40,11 @@ public class CrewUserQueryRepository {
     private ConstructorExpression<CrewUserGetDto> getCrewUserGetDtoConstructorExpression() {
         return Projections.constructor(CrewUserGetDto.class,
                 crewUser.id,
-                getSumDistance(),
-                crewUser.role,
                 crewUser.user.username,
-                crewUser.createdAt,
-                getSumSecondsOfRunningTime());
+                crewUser.role,
+                getSumDistance().coalesce(0f),
+                getSumSecondsOfRunningTime().coalesce(0L),
+                crewUser.createdAt
+        );
     }
 }

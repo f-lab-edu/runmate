@@ -105,34 +105,46 @@ public class CrewJoinRequestServiceTest {
     @Test
     void When_CancelRequest_Expect_Call_delete() {
         final String email = "Lambda@Lambda.com";
+        String adminEmail = "admin@admin.com";
+        Long crewId = 1L;
+
         Crew crew = textureFactory.makeCrew(false);
+        User adminUser = textureFactory.makeUser(adminEmail, false);
         User user = textureFactory.makeUser(email, false);
+        CrewUser admin = textureFactory.makeCrewUser(crew, adminUser, false);
+        crew.setId(crewId);
 
         final Long requestId = 1L;
         CrewJoinRequest request = textureFactory.makeRequest(crew, user, false);
 
         when(crewJoinRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
+        when(crewUserRepository.findAdmin(crewId)).thenReturn(Optional.of(admin));
 
         //then
-        crewJoinRequestService.cancelJoinRequest(requestId);
+        crewJoinRequestService.cancelJoinRequest(adminEmail, crewId, requestId);
         verify(crewJoinRequestRepository, atLeastOnce()).delete(any(CrewJoinRequest.class));
     }
 
     @Test
     void When_acknowledgeRequest_Expect_Call_crewJoinRequest_Delete_crewUser_Save() {
+        final String adminEmail = "admin@admin.com";
         final String email = "Lambda@Lambda.com";
         final Long crewId = 1L;
         Crew crew = textureFactory.makeCrew(false);
         crew.setId(crewId);
         User user = textureFactory.makeUser(email, false);
+        User adminUser = textureFactory.makeUser(adminEmail, false);
+        CrewUser admin = textureFactory.makeCrewUser(crew, adminUser, false);
+
 
         final Long requestId = 1L;
         CrewJoinRequest request = textureFactory.makeRequest(crew, user, false);
         request.setId(requestId);
 
+        when(crewUserRepository.findAdmin(crewId)).thenReturn(Optional.of(admin));
         when(crewJoinRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
 
-        crewJoinRequestService.approveJoinRequest(crew.getId(), requestId);
+        crewJoinRequestService.approveJoinRequest(adminEmail, crew.getId(), requestId);
 
         verify(crewJoinRequestRepository, atLeastOnce()).delete(any(CrewJoinRequest.class));
         verify(crewUserRepository, atLeastOnce()).save(any(CrewUser.class));
@@ -167,6 +179,6 @@ public class CrewJoinRequestServiceTest {
     }
 
     void crewUserRepositoryWillReturn(Optional<CrewUser> crewUser) {
-        when(crewUserRepository.findByCrewAndUser(any(Crew.class), any(User.class))).thenReturn(crewUser);
+        when(crewUserRepository.findByUser(any(User.class))).thenReturn(crewUser);
     }
 }

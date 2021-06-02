@@ -144,7 +144,6 @@ public class CrewJoinRequestRepositoryTest {
     void checkSameCrewJoinRequestWithDto(CrewJoinRequest request, CrewJoinRequestGetDto dto) {
         assertEquals(request.getId(), dto.getId());
         assertEquals(request.getUser().getEmail(), dto.getEmail());
-        assertEquals(request.getCrew().getId(), dto.getCrewId());
     }
 
     void deleteCrewJoinRequest(CrewJoinRequest request) {

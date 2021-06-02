@@ -13,12 +13,12 @@ import static com.runmate.repository.crew.CrewUserQueryRepository.*;
 @Getter
 public enum CrewUserOrderSpec {
 
-    ASC_CREATED_AT(true, "createdAt", crewUser.createdAt.asc()),
-    ASC_RUNNING_TIME(true, "runningTime", getSumSecondsOfRunningTime().asc()),
+    ASC_CREATED_AT(true, "created_at", crewUser.createdAt.asc()),
+    ASC_RUNNING_TIME(true, "running_time", getSumSecondsOfRunningTime().asc()),
     ASC_DISTANCE(true, "distance", getSumDistance().asc()),
 
-    DESC_CREATED_AT(false, "createdAt", crewUser.createdAt.desc()),
-    DESC_RUNNING_TIME(false, "runningTime", getSumSecondsOfRunningTime().desc()),
+    DESC_CREATED_AT(false, "created_at", crewUser.createdAt.desc()),
+    DESC_RUNNING_TIME(false, "running_time", getSumSecondsOfRunningTime().desc()),
     DESC_DISTANCE(false, "distance", getSumDistance().desc());
 
     private boolean isAscending;

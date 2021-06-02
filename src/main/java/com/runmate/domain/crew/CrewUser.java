@@ -48,4 +48,8 @@ public class CrewUser {
     public boolean isSameId(Long id) {
         return this.id.equals(id);
     }
+
+    public boolean isEqualEmail(String email) {
+        return user.getEmail().equals(email);
+    }
 }

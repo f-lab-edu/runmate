@@ -9,8 +9,7 @@ import com.runmate.service.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -37,6 +36,7 @@ public class UserService {
         return user;
     }
 
+    @Transactional(readOnly = true)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
     }
