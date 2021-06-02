@@ -30,7 +30,7 @@ public class CrewQueryRepository {
     public List<CrewGetDto> findByLocationWithSorted(Region region, Pageable pageable, CrewOrderSpec orderSpec) {
         return queryFactory.select(getCrewGetDtoConstructor())
                 .from(activity)
-                .innerJoin(activity.user, user)
+                .rightJoin(activity.user, user)
                 .innerJoin(user.crewUser, crewUser)
                 .innerJoin(crewUser.crew, crew)
                 .where(eqSi(region.getSi()), eqGu(region.getGu()), eqGun(region.getGun()))
