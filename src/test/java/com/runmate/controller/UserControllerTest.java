@@ -5,6 +5,7 @@ import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class UserControllerTest {
                 .addFilter(new CharacterEncodingFilter("UTF-8"))
                 .build();
 
-        user = userRepository.findByEmail(ADDRESS);
+        user = userRepository.findByEmail(ADDRESS).orElseThrow(NotFoundUserEmailException::new);
 
         String jsonBody = "{\n" +
                 "\t\"email\":\"you@you.com\",\n" +
@@ -56,7 +57,7 @@ public class UserControllerTest {
         MvcResult result = mockMvc.perform(post("/api/auth/local/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         token = result.getResponse().getHeader("Authorization").replace("Bearer ", "");
@@ -81,7 +82,14 @@ public class UserControllerTest {
                 .content(requestBody)
                 .header("Authorization", "Bearer " + token))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data", notNullValue()))
+                .andExpect(jsonPath("$.data.id", is(1)))
+                .andExpect(jsonPath("$.data.username", is("you")))
+                .andExpect(jsonPath("$.data.region.si", is("seoul")))
+                .andExpect(jsonPath("$.data.region.gu", is("nowon")))
+                .andExpect(jsonPath("$.data.region.gun", nullValue()))
+                .andExpect(jsonPath("$.data.introduction", is("메일 뛰자!")));
     }
 
     @Test
@@ -107,8 +115,6 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + token))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data", is(notNullValue())))
-                .andExpect(jsonPath("$.error", is(nullValue())));
+                .andExpect(status().isOk());
     }
 }

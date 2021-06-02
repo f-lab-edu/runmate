@@ -11,6 +11,7 @@ import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.user.UserRepository;
 import com.runmate.service.activity.ActivityService;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -67,7 +68,7 @@ public class ActivityControllerTest {
                 .addFilter(new JwtAuthenticationFilter(provider))
                 .addFilter(new CharacterEncodingFilter("utf8"))
                 .build();
-        user = userRepository.findByEmail(ADDRESS);
+        user = userRepository.findByEmail(ADDRESS).orElseThrow(NotFoundUserEmailException::new);
 
         AuthRequest authRequest = new AuthRequest(user.getEmail(), user.getPassword());
 
@@ -76,9 +77,10 @@ public class ActivityControllerTest {
         MvcResult result = mockMvc.perform(post("/api/auth/local/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(header().exists("Authorization"))
                 .andReturn();
+
         token = result.getResponse().getHeader("Authorization").replace("Bearer ", "");
     }
 

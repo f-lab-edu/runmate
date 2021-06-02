@@ -31,14 +31,17 @@ public class UserController {
     }
 
     @PutMapping("/{passedEmail}")
-    public ResponseEntity<String> modify(@RequestParam("email") String tokenEmail,
+    public ResponseEntity<JsonWrapper> modify(@RequestParam("email") String tokenEmail,
                                          @PathVariable("passedEmail") String passedEmail,
                                          @Valid @RequestBody UserModificationDto modificationDto) {
-        if (!tokenEmail.equals(passedEmail))
+        if (!tokenEmail.equals(passedEmail)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("it's not your email");
+                    .body(JsonWrapper.error("it's not your email"));
+        }
 
-        userService.modify(passedEmail, modificationDto);
-        return ResponseEntity.ok().body("success");
+        User modified = userService.modify(passedEmail, modificationDto);
+        UserGetDto body = modelMapper.map(modified, UserGetDto.class);
+        return ResponseEntity.ok()
+                .body(JsonWrapper.success(body));
     }
 }

@@ -8,6 +8,7 @@ import com.runmate.domain.user.User;
 import com.runmate.repository.activity.ActivityQueryRepository;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ActivityService {
     private final UserRepository userRepository;
 
     public void completeActivity(String email, Activity activity) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
         user.completeActivity(activity);
 
         activityRepository.save(activity);

@@ -11,6 +11,7 @@ import com.runmate.repository.spec.CrewUserOrderSpec;
 import com.runmate.repository.user.UserRepository;
 import com.runmate.service.exception.NotFoundCrewException;
 import com.runmate.service.exception.NotFoundCrewUserException;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import com.runmate.service.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +34,7 @@ public class CrewUserService {
     }
 
     public void delete(Long crewId, Long deletedCrewUserId, String email) {
-        User deleteRequestUser = userRepository.findByEmail(email);
+        User deleteRequestUser = userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
         Crew crew = crewRepository.findById(crewId).orElseThrow(NotFoundCrewException::new);
 
         CrewUser deletedMember = crewUserRepository.findById(deletedCrewUserId).orElseThrow(NotFoundCrewUserException::new);

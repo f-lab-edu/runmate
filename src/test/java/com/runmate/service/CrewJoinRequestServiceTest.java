@@ -159,7 +159,7 @@ public class CrewJoinRequestServiceTest {
     }
 
     void userRepositoryWillReturnUser(String email, User user) {
-        when(userRepository.findByEmail(email)).thenReturn(user);
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
     }
 
     void crewJoinRequestRepositoryWillReturn(Optional<CrewJoinRequest> request) {

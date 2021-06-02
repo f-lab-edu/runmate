@@ -3,6 +3,7 @@ package com.runmate.service;
 import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import com.runmate.service.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class UserServiceTest {
     @Test
     @Transactional
     public void When_Modify_User_Expect_Remain_UserEmail_modify_UserName() {
-        User user = userRepository.findByEmail(ADDRESS);
+        User user = userRepository.findByEmail(ADDRESS).orElseThrow(NotFoundUserEmailException::new);
 
         UserModificationDto modificationDto = UserModificationDto.builder()
                 .username("modified username")
@@ -33,7 +34,7 @@ public class UserServiceTest {
                 .build();
         userService.modify(user.getEmail(),modificationDto);
 
-        User modifiedUser=userRepository.findByEmail(user.getEmail());
+        User modifiedUser=userRepository.findByEmail(user.getEmail()).orElseThrow(NotFoundUserEmailException::new);
 
         //should modified
         assertEquals(modifiedUser.getUsername(),modificationDto.getUsername());

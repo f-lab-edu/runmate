@@ -6,6 +6,7 @@ import com.runmate.dto.activity.ActivityStatisticsDto;
 import com.runmate.repository.activity.ActivityQueryRepository;
 import com.runmate.repository.activity.ActivityRepository;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import com.runmate.texture.TextureFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ public class ActivityRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        user = userRepository.findByEmail(ADDRESS);
+        user = userRepository.findByEmail(ADDRESS).orElseThrow(NotFoundUserEmailException::new);
     }
 
     @Test
@@ -109,7 +110,7 @@ public class ActivityRepositoryTest {
     void findActivitiesWithPagination() {
         //given
         String email = "sung@sung.com";
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
 
         int offset = 0;
         int limit = 5;
@@ -140,7 +141,7 @@ public class ActivityRepositoryTest {
     void givenNoResultForPage_WhenFindActivitiesWithPagination_ThenReturnEmptyList() {
         //given
         String email = "sung@sung.com";
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
 
         int offset = 3;
         int limit = 5;

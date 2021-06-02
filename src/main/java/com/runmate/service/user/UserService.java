@@ -4,6 +4,8 @@ import com.runmate.dto.AuthRequest;
 import com.runmate.dto.user.UserModificationDto;
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.NotFoundUserEmailException;
+import com.runmate.service.exception.UnAuthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -17,27 +19,30 @@ public class UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public boolean join(User user) {
-        if (user != null && userRepository.findByEmail(user.getEmail()) == null) {
-            userRepository.save(user);
-            return true;
-        }
-        return false;
+    public User join(User user) {
+        userRepository.findByEmail(user.getEmail()).ifPresent(
+                duplicate -> {
+                    throw new IllegalArgumentException("duplicate email for " + duplicate.getEmail());
+                }
+        );
+
+        return userRepository.save(user);
     }
 
-    public boolean login(AuthRequest request) {
-        User user = userRepository.findByEmail(request.getEmail());
-        if (user == null || !user.getPassword().equals(request.getPassword()))
-            return false;
-        return true;
+    public User login(AuthRequest request) {
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(NotFoundUserEmailException::new);
+        if (!user.isMatchedPassword(request.getPassword())) {
+            throw new UnAuthorizedException("email and password are mismatched");
+        }
+        return user;
     }
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
     }
 
     public User modify(String email, UserModificationDto modificationDto) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
         modelMapper.map(modificationDto, user);
         return userRepository.save(user);
     }

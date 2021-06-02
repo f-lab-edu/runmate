@@ -30,7 +30,7 @@ public class CrewJoinRequestService {
     private final CrewRepository crewRepository;
 
     public CrewJoinRequest sendJoinRequest(Long crewId, String email) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
         Crew crew = crewRepository.findById(crewId)
                 .orElseThrow(NotFoundCrewException::new);
 

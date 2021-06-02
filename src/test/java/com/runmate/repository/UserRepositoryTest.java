@@ -2,6 +2,7 @@ package com.runmate.repository;
 
 import com.runmate.domain.user.User;
 import com.runmate.repository.user.UserRepository;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import com.runmate.texture.TextureFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class UserRepositoryTest {
 
     @Test
     public void find() {
-        User user = userRepository.findByEmail("you@you.com");
+        User user = userRepository.findByEmail("you@you.com").orElseThrow(NotFoundUserEmailException::new);
         assertEquals(user.getEmail(), "you@you.com");
         assertEquals(user.getIntroduction(), "메일 뛰자!");
         assertEquals(user.getUsername(), "you");

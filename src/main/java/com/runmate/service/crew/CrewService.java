@@ -11,11 +11,7 @@ import com.runmate.repository.crew.CrewRepository;
 import com.runmate.repository.crew.CrewUserRepository;
 import com.runmate.repository.spec.CrewOrderSpec;
 import com.runmate.repository.user.UserRepository;
-import com.runmate.service.exception.BelongToSomeCrewException;
-import com.runmate.service.exception.GradeLimitException;
-import com.runmate.service.exception.NotFoundCrewException;
-import com.runmate.service.exception.NotFoundCrewUserException;
-import com.runmate.service.exception.UnAuthorizedException;
+import com.runmate.service.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -33,7 +29,7 @@ public class CrewService {
     private final UserRepository userRepository;
 
     public Crew createCrew(Crew crew, String email) {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
 
         checkCanCreateCrew(crew, user);
 
@@ -64,7 +60,7 @@ public class CrewService {
 
     public void deleteCrew(long crewId, String email) {
         Crew crew = crewRepository.findById(crewId).orElseThrow(NotFoundCrewException::new);
-        User deleteRequestedUser = userRepository.findByEmail(email);
+        User deleteRequestedUser = userRepository.findByEmail(email).orElseThrow(NotFoundUserEmailException::new);
 
         CrewUser crewUser = crewUserRepository.findByCrewAndUser(crew, deleteRequestedUser)
                 .orElseThrow(() -> new NotFoundCrewUserException("you are not member of the given crew"));

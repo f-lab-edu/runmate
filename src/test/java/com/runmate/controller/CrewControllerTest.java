@@ -10,6 +10,7 @@ import com.runmate.repository.user.UserRepository;
 import com.runmate.service.crew.CrewJoinRequestService;
 import com.runmate.service.crew.CrewService;
 import com.runmate.service.crew.CrewUserService;
+import com.runmate.service.exception.NotFoundUserEmailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,8 +75,8 @@ class CrewControllerTest {
                 .addFilter(new CharacterEncodingFilter("utf8"))
                 .build();
 
-        noCrewUser = userRepository.findByEmail(NO_CREW_USER_EMAIL);
-        withCrewUser = userRepository.findByEmail(WITH_CREW_USER_EMAIL);
+        noCrewUser = userRepository.findByEmail(NO_CREW_USER_EMAIL).orElseThrow(NotFoundUserEmailException::new);
+        withCrewUser = userRepository.findByEmail(WITH_CREW_USER_EMAIL).orElseThrow(NotFoundUserEmailException::new);
 
         AuthRequest noCrewRequest = new AuthRequest(noCrewUser.getEmail(), noCrewUser.getPassword());
         AuthRequest withCrewRequest = new AuthRequest(withCrewUser.getEmail(), withCrewUser.getPassword());
@@ -94,7 +95,7 @@ class CrewControllerTest {
         return mockMvc.perform(post("/api/auth/local/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(header().exists("Authorization"))
                 .andReturn();
     }
