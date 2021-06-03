@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Transactional
@@ -109,7 +110,6 @@ public class CrewRepositoryTest {
         }
     }
 
-
     @Test
     void When_FindCrewsByLocation_OrderByRunningTime_Expect_OrderByRunningTime() {
         final int offSet = 0;
@@ -136,7 +136,7 @@ public class CrewRepositoryTest {
                 for (int k = 0; k < numOfActivity; k++) {
                     Activity activity = Activity.builder()
                             .distance(1F)
-                            .runningTime(LocalTime.of((k+1), k))
+                            .runningTime(LocalTime.of((k + 1), k))
                             .calories(10)
                             .build();
                     user.completeActivity(activity);
@@ -160,6 +160,30 @@ public class CrewRepositoryTest {
         for (int i = 0; i < result.size(); i++) {
             assertEquals(crewTotalRunningTime.get(i), result.get(i).getTotalRunningSeconds());
         }
+    }
+
+    @Test
+    void When_FindCrewWithNoActivity_Expect_Exist() {
+        final String email="admin@admin.com";
+        final Region region = Region.of().si("MySi").gu("MyGu").build();
+        final int offset = 0, pageSize = 10;
+
+        User adminOfCrew=textureFactory.makeUser(email,true);
+        Crew noActivityCrew = textureFactory.makeCrew(true);
+        CrewUser crewUser=textureFactory.makeCrewUser(noActivityCrew,adminOfCrew,true);
+
+        //when
+        List<CrewGetDto> results = crewQueryRepository.findByLocationWithSorted(region, PageRequest.of(offset, pageSize), CrewOrderSpec.DESC_DISTANCE);
+
+        CrewGetDto crewGetDto = new CrewGetDto(noActivityCrew.getId(), noActivityCrew.getName(), 0, 0L, noActivityCrew.getCreatedAt());
+
+        long count = results.stream()
+                .filter(result -> result.getId().equals(crewGetDto.getId()))
+                .count();
+        assertEquals(1,count);
+
+        assertEquals(0,crewGetDto.getTotalDistance());
+        assertEquals(0,crewGetDto.getTotalRunningSeconds());
     }
 
     void checkSameCrew(Crew expected, Crew result) {
