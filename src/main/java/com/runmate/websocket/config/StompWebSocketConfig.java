@@ -1,4 +1,4 @@
-package com.runmate.configure;
+package com.runmate.websocket.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
