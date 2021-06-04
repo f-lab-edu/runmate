@@ -1,6 +1,11 @@
 package com.runmate.websocket.domain;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public class Position {
-    private float latitude;
-    private float longitude;
+    private final float latitude;
+    private final float longitude;
 }

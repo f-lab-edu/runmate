@@ -1,19 +1,20 @@
 package com.runmate.websocket.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RunningMessage implements Serializable {
+public class RunningMessage {
     private Long teamId;
     private String username;
     private LocalTime averagePace;
     private LocalTime instantaneousPace;
+    @JsonProperty("position")
     private Position position;
 
     public RunningMessage(Long teamId, String username, LocalTime averagePace, LocalTime instantaneousPace, Position position) {

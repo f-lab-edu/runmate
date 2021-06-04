@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class RunmateApplication {
 
     public static void main(String[] args) {
-        System.setProperty("spring.profiles.active", "stomp");
+//        System.setProperty("spring.profiles.active", "stomp");
         SpringApplication.run(RunmateApplication.class, args);
     }
 
