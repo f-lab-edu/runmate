@@ -1,0 +1,15 @@
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation group: 'com.auth0', name: 'java-jwt', version: '3.10.3'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    implementation 'org.flywaydb:flyway-core'
+    implementation group: 'org.json', name: 'json', version: '20160810'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
