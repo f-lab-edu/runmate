@@ -1,6 +1,6 @@
-package com.runmate.service.exception;
+package com.runmate.exception;
 
-public class NotFoundEntityException extends BusinessException {
+public class NotFoundEntityException extends RuntimeException {
     public NotFoundEntityException() {
     }
 

@@ -1,5 +1,6 @@
 package com.runmate.controller.exception;
 
+import com.runmate.exception.*;
 import com.runmate.service.exception.*;
 import com.runmate.utils.JsonWrapper;
 import org.springframework.http.HttpStatus;

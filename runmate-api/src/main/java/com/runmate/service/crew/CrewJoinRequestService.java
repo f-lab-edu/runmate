@@ -6,6 +6,7 @@ import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.crew.Role;
 import com.runmate.domain.user.User;
 import com.runmate.dto.crew.CrewJoinRequestGetDto;
+import com.runmate.exception.*;
 import com.runmate.repository.crew.CrewJoinRequestRepository;
 import com.runmate.repository.crew.CrewRepository;
 import com.runmate.repository.crew.CrewUserRepository;

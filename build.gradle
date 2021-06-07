@@ -29,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
@@ -87,6 +88,12 @@ project(':runmate-domain'){
 
 }
 project(":runmate-api"){
+    dependencies {
+        compile project(':runmate-domain')
+        testCompile project(':runmate-domain')
+    }
+}
+project(":runmate-websocket"){
     dependencies {
         compile project(':runmate-domain')
     }

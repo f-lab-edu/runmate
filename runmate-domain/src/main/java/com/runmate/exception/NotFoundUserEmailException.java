@@ -1,4 +1,4 @@
-package com.runmate.service.exception;
+package com.runmate.exception;
 
 public class NotFoundUserEmailException extends NotFoundEntityException {
 
