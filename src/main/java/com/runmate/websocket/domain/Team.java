@@ -23,13 +23,14 @@ public class Team {
     @Column(name = "target_distance")
     private float targetDistance;
 
-    @Column(name = "average_pace")
-    private LocalTime averagePace;
+    @Column(name = "target_pace")
+    private LocalTime targetPace;
 
     @Builder
-    public Team(String title, float targetDistance, LocalTime averagePace) {
+    public Team(Long id, String title, float targetDistance, LocalTime targetPace) {
+        this.id = id;
         this.title = title;
         this.targetDistance = targetDistance;
-        this.averagePace = averagePace;
+        this.targetPace = targetPace;
     }
 }
