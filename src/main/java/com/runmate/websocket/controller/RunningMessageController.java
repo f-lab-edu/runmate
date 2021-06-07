@@ -1,24 +1,23 @@
 package com.runmate.websocket.controller;
 
 import com.runmate.websocket.domain.RunningMessage;
-import com.runmate.websocket.service.DummyAlarmService;
+import com.runmate.websocket.service.AlertService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 @Controller
 @RequiredArgsConstructor
 public class RunningMessageController {
-    private final DummyAlarmService alarmService;
+    private final AlertService alarmService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/running")
-    public void message(RunningMessage message){
-        if(alarmService.determineSendToAllUsers(message)){
-            simpMessagingTemplate.convertAndSend("/topic/"+message.getTeamId(),message);
-        }
+    public void sendOwnInfo(RunningMessage message) {
+        Long teamId = message.getTeamId();
+        alarmService.sendAlert(simpMessagingTemplate, message,
+                (messagingTemplate, alertMessage) -> messagingTemplate.convertAndSend("/topic/alert/" + teamId, alertMessage));
+        simpMessagingTemplate.convertAndSend("/topic/info/" + teamId, message);
     }
 }
