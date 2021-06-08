@@ -1,7 +1,6 @@
 package com.runmate.security.jwtUtils;
 
 import com.runmate.configure.jwt.JwtProvider;
-import com.runmate.domain.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,23 +14,15 @@ public class JwtUtilsTests {
 
     @Test
     public void createTokenAndValidate() {
-        User user = User.of()
-                .email("anny@anny.com")
-                .build();
-
-        String token = jwtProvider.createToken(user.getEmail());
-        System.out.println(token);
-
+        final String email = "anny@anny.com";
+        String token = jwtProvider.createToken(email);
         assertEquals(jwtProvider.validate(token), true);
     }
 
     @Test
     public void getClaim() {
-        User user = User.of()
-                .email("anny@anny.com")
-                .build();
-
-        String token = jwtProvider.createToken(user.getEmail());
-        assertEquals(jwtProvider.getClaim(token), user.getEmail());
+        final String email = "anny@anny.com";
+        String token = jwtProvider.createToken(email);
+        assertEquals(jwtProvider.getClaim(token), email);
     }
 }

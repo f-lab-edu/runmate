@@ -26,9 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             UnAuthorizedException.class,
-            DuplicatedCrewJoinRequestToSameCrewException.class,
-            BelongToSomeCrewException.class,
-            GradeLimitException.class
+            InvalidValueException.class
     })
     public ResponseEntity<JsonWrapper> handleForbiddenException(RuntimeException e) {
         return ResponseEntity
@@ -37,9 +35,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            NotFoundCrewUserException.class,
-            NotFoundCrewException.class,
-            NotFoundCrewJoinRequestException.class,
+            NotFoundEntityException.class,
             IllegalArgumentException.class
     })
     public ResponseEntity<JsonWrapper> handleNotFoundException(RuntimeException e) {
