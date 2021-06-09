@@ -1,1 +1,5 @@
 rootProject.name = 'runmate'
+include 'runmate-domain'
+include 'runmate-api'
+include 'runmate-websocket'
+

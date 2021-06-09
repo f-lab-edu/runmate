@@ -29,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
@@ -62,16 +63,38 @@ clean.doLast {
 test {
     useJUnitPlatform()
 }
-flyway {
-    url = 'jdbc:mysql://localhost:3306/runmate?serverTimezone=Asia/Seoul&characterEncoding=utf8'
-    user = 'root'
-    password = '3504httdA*'
-    schemas = ['runmate']
-    placeholders = [
-            'keyABC': 'valueXYZ',
-            'otherplaceholder': 'value123'
-    ]
-    encoding = 'UTF8'
-    table = 'flyway_migration_history'
-    driver = "com.mysql.cj.jdbc.Driver"
+
+
+subprojects {
+    group = 'com.runmate'
+    version = '0.0.1-SNAPSHOT'
+
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
+project(':runmate-domain'){
+
+}
+project(":runmate-api"){
+    dependencies {
+        compile project(':runmate-domain')
+        testCompile project(':runmate-domain')
+    }
+}
+project(":runmate-websocket"){
+    dependencies {
+        compile project(':runmate-domain')
+    }
 }

@@ -1,0 +1,65 @@
+<html>
+<head>
+    <title>Chat WebSocket</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.2/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+teamId:<input type="text" name="teamId" id="teamId"><br>
+<button id="btnEnter">입장</button>
+
+
+
+<form id="messageForm">
+    username:<input type="text" name="username" id="username"><br>
+    latitude:<input type="text" name="latitude" id="latitude"><br>
+    longitude:<input type="text" name="longitude" id="longitude">
+
+    <input type="submit" value="send message">
+</form>
+<div id="messageWindow">
+
+</div>
+
+<script type="text/javascript">
+    const messageForm= document.getElementById('messageForm');
+    const messageWindow=document.getElementById('messageWindow');
+    const btnEnter=document.getElementById('btnEnter');
+    var stompClient = null;
+
+    messageForm.addEventListener("submit", e => {
+        e.preventDefault();
+        const teamId=document.getElementById('teamId').value;
+        const username=document.getElementById('username').value;
+        const latitude=document.getElementById('latitude').value;
+        const longitude=document.getElementById('longitude').value;
+
+        const jsonValue=JSON.stringify({teamId:teamId, username:username, position:{latitude:latitude,longitude:longitude}})
+        stompClient.send('/app/running', {}, jsonValue);
+    });
+
+    function renderItem(jsonItem){
+        const divEl=document.createElement('div')
+        divEl.innerText='From:'+jsonItem.username+", pos:("+jsonItem.position.latitude+","+jsonItem.position.longitude+")";
+        messageWindow.appendChild(divEl);
+    }
+
+    btnEnter.addEventListener("click", ev => {
+        console.log("start");
+        function connect() {
+            var socket = new SockJS('/crew-running');
+            stompClient = Stomp.over(socket);
+
+            const teamId=document.getElementById('teamId');
+            stompClient.connect({}, function(frame) {
+                stompClient.subscribe('/topic/'+teamId.value, function(messageOutput) {
+                    const jsonResult=JSON.parse(messageOutput.body);
+                    renderItem(jsonResult);
+                });
+            });
+        }
+        connect();
+    });
+</script>
+</body>
+</html>
