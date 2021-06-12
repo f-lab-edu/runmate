@@ -25,9 +25,9 @@ public class Result {
     private CompleteStatus completeStatus;
 
     @Builder
-    public Result(float totalDistance, long totalRunningSeconds) {
+    public Result(float totalDistance, long totalRunningSeconds, CompleteStatus status) {
         this.totalDistance = totalDistance;
         this.totalRunningSeconds = totalRunningSeconds;
-        this.completeStatus = CompleteStatus.FAIL;
+        this.completeStatus = status;
     }
 }
