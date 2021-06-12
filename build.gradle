@@ -5,6 +5,9 @@ plugins {
     id "org.flywaydb.flyway" version "7.8.1"
 }
 
+apply plugin: 'application'
+mainClassName = 'com.runmate.RunmateApplication'
+
 group = 'com.runmate'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
