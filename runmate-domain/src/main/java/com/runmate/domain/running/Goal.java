@@ -1,9 +1,6 @@
 package com.runmate.domain.running;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
@@ -13,6 +10,7 @@ import java.time.LocalDateTime;
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@EqualsAndHashCode
 public class Goal {
     @Column(name = "goal_total_distance")
     private float totalDistance;
