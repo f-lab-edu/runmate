@@ -29,10 +29,6 @@ public class Team {
     @Embedded
     private Result result;
 
-    @Column(name = "created_at")
-    @CreatedDate
-    private LocalDateTime createdAt;
-
     @Builder
     public Team(String title, Goal goal, Result result) {
         this.title = title;
