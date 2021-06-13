@@ -12,7 +12,9 @@ create table team(
 create table team_member(
     id bigint primary key auto_increment,
     crew_user_id bigint not null,
-    team_id bigint not null
+    team_id bigint not null,
+    individual_distance float(10,3) not null,
+    individual_running_seconds bigint not null
 )default character set utf8;
 alter table team_member
     ADD FOREIGN KEY(crew_user_id) REFERENCES crew_user(id);

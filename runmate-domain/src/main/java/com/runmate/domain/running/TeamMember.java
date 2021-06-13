@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="team_member")
+@Table(name = "team_member")
 public class TeamMember {
     @Id
     @Column(name = "id")
@@ -26,9 +26,13 @@ public class TeamMember {
     @ManyToOne
     private Team team;
 
+    @Embedded
+    private IndividualResult result;
+
     @Builder
-    public TeamMember(CrewUser crewUser, Team team) {
+    public TeamMember(CrewUser crewUser, Team team, IndividualResult result) {
         this.crewUser = crewUser;
         this.team = team;
+        this.result = result;
     }
 }

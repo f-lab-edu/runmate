@@ -2,10 +2,7 @@ package com.runmate.repository;
 
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
-import com.runmate.domain.running.Goal;
-import com.runmate.domain.running.Result;
-import com.runmate.domain.running.Team;
-import com.runmate.domain.running.TeamMember;
+import com.runmate.domain.running.*;
 import com.runmate.domain.user.User;
 import com.runmate.repository.running.TeamMemberRepository;
 import com.runmate.repository.running.TeamRepository;
@@ -60,10 +57,16 @@ public class TeamMemberRepositoryTest {
 
     @Test
     public void When_SaveAndGet() {
+        IndividualResult individualResult = IndividualResult.builder()
+                .totalDistance(3.4F)
+                .totalRunningSeconds(12000)
+                .build();
+
         final int numOfTeamMemberBeforeSave = teamMemberRepository.findAll().size();
         TeamMember teamMember = TeamMember.builder()
                 .team(team)
                 .crewUser(crewUser)
+                .result(individualResult)
                 .build();
         teamMemberRepository.save(teamMember);
 
@@ -78,5 +81,6 @@ public class TeamMemberRepositoryTest {
         assertEquals(one.getId(), another.getId());
         assertEquals(one.getTeam().getId(), another.getTeam().getId());
         assertEquals(one.getCrewUser().getId(), another.getCrewUser().getId());
+        assertEquals(one.getResult(), another.getResult());
     }
 }
