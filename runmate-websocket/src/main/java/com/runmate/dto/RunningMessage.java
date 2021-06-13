@@ -1,6 +1,7 @@
-package com.runmate.domain.running;
+package com.runmate.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.runmate.domain.running.Position;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

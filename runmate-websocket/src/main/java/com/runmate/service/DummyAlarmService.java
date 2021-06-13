@@ -1,6 +1,6 @@
 package com.runmate.service;
 
-import com.runmate.domain.running.RunningMessage;
+import com.runmate.dto.RunningMessage;
 import org.springframework.stereotype.Service;
 
 @Service
