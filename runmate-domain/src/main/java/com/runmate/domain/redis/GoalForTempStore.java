@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import static java.time.LocalDateTime.now;
 
 @Getter
 @NoArgsConstructor
@@ -25,21 +24,7 @@ public class GoalForTempStore {
         this.startedAt = startedAt;
     }
 
-    public boolean isGoalSuccess(float runningDistance) {
-        LocalDateTime current = now();
-        LocalDateTime endTime = calcEndTime();
-        if (current.isEqual(endTime) || current.isAfter(endTime)) {
-            return runningDistance >= getDistance();
-        }
-        return false;
-    }
-
-    public boolean isTimeOver() {
-        LocalDateTime endTime = calcEndTime();
-        return now().isAfter(endTime);
-    }
-
-    private LocalDateTime calcEndTime() {
+    public LocalDateTime calcEndTime() {
         return startedAt.plus(getRunningSeconds(), ChronoUnit.SECONDS);
     }
 }

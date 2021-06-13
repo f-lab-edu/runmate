@@ -11,6 +11,8 @@ import org.springframework.data.redis.core.RedisHash;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RedisHash("running:team")
@@ -43,5 +45,17 @@ public class TeamInfo {
     public float increaseTotalDistance(float distance) {
         this.totalDistance += distance;
         return this.totalDistance;
+    }
+
+    public boolean isSuccessOnRunning() {
+        return !isTimeOver() && totalDistance >= goal.getDistance();
+    }
+
+    public boolean isTimeOver() {
+        return now().isAfter(goal.calcEndTime());
+    }
+
+    public boolean isFailOnRunning() {
+        return isTimeOver() && totalDistance < goal.getDistance();
     }
 }
