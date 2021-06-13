@@ -1,7 +1,5 @@
 package com.runmate.domain.redis;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.runmate.domain.running.Goal;
 import com.runmate.exception.AdminNotIncludedException;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,10 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-import static java.time.LocalDateTime.*;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,8 +40,8 @@ public class TeamInfo {
                 .orElseThrow(AdminNotIncludedException::new);
     }
 
-    public float increaseTotalDistance(MemberInfo memberInfo) {
-        this.totalDistance += memberInfo.getTotalDistance();
+    public float increaseTotalDistance(float distance) {
+        this.totalDistance += distance;
         return this.totalDistance;
     }
 }
