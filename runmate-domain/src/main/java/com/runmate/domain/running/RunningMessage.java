@@ -16,12 +16,14 @@ public class RunningMessage {
     private LocalTime instantaneousPace;
     @JsonProperty("position")
     private Position position;
+    private float distance;
 
-    public RunningMessage(Long teamId, String username, LocalTime averagePace, LocalTime instantaneousPace, Position position) {
+    public RunningMessage(Long teamId, String username, LocalTime averagePace, LocalTime instantaneousPace, Position position, float distance) {
         this.teamId = teamId;
         this.username = username;
         this.averagePace = averagePace;
         this.instantaneousPace = instantaneousPace;
         this.position = position;
+        this.distance = distance;
     }
 }
