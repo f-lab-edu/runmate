@@ -20,7 +20,7 @@ public class Goal {
 
     @Column(name = "goal_started_at")
     @CreatedDate
-    private LocalDateTime started_at;
+    private LocalDateTime startedAt;
 
     @Builder
     public Goal(float totalDistance, long totalRunningSeconds) {
