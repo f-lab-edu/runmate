@@ -1,5 +1,6 @@
 package com.runmate.domain.redis;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.runmate.domain.running.Goal;
 import com.runmate.exception.AdminNotIncludedException;
 import lombok.AccessLevel;
@@ -25,14 +26,16 @@ public class TeamInfo {
     private List<Long> members = new ArrayList<>();
     private float totalDistance;
     private long adminId;
+    private GoalForTempStore goal;
 
     @Builder
-    public TeamInfo(long teamId, List<Long> members, long adminId) {
+    public TeamInfo(long teamId, List<Long> members, long adminId, GoalForTempStore goal) {
         checkAdminIncludeInMembers(members, adminId);
 
         this.teamId = teamId;
         this.members = members;
         this.adminId = adminId;
+        this.goal = goal;
         this.totalDistance = 0;
     }
 
@@ -46,14 +49,5 @@ public class TeamInfo {
     public float increaseTotalDistance(MemberInfo memberInfo) {
         this.totalDistance += memberInfo.getTotalDistance();
         return this.totalDistance;
-    }
-
-    public boolean isGoalSuccess(Goal goal) {
-        LocalDateTime current = now();
-        LocalDateTime endTime = goal.getStarted_at().plus(goal.getTotalRunningSeconds(), ChronoUnit.SECONDS);
-        if (current.isEqual(endTime) || current.isAfter(endTime)) {
-            return totalDistance >= goal.getTotalDistance();
-        }
-        return false;
     }
 }
