@@ -27,10 +27,19 @@ public class GoalForTempStore {
 
     public boolean isGoalSuccess(float runningDistance) {
         LocalDateTime current = now();
-        LocalDateTime endTime = startedAt.plus(getRunningSeconds(), ChronoUnit.SECONDS);
+        LocalDateTime endTime = calcEndTime();
         if (current.isEqual(endTime) || current.isAfter(endTime)) {
             return runningDistance >= getDistance();
         }
         return false;
+    }
+
+    public boolean isTimeOver() {
+        LocalDateTime endTime = calcEndTime();
+        return now().isAfter(endTime);
+    }
+
+    private LocalDateTime calcEndTime() {
+        return startedAt.plus(getRunningSeconds(), ChronoUnit.SECONDS);
     }
 }
