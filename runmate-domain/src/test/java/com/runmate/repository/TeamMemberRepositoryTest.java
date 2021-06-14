@@ -38,14 +38,8 @@ public class TeamMemberRepositoryTest {
                 .totalRunningSeconds(30000)
                 .build();
 
-        Result result = Result.builder()
-                .totalDistance(3.4F)
-                .totalRunningSeconds(30000)
-                .build();
-
         team = Team.builder()
                 .goal(goal)
-                .result(result)
                 .title("let' go")
                 .build();
         teamRepository.save(team);

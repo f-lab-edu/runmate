@@ -27,10 +27,6 @@ public class TeamRepositoryTest {
                 .totalRunningSeconds(160000)
                 .totalDistance(42.195F)
                 .build();
-        result = Result.builder()
-                .totalDistance(46.195F)
-                .totalRunningSeconds(130000)
-                .build();
     }
 
     @Test
@@ -39,7 +35,6 @@ public class TeamRepositoryTest {
 
         Team team = Team.builder()
                 .goal(goal)
-                .result(result)
                 .title("ok go")
                 .build();
         teamRepository.save(team);

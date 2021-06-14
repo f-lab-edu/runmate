@@ -30,9 +30,12 @@ public class Team {
     private Result result;
 
     @Builder
-    public Team(String title, Goal goal, Result result) {
+    public Team(String title, Goal goal) {
         this.title = title;
         this.goal = goal;
+    }
+
+    public void decideResult() {
         this.result = result;
     }
 }
