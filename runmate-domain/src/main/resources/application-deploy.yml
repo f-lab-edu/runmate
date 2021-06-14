@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://runmate-mysql.cxt1mahwxj0j.ap-northeast-2.rds.amazonaws.com:3306/runmate?serverTimezone=Asia/Seoul&characterEncoding=utf8
+    username: admin
+    password: 3504httdA*
+
+  flyway:
+    url: jdbc:mysql://runmate-mysql.cxt1mahwxj0j.ap-northeast-2.rds.amazonaws.com:3306/runmate?serverTimezone=Asia/Seoul&characterEncoding=utf8
+    user: admin
+    password: 3504httdA*
+    schemas: runmate
+    encoding: UTF-8
+    table: flyway_migration_history
+
+  jpa:
+    hibernate:
+      ddl-auto: none #create update none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
