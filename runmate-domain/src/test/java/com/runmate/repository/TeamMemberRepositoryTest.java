@@ -51,16 +51,10 @@ public class TeamMemberRepositoryTest {
 
     @Test
     public void When_SaveAndGet() {
-        IndividualResult individualResult = IndividualResult.builder()
-                .totalDistance(3.4F)
-                .totalRunningSeconds(12000)
-                .build();
-
         final int numOfTeamMemberBeforeSave = teamMemberRepository.findAll().size();
         TeamMember teamMember = TeamMember.builder()
                 .team(team)
                 .crewUser(crewUser)
-                .result(individualResult)
                 .build();
         teamMemberRepository.save(teamMember);
 
