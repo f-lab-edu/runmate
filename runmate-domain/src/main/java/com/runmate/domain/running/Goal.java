@@ -19,12 +19,12 @@ public class Goal {
     private long totalRunningSeconds;
 
     @Column(name = "goal_started_at")
-    @CreatedDate
     private LocalDateTime startedAt;
 
     @Builder
-    public Goal(float totalDistance, long totalRunningSeconds) {
+    public Goal(float totalDistance, long totalRunningSeconds, LocalDateTime startedAt) {
         this.totalDistance = totalDistance;
         this.totalRunningSeconds = totalRunningSeconds;
+        this.startedAt = startedAt;
     }
 }
