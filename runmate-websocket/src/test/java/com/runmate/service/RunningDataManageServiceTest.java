@@ -14,8 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class RunningDataManageServiceTest {
@@ -74,5 +75,45 @@ public class RunningDataManageServiceTest {
         //then
         assertEquals(memberDistanceBeforeIncrease + runningMessage.getDistance(), memberInfo.getTotalDistance());
         assertEquals(teamDistanceBeforeIncrease + runningMessage.getDistance(), teamInfo.getTotalDistance());
+    }
+
+    @Test
+    void When_clearRunningData_Expect_AllRunningDataDeleted() {
+        //given
+        final int numOfMembers = 5;
+        final long teamId = 7L;
+        final long adminId = 0L;
+        List<Long> memberIds = Arrays.asList(0L, 1L, 2L, 3L, 4L);
+
+        memberIds.forEach(memberId -> {
+            MemberInfo memberInfo = MemberInfo.builder()
+                    .memberId(memberId)
+                    .teamId(teamId)
+                    .build();
+            memberInfoRepository.save(memberInfo);
+        });
+        GoalForTempStore goal = GoalForTempStore.builder()
+                .runningSeconds(3600)
+                .startedAt(LocalDateTime.now())
+                .distance(10.0F)
+                .build();
+
+        TeamInfo teamInfo = TeamInfo.builder()
+                .members(memberIds)
+                .teamId(teamId)
+                .adminId(adminId)
+                .goal(goal)
+                .build();
+        teamInfoRepository.save(teamInfo);
+
+        //when
+        runningDataManageService.clearAllRunningData(teamId);
+
+        //then
+        memberIds.forEach(memberId -> {
+            assertFalse(memberInfoRepository.findById(memberId).isPresent());
+        });
+
+        assertFalse(teamInfoRepository.findById(teamId).isPresent());
     }
 }

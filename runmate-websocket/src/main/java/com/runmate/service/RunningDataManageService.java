@@ -36,4 +36,18 @@ public class RunningDataManageService {
         teamInfo.increaseTotalDistance(message.getDistance());
         teamInfoRepository.save(teamInfo);
     }
+
+    public void clearAllRunningData(long teamId) {
+        TeamInfo teamInfo = teamInfoRepository.findById(teamId)
+                .orElseThrow(NotFoundTeamInfoException::new);
+
+        teamInfo.getMembers()
+                .forEach(memberId -> {
+                    MemberInfo memberInfo = memberInfoRepository.findById(memberId)
+                            .orElseThrow(NotFoundMemberInfoException::new);
+
+                    memberInfoRepository.delete(memberInfo);
+                });
+        teamInfoRepository.delete(teamInfo);
+    }
 }
