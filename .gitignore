@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### QClass for QueryDsl
-src/main/generated
+/runmate-domain/src/main/generated
