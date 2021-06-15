@@ -4,13 +4,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "team")
 public class Team {
     @Id
     @Column(name = "id")
@@ -20,16 +23,19 @@ public class Team {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "target_distance")
-    private float targetDistance;
+    @Embedded
+    private Goal goal;
 
-    @Column(name = "average_pace")
-    private LocalTime averagePace;
+    @Embedded
+    private Result result;
 
     @Builder
-    public Team(String title, float targetDistance, LocalTime averagePace) {
+    public Team(String title, Goal goal) {
         this.title = title;
-        this.targetDistance = targetDistance;
-        this.averagePace = averagePace;
+        this.goal = goal;
+    }
+
+    public void decideResult() {
+        this.result = result;
     }
 }

@@ -1,7 +1,7 @@
 package com.runmate.controller;
 
 import com.runmate.service.DummyAlarmService;
-import com.runmate.domain.running.RunningMessage;
+import com.runmate.dto.RunningMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
