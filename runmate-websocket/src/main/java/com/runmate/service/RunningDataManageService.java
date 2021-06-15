@@ -7,7 +7,6 @@ import com.runmate.exception.NotFoundMemberInfoException;
 import com.runmate.exception.NotFoundTeamInfoException;
 import com.runmate.repository.redis.MemberInfoRepository;
 import com.runmate.repository.redis.TeamInfoRepository;
-import com.runmate.repository.running.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class UpdateRunningDataService {
+public class RunningDataManageService {
     private final TeamInfoRepository teamInfoRepository;
     private final MemberInfoRepository memberInfoRepository;
 

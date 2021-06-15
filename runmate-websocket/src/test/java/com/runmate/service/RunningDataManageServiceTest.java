@@ -3,7 +3,6 @@ package com.runmate.service;
 import com.runmate.domain.redis.GoalForTempStore;
 import com.runmate.domain.redis.MemberInfo;
 import com.runmate.domain.redis.TeamInfo;
-import com.runmate.domain.running.Goal;
 import com.runmate.domain.running.Position;
 import com.runmate.dto.RunningMessage;
 import com.runmate.repository.redis.MemberInfoRepository;
@@ -19,9 +18,9 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-public class UpdateRunningDataServiceTest {
+public class RunningDataManageServiceTest {
     @Autowired
-    UpdateRunningDataService updateRunningDataService;
+    RunningDataManageService runningDataManageService;
     @Autowired
     MemberInfoRepository memberInfoRepository;
     @Autowired
@@ -67,7 +66,7 @@ public class UpdateRunningDataServiceTest {
         final float memberDistanceBeforeIncrease = memberInfo.getTotalDistance();
         final float teamDistanceBeforeIncrease = teamInfo.getTotalDistance();
         //when
-        updateRunningDataService.updateRunningData(runningMessage);
+        runningDataManageService.updateRunningData(runningMessage);
 
         memberInfo = memberInfoRepository.findById(memberId).get();
         teamInfo = teamInfoRepository.findById(teamId).get();
