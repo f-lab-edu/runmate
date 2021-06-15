@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UpdateRunningDataService {
     private final TeamInfoRepository teamInfoRepository;
     private final MemberInfoRepository memberInfoRepository;
-    private final TeamRepository teamRepository;
 
     public void updateRunningData(RunningMessage message) {
         updateMemberInfo(message);
