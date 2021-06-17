@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class TeamInfo {
     private float totalDistance;
     private long adminId;
     private GoalForTempStore goal;
+    private long runningSeconds;
 
     @Builder
     public TeamInfo(long teamId, List<Long> members, long adminId, GoalForTempStore goal) {
@@ -33,6 +35,7 @@ public class TeamInfo {
         this.adminId = adminId;
         this.goal = goal;
         this.totalDistance = 0;
+        this.runningSeconds = 0;
     }
 
     private void checkAdminIncludeInMembers(List<Long> members, long adminId) {
@@ -44,7 +47,12 @@ public class TeamInfo {
 
     public float increaseTotalDistance(float distance) {
         this.totalDistance += distance;
+        updateRunningSeconds();
         return this.totalDistance;
+    }
+
+    private void updateRunningSeconds() {
+        this.runningSeconds = Duration.between(now(), this.goal.getStartedAt()).getSeconds();
     }
 
     public boolean isSuccessOnRunning() {
