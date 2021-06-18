@@ -1,17 +1,20 @@
 package com.runmate.dto;
 
+import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.activity.Activity;
 import com.runmate.dto.activity.ActivityCreationDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 public class ActivityDtoMapperTest {
     static final ModelMapper modelMapper = new ModelMapper();
 

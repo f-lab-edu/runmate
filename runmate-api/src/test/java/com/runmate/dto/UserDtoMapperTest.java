@@ -1,5 +1,6 @@
 package com.runmate.dto;
 
+import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.user.Region;
 import com.runmate.domain.user.User;
 import com.runmate.dto.user.UserCreationDto;
@@ -13,11 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
+@ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 public class UserDtoMapperTest {
     @Autowired
     UserRepository userRepository;
