@@ -52,7 +52,7 @@ public class TeamInfo {
     }
 
     private void updateRunningSeconds() {
-        this.runningSeconds = Duration.between(now(), this.goal.getStartedAt()).getSeconds();
+        this.runningSeconds = Duration.between(this.goal.getStartedAt(), now()).getSeconds();
     }
 
     public boolean isSuccessOnRunning() {
@@ -60,7 +60,7 @@ public class TeamInfo {
     }
 
     public boolean isTimeOver() {
-        return now().isAfter(goal.calcEndTime());
+        return goal.getRunningSeconds() < this.runningSeconds;
     }
 
     public boolean isFailOnRunning() {
