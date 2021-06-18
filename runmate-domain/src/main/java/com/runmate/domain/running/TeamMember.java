@@ -39,7 +39,10 @@ public class TeamMember {
                 .build();
     }
 
-    public void decideResult(IndividualResult result) {
-        this.result = result;
+    public void decideResult(Long runningSeconds, float distance) {
+        this.result = IndividualResult.builder()
+                .totalDistance(distance)
+                .totalRunningSeconds(runningSeconds)
+                .build();
     }
 }
