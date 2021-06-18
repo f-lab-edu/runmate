@@ -1,5 +1,6 @@
 package com.runmate.service;
 
+import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.user.User;
 import com.runmate.dto.user.UserModificationDto;
 import com.runmate.repository.user.UserRepository;
@@ -7,12 +8,14 @@ import com.runmate.service.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import com.runmate.exception.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 public class UserServiceTest {
     @Autowired
     UserService userService;

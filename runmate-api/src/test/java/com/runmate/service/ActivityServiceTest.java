@@ -1,5 +1,6 @@
 package com.runmate.service;
 
+import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.activity.Activity;
 import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.User;
@@ -13,6 +14,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 
 @SpringBootTest
+@ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 public class ActivityServiceTest {
     private static final int CURRENT_YEAR = LocalDateTime.now().getYear();
     private static final Month CURRENT_MONTH = LocalDateTime.now().getMonth();

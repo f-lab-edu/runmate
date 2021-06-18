@@ -1,6 +1,7 @@
 package com.runmate.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.runmate.TestActiveProfilesResolver;
 import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.domain.user.User;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 public class UserControllerTest {
     MockMvc mockMvc;
     @Autowired

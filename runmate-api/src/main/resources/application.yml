@@ -1,3 +1,4 @@
+# common
 spring:
   profiles:
     include:
@@ -27,3 +28,8 @@ jwt:
   secretKey: 3q$.5pdz4563!2aghkz
   expire: 600000
 
+---
+spring.config.activate.on-profile: local
+
+---
+spring.config.activate.on-profile: prod
