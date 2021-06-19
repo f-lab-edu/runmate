@@ -1,16 +1,17 @@
 package com.runmate.repository.redis;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.runmate.domain.redis.GoalForTempStore;
 import com.runmate.domain.redis.TeamInfo;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +24,11 @@ public class TeamInfoRepositoryTest {
     TeamInfoRepository teamInfoRepository;
     GoalForTempStore goal;
 
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
     @BeforeEach
     void setUp() {
         goal = GoalForTempStore.builder()
@@ -33,8 +39,7 @@ public class TeamInfoRepositoryTest {
     }
 
     @Test
-    void When_SaveAndFind_TeamInfo_Expect_SameObject() {
-        //when
+    void when_SaveAndFind_WithJacksonSerializer() {
         List<Long> memberIds = Arrays.asList(2L, 3L, 6L);
         TeamInfo teamInfo = TeamInfo.builder()
                 .teamId(2L)
@@ -42,11 +47,15 @@ public class TeamInfoRepositoryTest {
                 .members(memberIds)
                 .goal(goal)
                 .build();
-        teamInfoRepository.save(teamInfo);
 
-        //then
-        TeamInfo result = teamInfoRepository.findById(teamInfo.getTeamId()).get();
+        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
+        ops.set("running:team:" + teamInfo.getTeamId(), teamInfo);
+        redisTemplate.exec();
+
+        TeamInfo result = objectMapper.convertValue(ops.get("running:team:" + teamInfo.getTeamId()), TeamInfo.class);
         checkSameTeamInfo(teamInfo, result);
+
+        redisTemplate.delete("running:team:"+teamInfo.getTeamId());
     }
 
     void checkSameTeamInfo(TeamInfo one, TeamInfo another) {

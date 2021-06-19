@@ -1,5 +1,6 @@
 package com.runmate.domain.redis;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.runmate.exception.AdminNotIncludedException;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,15 +55,15 @@ public class TeamInfo {
     private void updateRunningSeconds() {
         this.runningSeconds = Duration.between(this.goal.getStartedAt(), now()).getSeconds();
     }
-
+    @JsonIgnore
     public boolean isSuccessOnRunning() {
         return !isTimeOver() && totalDistance >= goal.getDistance();
     }
-
+    @JsonIgnore
     public boolean isTimeOver() {
         return goal.getRunningSeconds() < this.runningSeconds;
     }
-
+    @JsonIgnore
     public boolean isFailOnRunning() {
         return isTimeOver() && totalDistance < goal.getDistance();
     }
