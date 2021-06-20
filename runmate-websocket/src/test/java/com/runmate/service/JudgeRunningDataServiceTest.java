@@ -7,6 +7,8 @@ import com.runmate.repository.redis.TeamInfoRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -21,12 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JudgeRunningDataServiceTest {
     @Autowired
     JudgeRunningDataService judgeRunningDataService;
-    @Autowired
-    TeamInfoRepository teamInfoRepository;
+
     @Autowired
     MemberInfoRepository memberInfoRepository;
+    @Autowired
+    TeamInfoRepository teamInfoRepository;
 
-    List<Long> memberIds = Arrays.asList(1L, 2L, 3L);
+    private static final String memberKey = "running:member";
+    private static final String teamKey = "running:team";
+
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
 
     @Test
     void When_SuccessOnRunning_Expect_True() {
@@ -38,16 +45,13 @@ public class JudgeRunningDataServiceTest {
                 .startedAt(startedAt)
                 .build();
         TeamInfo teamInfo = TeamInfo.builder()
-                .members(memberIds)
                 .teamId(1L)
                 .goal(goal)
                 .adminId(1L)
                 .build();
-
         teamInfo.increaseTotalDistance(2.1F);
 
         teamInfoRepository.save(teamInfo);
-
         //then
         assertEquals(true, judgeRunningDataService.isTeamSuccessOnRunning(teamInfo.getTeamId()));
     }
@@ -62,12 +66,10 @@ public class JudgeRunningDataServiceTest {
                 .startedAt(startedAt)
                 .build();
         TeamInfo teamInfo = TeamInfo.builder()
-                .members(memberIds)
                 .teamId(1L)
                 .goal(goal)
                 .adminId(1L)
                 .build();
-
         teamInfo.increaseTotalDistance(1.9F);
 
         teamInfoRepository.save(teamInfo);
@@ -86,12 +88,10 @@ public class JudgeRunningDataServiceTest {
                 .startedAt(startedAt)
                 .build();
         TeamInfo teamInfo = TeamInfo.builder()
-                .members(memberIds)
                 .teamId(1L)
                 .goal(goal)
                 .adminId(1L)
                 .build();
-
         teamInfo.increaseTotalDistance(1.9F);
 
         teamInfoRepository.save(teamInfo);
