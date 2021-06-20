@@ -35,9 +35,12 @@ public class TeamInfoRepositoryTest {
                 .build();
 
         teamInfoRepository.save(teamInfo);
+        redisTemplate.exec();
 
         TeamInfo result = teamInfoRepository.findById(teamInfo.getTeamId()).orElse(null);
         checkSameTeamInfo(teamInfo, result);
+
+        redisTemplate.delete(TeamInfoRepository.teamKey + ":" + result.getTeamId());
     }
 
     void checkSameTeamInfo(TeamInfo one, TeamInfo another) {

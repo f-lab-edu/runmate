@@ -17,17 +17,10 @@ public class TeamInfoRepository {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public TeamInfo save(TeamInfo teamInfo) {
-        redisTemplate.multi();
-        try {
-            ValueOperations<String, Object> ops = redisTemplate.opsForValue();
-            ops.set(teamKey + ":" + teamInfo.getTeamId(), teamInfo);
+        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
+        ops.set(teamKey + ":" + teamInfo.getTeamId(), teamInfo);
 
-            redisTemplate.exec();
-            return teamInfo;
-        } catch (Exception exception) {
-            redisTemplate.discard();
-            throw exception;
-        }
+        return teamInfo;
     }
 
     public Optional<TeamInfo> findById(long teamId) {

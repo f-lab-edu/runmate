@@ -26,12 +26,15 @@ public class MemberInfoRepositoryTest {
                 .memberId(2L)
                 .build();
         memberInfo.increaseTotalDistance(10.0F);
+
         memberInfoRepository.save(memberInfo);
+        redisTemplate.exec();
 
         MemberInfo result = memberInfoRepository.findById(memberInfo.getMemberId()).orElse(null);
 
         //then
         checkSameMemberInfo(memberInfo, result);
+        redisTemplate.delete(MemberInfoRepository.memberKey + ":" + memberInfo.getMemberId());
     }
 
     void checkSameMemberInfo(MemberInfo one, MemberInfo another) {
