@@ -8,13 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,15 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JudgeRunningDataServiceTest {
     @Autowired
     JudgeRunningDataService judgeRunningDataService;
-
     @Autowired
     MemberInfoRepository memberInfoRepository;
     @Autowired
     TeamInfoRepository teamInfoRepository;
-
-    private static final String memberKey = "running:member";
-    private static final String teamKey = "running:team";
-
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
 
@@ -52,6 +44,8 @@ public class JudgeRunningDataServiceTest {
         teamInfo.increaseTotalDistance(2.1F);
 
         teamInfoRepository.save(teamInfo);
+        redisTemplate.exec();
+
         //then
         assertEquals(true, judgeRunningDataService.isTeamSuccessOnRunning(teamInfo.getTeamId()));
     }
@@ -73,6 +67,7 @@ public class JudgeRunningDataServiceTest {
         teamInfo.increaseTotalDistance(1.9F);
 
         teamInfoRepository.save(teamInfo);
+        redisTemplate.exec();
 
         //then
         assertEquals(true, judgeRunningDataService.isTeamFailOnRunning(teamInfo.getTeamId()));
@@ -95,6 +90,7 @@ public class JudgeRunningDataServiceTest {
         teamInfo.increaseTotalDistance(1.9F);
 
         teamInfoRepository.save(teamInfo);
+        redisTemplate.exec();
 
         //then
         assertEquals(true, judgeRunningDataService.isTeamTimeOver(teamInfo.getTeamId()));
