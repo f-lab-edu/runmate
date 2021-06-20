@@ -8,15 +8,23 @@ import com.runmate.exception.NotFoundTeamInfoException;
 import com.runmate.repository.redis.MemberInfoRepository;
 import com.runmate.repository.redis.TeamInfoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.runmate.repository.redis.MemberInfoRepository.*;
+import static com.runmate.repository.redis.TeamInfoRepository.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Transactional
 public class RunningDataManageService {
     private final TeamInfoRepository teamInfoRepository;
     private final MemberInfoRepository memberInfoRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     public void updateRunningData(RunningMessage message) {
         updateMemberInfo(message);
@@ -37,17 +45,14 @@ public class RunningDataManageService {
         teamInfoRepository.save(teamInfo);
     }
 
-    public void clearAllRunningData(long teamId) {
+    public void clearAllRunningData(long teamId, long memberId) {
+        List<String> deleteKeys = new ArrayList<>();
         TeamInfo teamInfo = teamInfoRepository.findById(teamId)
-                .orElseThrow(NotFoundTeamInfoException::new);
+                .orElse(null);
+        if (teamInfo != null)
+            deleteKeys.add(teamKey + ":" + teamId);
 
-        teamInfo.getMembers()
-                .forEach(memberId -> {
-                    MemberInfo memberInfo = memberInfoRepository.findById(memberId)
-                            .orElseThrow(NotFoundMemberInfoException::new);
-
-                    memberInfoRepository.delete(memberInfo);
-                });
-        teamInfoRepository.delete(teamInfo);
+        deleteKeys.add(memberKey + ":" + memberId);
+        redisTemplate.delete(deleteKeys);
     }
 }

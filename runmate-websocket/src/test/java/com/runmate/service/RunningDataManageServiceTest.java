@@ -10,6 +10,8 @@ import com.runmate.repository.redis.TeamInfoRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -19,6 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 public class RunningDataManageServiceTest {
     @Autowired
     RunningDataManageService runningDataManageService;
@@ -26,6 +29,8 @@ public class RunningDataManageServiceTest {
     MemberInfoRepository memberInfoRepository;
     @Autowired
     TeamInfoRepository teamInfoRepository;
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
 
     @Test
     public void When_IncreaseDistance() {
@@ -52,6 +57,7 @@ public class RunningDataManageServiceTest {
                 .build();
         teamInfo.increaseTotalDistance(3.0F);
         teamInfoRepository.save(teamInfo);
+        redisTemplate.exec();
 
         RunningMessage runningMessage = RunningMessage.builder()
                 .distance(10.2F)
@@ -103,9 +109,12 @@ public class RunningDataManageServiceTest {
                 .goal(goal)
                 .build();
         teamInfoRepository.save(teamInfo);
+        redisTemplate.exec();
 
         //when
-        runningDataManageService.clearAllRunningData(teamId);
+        memberIds.forEach(memberId -> {
+            runningDataManageService.clearAllRunningData(teamId, memberId);
+        });
 
         //then
         memberIds.forEach(memberId -> {
