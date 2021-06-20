@@ -7,6 +7,7 @@ import com.runmate.domain.running.Position;
 import com.runmate.dto.RunningMessage;
 import com.runmate.repository.redis.MemberInfoRepository;
 import com.runmate.repository.redis.TeamInfoRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +33,14 @@ public class RunningDataManageServiceTest {
     TeamInfoRepository teamInfoRepository;
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
+
+    @AfterEach
+    void clearAllRedisData() {
+        Iterator<String> iterator = redisTemplate.keys("*").iterator();
+        while (iterator.hasNext()) {
+            redisTemplate.delete(iterator.next());
+        }
+    }
 
     @Test
     public void When_IncreaseDistance() {

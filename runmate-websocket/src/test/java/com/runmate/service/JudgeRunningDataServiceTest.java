@@ -4,6 +4,7 @@ import com.runmate.domain.redis.GoalForTempStore;
 import com.runmate.domain.redis.TeamInfo;
 import com.runmate.repository.redis.MemberInfoRepository;
 import com.runmate.repository.redis.TeamInfoRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Iterator;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -26,6 +29,14 @@ public class JudgeRunningDataServiceTest {
     TeamInfoRepository teamInfoRepository;
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
+
+    @AfterEach
+    void clearAllRedisData() {
+        Iterator<String> iterator = redisTemplate.keys("*").iterator();
+        while (iterator.hasNext()) {
+            redisTemplate.delete(iterator.next());
+        }
+    }
 
     @Test
     void When_SuccessOnRunning_Expect_True() {
