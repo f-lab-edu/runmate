@@ -20,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @Transactional
 public class TeamInfoRepositoryTest {
-    @Autowired
-    TeamInfoRepository teamInfoRepository;
     GoalForTempStore goal;
 
     @Autowired
@@ -44,7 +42,6 @@ public class TeamInfoRepositoryTest {
         TeamInfo teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
 

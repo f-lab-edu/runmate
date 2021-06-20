@@ -48,7 +48,6 @@ public class RunningDataManageServiceTest {
         TeamInfo teamInfo = TeamInfo.builder()
                 .teamId(teamId)
                 .adminId(memberId)
-                .members(Arrays.asList(memberId))
                 .goal(goal)
                 .build();
         teamInfo.increaseTotalDistance(3.0F);
@@ -99,7 +98,6 @@ public class RunningDataManageServiceTest {
                 .build();
 
         TeamInfo teamInfo = TeamInfo.builder()
-                .members(memberIds)
                 .teamId(teamId)
                 .adminId(adminId)
                 .goal(goal)

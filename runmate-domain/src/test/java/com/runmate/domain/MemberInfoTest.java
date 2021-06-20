@@ -22,7 +22,6 @@ public class MemberInfoTest {
         TeamInfo teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(Arrays.asList(1L, 2L, 3L))
                 .goal(goal)
                 .build();
 

@@ -29,7 +29,6 @@ public class TeamInfoTest {
         teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
     }
@@ -59,7 +58,6 @@ public class TeamInfoTest {
         teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
         teamInfo.increaseTotalDistance(currentDistance);
@@ -81,7 +79,6 @@ public class TeamInfoTest {
         teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
         teamInfo.increaseTotalDistance(currentDistance);
@@ -98,29 +95,9 @@ public class TeamInfoTest {
         teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
 
         teamInfo.isTimeOver();
-    }
-
-    @Test
-    void When_adminNotIncluded_Expect_ThrowException() {
-        memberIds = Arrays.asList(9L, 10L);
-        goal = GoalForTempStore.builder()
-                .startedAt(LocalDateTime.now().minus(10, ChronoUnit.HOURS))
-                .distance(10)
-                .runningSeconds(1)
-                .build();
-
-        assertThrows(AdminNotIncludedException.class, () -> {
-            TeamInfo.builder()
-                    .teamId(2L)
-                    .adminId(3L)
-                    .members(memberIds)
-                    .goal(goal)
-                    .build();
-        });
     }
 }
