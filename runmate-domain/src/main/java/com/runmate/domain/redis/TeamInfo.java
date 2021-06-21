@@ -31,7 +31,6 @@ public class TeamInfo {
         this.goal = goal;
 
         this.adminId = adminId;
-        members.add(adminId);
 
         this.totalDistance = 0;
         this.runningSeconds = 0;
