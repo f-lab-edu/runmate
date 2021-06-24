@@ -1,6 +1,5 @@
 package com.runmate.service;
 
-import com.runmate.domain.redis.GoalForTempStore;
 import com.runmate.domain.redis.MemberInfo;
 import com.runmate.domain.redis.TeamInfo;
 import com.runmate.domain.running.Team;
@@ -51,26 +50,25 @@ public class RunningDataMoveService {
     }
 
     public void persistRunningDataToMem(Long teamId, Long memberId) {
+        persistTeamInfoDataToMem(teamId, memberId);
+        persistMemberInfoDataToMem(teamId, memberId);
+    }
+
+    private void persistTeamInfoDataToMem(Long teamId, Long memberId) {
         Team team = teamRepository.findById(teamId).orElseThrow(NotFoundTeamException::new);
-
         TeamInfo teamInfo = teamInfoRepository.findById(teamId).orElse(null);
-
         if (teamInfo == null) {
-            GoalForTempStore goal = GoalForTempStore.builder()
-                    .runningSeconds(team.getGoal().getTotalRunningSeconds())
-                    .distance(team.getGoal().getTotalDistance())
-                    .startedAt(team.getGoal().getStartedAt())
-                    .build();
-
-            teamInfo = TeamInfo.builder()
+            teamInfo = TeamInfo.fromGoal()
                     .teamId(teamId)
-                    .goal(goal)
+                    .goal(team.getGoal())
                     .build();
         }
 
         teamInfo.getMembers().add(memberId);
         teamInfoRepository.save(teamInfo);
+    }
 
+    private void persistMemberInfoDataToMem(Long teamId, Long memberId) {
         if (memberInfoRepository.findById(memberId).orElse(null) == null) {
             MemberInfo memberInfo = MemberInfo.builder()
                     .memberId(memberId)
