@@ -64,7 +64,8 @@ public class RunningDataMoveService {
                     .build();
         }
 
-        teamInfo.getMembers().add(memberId);
+        if(!teamInfo.getMembers().contains(memberId))
+            teamInfo.getMembers().add(memberId);
         teamInfoRepository.save(teamInfo);
     }
 
