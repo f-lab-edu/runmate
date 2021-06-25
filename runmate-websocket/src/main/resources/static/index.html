@@ -6,8 +6,8 @@
 </head>
 <body>
 teamId:<input type="text" name="teamId" id="teamId"><br>
+memberId:<input type="text" name="memberId" id="memberId"><br>
 <button id="btnEnter">입장</button>
-
 
 
 <form id="messageForm">
@@ -22,44 +22,53 @@ teamId:<input type="text" name="teamId" id="teamId"><br>
 </div>
 
 <script type="text/javascript">
-    const messageForm= document.getElementById('messageForm');
-    const messageWindow=document.getElementById('messageWindow');
-    const btnEnter=document.getElementById('btnEnter');
+    const messageForm = document.getElementById('messageForm');
+    const messageWindow = document.getElementById('messageWindow');
+    const btnEnter = document.getElementById('btnEnter');
     var stompClient = null;
 
     messageForm.addEventListener("submit", e => {
         e.preventDefault();
-        const teamId=document.getElementById('teamId').value;
-        const username=document.getElementById('username').value;
-        const latitude=document.getElementById('latitude').value;
-        const longitude=document.getElementById('longitude').value;
+        const teamId = document.getElementById('teamId').value;
+        const username = document.getElementById('username').value;
+        const latitude = document.getElementById('latitude').value;
+        const longitude = document.getElementById('longitude').value;
 
-        const jsonValue=JSON.stringify({teamId:teamId, username:username, position:{latitude:latitude,longitude:longitude}})
+        const jsonValue = JSON.stringify({
+            teamId: teamId,
+            username: username,
+            position: {latitude: latitude, longitude: longitude}
+        })
         stompClient.send('/app/running', {}, jsonValue);
     });
 
-    function renderItem(jsonItem){
-        const divEl=document.createElement('div')
-        divEl.innerText='From:'+jsonItem.username+", pos:("+jsonItem.position.latitude+","+jsonItem.position.longitude+")";
+    function renderItem(jsonItem) {
+        const divEl = document.createElement('div')
+        divEl.innerText = 'From:' + jsonItem.username + ", pos:(" + jsonItem.position.latitude + "," + jsonItem.position.longitude + ")";
         messageWindow.appendChild(divEl);
     }
 
     btnEnter.addEventListener("click", ev => {
+        const teamId = document.getElementById("teamId").value;
+        const memberId = document.getElementById("memberId").value;
+
         console.log("start");
+
         function connect() {
             var socket = new SockJS('/crew-running');
             stompClient = Stomp.over(socket);
 
-            const teamId=document.getElementById('teamId');
-            stompClient.connect({}, function(frame) {
-                stompClient.subscribe('/topic/'+teamId.value, function(messageOutput) {
-                    const jsonResult=JSON.parse(messageOutput.body);
+            stompClient.connect({teamId: teamId, memberId: memberId}, function (frame) {
+                stompClient.subscribe('/topic/' + teamId, function (messageOutput) {
+                    const jsonResult = JSON.parse(messageOutput.body);
                     renderItem(jsonResult);
                 });
             });
         }
+
         connect();
     });
+
 </script>
 </body>
 </html>
