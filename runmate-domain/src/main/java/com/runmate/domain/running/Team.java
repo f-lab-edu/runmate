@@ -4,11 +4,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -33,9 +30,19 @@ public class Team {
     public Team(String title, Goal goal) {
         this.title = title;
         this.goal = goal;
+        this.result = Result.builder()
+                .totalDistance(0F)
+                .status(CompleteStatus.FAIL)
+                .totalRunningSeconds(0L)
+                .build();
     }
 
-    public void decideResult() {
-        this.result = result;
+    public void decideResult(float distance, long runningSeconds, boolean isSuccess) {
+        this.result = Result.builder()
+                .totalDistance(distance)
+                .totalRunningSeconds(runningSeconds)
+                .status(CompleteStatus.of(isSuccess))
+                .build();
+
     }
 }

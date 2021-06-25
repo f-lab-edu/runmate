@@ -29,7 +29,6 @@ public class TeamInfoTest {
         teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
     }
@@ -47,7 +46,7 @@ public class TeamInfoTest {
     void When_IsSuccessOnRunning_Expect_True() {
         final float goalDistance = 10F;
         final float currentDistance = 12F;
-        final LocalDateTime start = LocalDateTime.now();
+        final LocalDateTime start = LocalDateTime.now().minus(1,ChronoUnit.HOURS);
         final long hour = 3600;
 
         goal = GoalForTempStore.builder()
@@ -59,7 +58,6 @@ public class TeamInfoTest {
         teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
         teamInfo.increaseTotalDistance(currentDistance);
@@ -70,18 +68,17 @@ public class TeamInfoTest {
     void When_IsFailOnRunning_Expect_True() {
         final float goalDistance = 10F;
         final float currentDistance = 8F;
-        final LocalDateTime start = LocalDateTime.now().plus(10, ChronoUnit.SECONDS);
+        final LocalDateTime start = LocalDateTime.now().plus(3600, ChronoUnit.SECONDS);
 
         goal = GoalForTempStore.builder()
                 .startedAt(start)
                 .distance(goalDistance)
-                .runningSeconds(1)
+                .runningSeconds(10)
                 .build();
 
         teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
         teamInfo.increaseTotalDistance(currentDistance);
@@ -98,29 +95,9 @@ public class TeamInfoTest {
         teamInfo = TeamInfo.builder()
                 .teamId(2L)
                 .adminId(3L)
-                .members(memberIds)
                 .goal(goal)
                 .build();
 
         teamInfo.isTimeOver();
-    }
-
-    @Test
-    void When_adminNotIncluded_Expect_ThrowException() {
-        memberIds = Arrays.asList(9L, 10L);
-        goal = GoalForTempStore.builder()
-                .startedAt(LocalDateTime.now().minus(10, ChronoUnit.HOURS))
-                .distance(10)
-                .runningSeconds(1)
-                .build();
-
-        assertThrows(AdminNotIncludedException.class, () -> {
-            TeamInfo.builder()
-                    .teamId(2L)
-                    .adminId(3L)
-                    .members(memberIds)
-                    .goal(goal)
-                    .build();
-        });
     }
 }

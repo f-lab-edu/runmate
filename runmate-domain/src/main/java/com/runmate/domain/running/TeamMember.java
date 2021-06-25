@@ -33,9 +33,16 @@ public class TeamMember {
     public TeamMember(CrewUser crewUser, Team team) {
         this.crewUser = crewUser;
         this.team = team;
+        this.result = IndividualResult.builder()
+                .totalDistance(0F)
+                .totalRunningSeconds(0L)
+                .build();
     }
 
-    public void decideResult(IndividualResult result) {
-        this.result = result;
+    public void decideResult(Long runningSeconds, float distance) {
+        this.result = IndividualResult.builder()
+                .totalDistance(distance)
+                .totalRunningSeconds(runningSeconds)
+                .build();
     }
 }
