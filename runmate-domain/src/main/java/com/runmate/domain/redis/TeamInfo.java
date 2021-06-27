@@ -1,6 +1,7 @@
 package com.runmate.domain.redis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.runmate.domain.running.Goal;
 import com.runmate.exception.AdminNotIncludedException;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class TeamInfo {
     private GoalForTempStore goal;
     private long runningSeconds;
 
-    @Builder
+    @Builder(builderMethodName = "builder")
     public TeamInfo(long teamId, long adminId, GoalForTempStore goal) {
         this.teamId = teamId;
         this.goal = goal;
@@ -34,6 +35,20 @@ public class TeamInfo {
 
         this.totalDistance = 0;
         this.runningSeconds = 0;
+    }
+
+    @Builder(builderMethodName = "fromGoal", builderClassName = "forMove")
+    public TeamInfo(long teamId, long adminId, Goal goal) {
+        this.teamId = teamId;
+        this.adminId = adminId;
+        this.totalDistance = 0;
+        this.runningSeconds = 0;
+
+        this.goal = GoalForTempStore.builder()
+                .startedAt(goal.getStartedAt())
+                .distance(goal.getTotalDistance())
+                .runningSeconds(goal.getTotalRunningSeconds())
+                .build();
     }
 
     public float increaseTotalDistance(float distance) {
