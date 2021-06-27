@@ -18,14 +18,9 @@ public class Result {
     @Column(name = "result_total_running_seconds")
     private long totalRunningSeconds;
 
-    @Column(name = "complete_status")
-    @Enumerated(EnumType.STRING)
-    private CompleteStatus completeStatus;
-
     @Builder
-    public Result(float totalDistance, long totalRunningSeconds, CompleteStatus status) {
+    public Result(float totalDistance, long totalRunningSeconds) {
         this.totalDistance = totalDistance;
         this.totalRunningSeconds = totalRunningSeconds;
-        this.completeStatus = status;
     }
 }

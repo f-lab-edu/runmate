@@ -5,7 +5,7 @@ create table team(
     goal_running_seconds bigint not null,
     result_total_distance float(10,3) ,
     result_total_running_seconds bigint ,
-    complete_status varchar(10) default 'FAIL',
+    team_status varchar(10) default 'PENDING',
     goal_started_at timestamp default CURRENT_TIMESTAMP
 )default character set utf8;
 

@@ -26,23 +26,28 @@ public class Team {
     @Embedded
     private Result result;
 
+    @Column(name = "team_status")
+    @Enumerated(EnumType.STRING)
+    private TeamStatus teamStatus;
+
     @Builder
     public Team(String title, Goal goal) {
         this.title = title;
         this.goal = goal;
         this.result = Result.builder()
                 .totalDistance(0F)
-                .status(CompleteStatus.FAIL)
                 .totalRunningSeconds(0L)
                 .build();
+
+        this.teamStatus = TeamStatus.PENDING;
     }
 
     public void decideResult(float distance, long runningSeconds, boolean isSuccess) {
         this.result = Result.builder()
                 .totalDistance(distance)
                 .totalRunningSeconds(runningSeconds)
-                .status(CompleteStatus.of(isSuccess))
                 .build();
 
+        this.teamStatus = isSuccess ? TeamStatus.SUCCESS : TeamStatus.FAIL;
     }
 }
