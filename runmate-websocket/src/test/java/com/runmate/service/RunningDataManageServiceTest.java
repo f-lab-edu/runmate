@@ -1,5 +1,6 @@
 package com.runmate.service;
 
+import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.redis.GoalForTempStore;
 import com.runmate.domain.redis.MemberInfo;
 import com.runmate.domain.redis.TeamInfo;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 public class RunningDataManageServiceTest {
     @Autowired
     RunningDataManageService runningDataManageService;
