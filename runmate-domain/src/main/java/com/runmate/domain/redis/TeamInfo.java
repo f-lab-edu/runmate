@@ -87,9 +87,9 @@ public class TeamInfo {
     }
 
     @JsonIgnore
-    public boolean isCurrentTimeLargerThanStartedAt() {
+    public boolean isCurrentTimeBeforeStartedAt() {
         LocalDateTime currentTime = now();
-        return currentTime.isAfter(getEndTime()) || currentTime.isEqual(getEndTime());
+        return currentTime.isBefore(getEndTime());
     }
 
     public void participateRunning(Long memberId) {
@@ -114,7 +114,7 @@ public class TeamInfo {
     }
 
     private void checkNowIsBetweenStartedAndRunningSeconds() {
-        if (isTimeOver() || isCurrentTimeLargerThanStartedAt())
+        if (isTimeOver() || isCurrentTimeBeforeStartedAt())
             throw new CurrentIsNotRunningTimeException();
     }
 }
