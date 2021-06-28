@@ -29,6 +29,9 @@ public class TeamMember {
     @Embedded
     private IndividualResult result;
 
+    @Enumerated(EnumType.STRING)
+    private TeamMemberStatus teamMemberStatus;
+
     @Builder
     public TeamMember(CrewUser crewUser, Team team) {
         this.crewUser = crewUser;
@@ -37,6 +40,7 @@ public class TeamMember {
                 .totalDistance(0F)
                 .totalRunningSeconds(0L)
                 .build();
+        this.teamMemberStatus = TeamMemberStatus.PENDING;
     }
 
     public void decideResult(Long runningSeconds, float distance) {

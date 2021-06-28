@@ -17,7 +17,8 @@ create table team_member(
     crew_user_id bigint not null,
     team_id bigint not null,
     individual_distance float(10,3),
-    individual_running_seconds bigint
+    individual_running_seconds bigint,
+    team_member_status varchar(10) default 'PENDING'
 )default character set utf8;
 alter table team_member
     ADD FOREIGN KEY(crew_user_id) REFERENCES crew_user(id);
