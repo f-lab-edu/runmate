@@ -1,5 +1,7 @@
 package com.runmate.domain.running;
 
+import com.runmate.domain.crew.CrewUser;
+import com.runmate.dto.running.TeamCreationRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +19,10 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(name = "leader_id")
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    private CrewUser leader;
+
     @Column(name = "title")
     private String title;
 
@@ -31,7 +37,8 @@ public class Team {
     private TeamStatus teamStatus;
 
     @Builder
-    public Team(String title, Goal goal) {
+    public Team(CrewUser leader, String title, Goal goal) {
+        this.leader = leader;
         this.title = title;
         this.goal = goal;
         this.result = Result.builder()
@@ -40,6 +47,20 @@ public class Team {
                 .build();
 
         this.teamStatus = TeamStatus.PENDING;
+    }
+
+    public static Team of(CrewUser leader, TeamCreationRequest request) {
+        Goal goal = Goal.builder()
+                .totalDistance(request.getGoal().getDistance())
+                .totalRunningSeconds(request.getGoal().getRunningTime())
+                .startedAt(request.getStartTime())
+                .build();
+
+        return Team.builder()
+                .leader(leader)
+                .title(request.getTitle())
+                .goal(goal)
+                .build();
     }
 
     public void decideResult(float distance, long runningSeconds, boolean isSuccess) {
