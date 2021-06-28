@@ -125,9 +125,9 @@ public class RunningDataMoveToMemTest {
         //then
         TeamInfo teamInfo = teamInfoRepository.findById(team.getId()).orElse(null);
 
-        assertEquals(teamInfo.getMembers().size(), teamMembers.size());
-        for (int i = 0; i < teamInfo.getMembers().size(); i++) {
-            assertEquals(teamInfo.getMembers().get(i), teamMembers.get(i).getId());
+        assertEquals(teamInfo.getOnlineMembers().size(), teamMembers.size());
+        for (int i = 0; i < teamInfo.getOnlineMembers().size(); i++) {
+            assertEquals(teamInfo.getOnlineMembers().get(i), teamMembers.get(i).getId());
         }
 
         assertEquals(teamInfo.getGoal().getDistance(), team.getGoal().getTotalDistance());

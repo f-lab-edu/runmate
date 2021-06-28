@@ -2,7 +2,8 @@ package com.runmate.domain.redis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.runmate.domain.running.Goal;
-import com.runmate.exception.AdminNotIncludedException;
+import com.runmate.exception.CurrentIsNotRunningTimeException;
+import com.runmate.exception.MemberNotIncludedTeamException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,18 +23,20 @@ import static java.time.LocalDateTime.now;
 public class TeamInfo {
     @Id
     private long teamId;
-    private List<Long> members = new ArrayList<>();
+    private List<Long> onlineMembers = new ArrayList<>();
+    private List<Long> totalMembers = new ArrayList<>();
     private float totalDistance;
     private long adminId;
     private GoalForTempStore goal;
     private long runningSeconds;
 
     @Builder(builderMethodName = "builder")
-    public TeamInfo(long teamId, long adminId, GoalForTempStore goal) {
+    public TeamInfo(long teamId, long adminId, GoalForTempStore goal, List<Long> totalMembers) {
         this.teamId = teamId;
         this.goal = goal;
 
         this.adminId = adminId;
+        this.totalMembers = totalMembers;
 
         this.totalDistance = 0;
         this.runningSeconds = 0;
@@ -57,6 +62,11 @@ public class TeamInfo {
         return this.totalDistance;
     }
 
+    @JsonIgnore
+    public LocalDateTime getEndTime() {
+        return getGoal().getStartedAt().plus(getGoal().getRunningSeconds(), ChronoUnit.SECONDS);
+    }
+
     private void updateRunningSeconds() {
         this.runningSeconds = Duration.between(this.goal.getStartedAt(), now()).getSeconds();
     }
@@ -68,11 +78,43 @@ public class TeamInfo {
 
     @JsonIgnore
     public boolean isTimeOver() {
-        return goal.getRunningSeconds() < this.runningSeconds;
+        return now().isAfter(getEndTime());
     }
 
     @JsonIgnore
     public boolean isFailOnRunning() {
         return isTimeOver() && totalDistance < goal.getDistance();
+    }
+
+    @JsonIgnore
+    public boolean isCurrentTimeLargerThanStartedAt() {
+        LocalDateTime currentTime = now();
+        return currentTime.isAfter(getEndTime()) || currentTime.isEqual(getEndTime());
+    }
+
+    public void participateRunning(Long memberId) {
+        checkCanParticipate(memberId);
+        this.getOnlineMembers().add(memberId);
+    }
+
+    public void leaveRunning(Long memberId) {
+        this.getOnlineMembers().remove(memberId);
+    }
+
+    private void checkCanParticipate(Long memberId) {
+        checkMemberIncludedInTeam(memberId);
+        checkNowIsBetweenStartedAndRunningSeconds();
+    }
+
+    private void checkMemberIncludedInTeam(Long memberId) {
+        this.getTotalMembers()
+                .stream()
+                .filter(id -> id == memberId)
+                .findFirst().orElseThrow(MemberNotIncludedTeamException::new);
+    }
+
+    private void checkNowIsBetweenStartedAndRunningSeconds() {
+        if (isTimeOver() || isCurrentTimeLargerThanStartedAt())
+            throw new CurrentIsNotRunningTimeException();
     }
 }

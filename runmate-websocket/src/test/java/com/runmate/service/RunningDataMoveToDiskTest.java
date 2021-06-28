@@ -111,7 +111,7 @@ public class RunningDataMoveToDiskTest {
                     .build();
             memberInfo.increaseTotalDistance(0.1F);
 
-            teamInfo.getMembers().add(memberId);
+            teamInfo.getOnlineMembers().add(memberId);
             memberInfoRepository.save(memberInfo);
         });
         teamInfoRepository.save(teamInfo);

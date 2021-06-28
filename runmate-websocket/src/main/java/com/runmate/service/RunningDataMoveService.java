@@ -40,7 +40,7 @@ public class RunningDataMoveService {
         Team team = teamRepository.findById(teamId).orElseThrow(NotFoundTeamException::new);
         team.decideResult(teamInfo.getTotalDistance(), teamInfo.getRunningSeconds(), teamInfo.isSuccessOnRunning());
 
-        teamInfo.getMembers().forEach(memberId -> {
+        teamInfo.getTotalMembers().forEach(memberId -> {
             MemberInfo memberInfo = memberInfoRepository.findById(memberId).orElseThrow(NotFoundMemberInfoException::new);
             TeamMember teamMember = teamMemberRepository.findById(memberId).orElseThrow(NotFoundTeamMemberException::new);
             teamMember.decideResult(teamInfo.getRunningSeconds(), memberInfo.getTotalDistance());
@@ -60,7 +60,7 @@ public class RunningDataMoveService {
                     .build();
         }
 
-        teamInfo.getMembers().add(memberId);
+        teamInfo.participateRunning(memberId);
         teamInfoRepository.save(teamInfo);
 
         if (memberInfoRepository.findById(memberId).equals(Optional.empty())) {
