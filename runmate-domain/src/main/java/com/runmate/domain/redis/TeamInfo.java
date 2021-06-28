@@ -89,7 +89,7 @@ public class TeamInfo {
     @JsonIgnore
     public boolean isCurrentTimeBeforeStartedAt() {
         LocalDateTime currentTime = now();
-        return currentTime.isBefore(getEndTime());
+        return currentTime.isBefore(this.getGoal().getStartedAt());
     }
 
     public void participateRunning(Long memberId) {
