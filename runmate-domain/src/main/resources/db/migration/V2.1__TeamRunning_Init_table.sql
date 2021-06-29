@@ -1,3 +1,6 @@
+drop table if exists team_member cascade;
+drop table if exists team cascade;
+
 create table team(
     id bigint primary key auto_increment,
     leader_id bigint,
@@ -7,9 +10,7 @@ create table team(
     result_total_distance float(10,3) ,
     result_total_running_seconds bigint ,
     team_status varchar(10) default 'PENDING',
-    goal_started_at timestamp default CURRENT_TIMESTAMP,
-
-    foreign key (leader_id) references team_member(id) on delete cascade
+    goal_started_at timestamp default CURRENT_TIMESTAMP
 )default character set utf8;
 
 create table team_member(
@@ -20,7 +21,10 @@ create table team_member(
     individual_running_seconds bigint,
     team_member_status varchar(10) default 'PENDING'
 )default character set utf8;
-alter table team_member
+
+ALTER TABLE team
+    ADD FOREIGN KEY (leader_id) REFERENCES team_member(id) ON DELETE CASCADE;
+ALTER TABLE team_member
     ADD FOREIGN KEY(crew_user_id) REFERENCES crew_user(id);
-alter table team_member
+ALTER TABLE team_member
     ADD FOREIGN KEY(team_id) REFERENCES team(id);
