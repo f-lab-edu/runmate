@@ -20,8 +20,8 @@ public class Team {
     private Long id;
 
     @JoinColumn(name = "leader_id")
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
-    private CrewUser leader;
+    @OneToOne(cascade = CascadeType.ALL)
+    private TeamMember leader;
 
     @Column(name = "title")
     private String title;
@@ -37,7 +37,7 @@ public class Team {
     private TeamStatus teamStatus;
 
     @Builder
-    public Team(CrewUser leader, String title, Goal goal) {
+    public Team(TeamMember leader, String title, Goal goal) {
         this.leader = leader;
         this.title = title;
         this.goal = goal;
@@ -49,7 +49,7 @@ public class Team {
         this.teamStatus = TeamStatus.PENDING;
     }
 
-    public static Team of(CrewUser leader, TeamCreationRequest request) {
+    public static Team from(TeamCreationRequest request) {
         Goal goal = Goal.builder()
                 .totalDistance(request.getGoal().getDistance())
                 .totalRunningSeconds(request.getGoal().getRunningTime())
@@ -57,10 +57,20 @@ public class Team {
                 .build();
 
         return Team.builder()
-                .leader(leader)
+                .leader(null)
                 .title(request.getTitle())
                 .goal(goal)
                 .build();
+    }
+
+    public void assignLeader(TeamMember leader) {
+        this.leader = leader;
+    }
+
+    public void validateMember(CrewUser crewUser) {
+        if (leader.isDifferentCrew(crewUser)) {
+            throw new IllegalArgumentException("cannot invite to different crew members");
+        }
     }
 
     public void decideResult(float distance, long runningSeconds, boolean isSuccess) {

@@ -49,4 +49,8 @@ public class TeamMember {
                 .totalRunningSeconds(runningSeconds)
                 .build();
     }
+
+    public boolean isDifferentCrew(CrewUser crewUser) {
+        return !this.crewUser.getCrew().equals(crewUser.getCrew());
+    }
 }
