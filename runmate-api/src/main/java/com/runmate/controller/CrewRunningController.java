@@ -24,7 +24,7 @@ public class CrewRunningController {
 
     private final CrewRunningService crewRunningService;
 
-    @PostMapping
+    @PostMapping(name = "/teams")
     public ResponseEntity<JsonWrapper> createTeam(@RequestBody TeamCreationRequest request) {
         Team team = crewRunningService.createTeam(request);
         List<String> initialMemberEmails = request.getEmails();
