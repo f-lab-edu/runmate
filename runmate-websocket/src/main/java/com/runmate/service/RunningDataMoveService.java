@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.runmate.repository.redis.MemberInfoRepository.memberKey;
 import static com.runmate.repository.redis.TeamInfoRepository.teamKey;
@@ -53,10 +54,16 @@ public class RunningDataMoveService {
     public void persistRunningDataToMem(Long teamId, Long memberId) {
         TeamInfo teamInfo = teamInfoRepository.findById(teamId).orElse(null);
         if (teamInfo == null) {
-            Team team = teamRepository.findById(teamId).orElseThrow(NotFoundTeamException::new);
+            Team team = teamRepository.findByIdHaveTeamMembers(teamId).orElseThrow(NotFoundTeamException::new);
+            List<Long> totalMembers = team.getTeamMembers()
+                    .stream()
+                    .map(teamMember -> teamMember.getId())
+                    .collect(Collectors.toList());
+
             teamInfo = TeamInfo.fromGoal()
                     .teamId(teamId)
                     .goal(team.getGoal())
+                    .totalMembers(totalMembers)
                     .build();
         }
 
