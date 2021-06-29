@@ -43,11 +43,12 @@ public class TeamInfo {
     }
 
     @Builder(builderMethodName = "fromGoal", builderClassName = "forMove")
-    public TeamInfo(long teamId, long adminId, Goal goal) {
+    public TeamInfo(long teamId, long adminId, Goal goal, List<Long> totalMembers) {
         this.teamId = teamId;
         this.adminId = adminId;
         this.totalDistance = 0;
         this.runningSeconds = 0;
+        this.totalMembers = totalMembers;
 
         this.goal = GoalForTempStore.builder()
                 .startedAt(goal.getStartedAt())
