@@ -1,6 +1,5 @@
 package com.runmate.service;
 
-import com.runmate.domain.redis.GoalForTempStore;
 import com.runmate.domain.redis.MemberInfo;
 import com.runmate.domain.redis.TeamInfo;
 import com.runmate.domain.running.Team;
@@ -17,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.runmate.repository.redis.MemberInfoRepository.memberKey;
 import static com.runmate.repository.redis.TeamInfoRepository.teamKey;
@@ -40,7 +41,7 @@ public class RunningDataMoveService {
         Team team = teamRepository.findById(teamId).orElseThrow(NotFoundTeamException::new);
         team.decideResult(teamInfo.getTotalDistance(), teamInfo.getRunningSeconds(), teamInfo.isSuccessOnRunning());
 
-        teamInfo.getMembers().forEach(memberId -> {
+        teamInfo.getTotalMembers().forEach(memberId -> {
             MemberInfo memberInfo = memberInfoRepository.findById(memberId).orElseThrow(NotFoundMemberInfoException::new);
             TeamMember teamMember = teamMemberRepository.findById(memberId).orElseThrow(NotFoundTeamMemberException::new);
             teamMember.decideResult(teamInfo.getRunningSeconds(), memberInfo.getTotalDistance());
@@ -51,32 +52,34 @@ public class RunningDataMoveService {
     }
 
     public void persistRunningDataToMem(Long teamId, Long memberId) {
-        Team team = teamRepository.findById(teamId).orElseThrow(NotFoundTeamException::new);
-
         TeamInfo teamInfo = teamInfoRepository.findById(teamId).orElse(null);
-
         if (teamInfo == null) {
-            GoalForTempStore goal = GoalForTempStore.builder()
-                    .runningSeconds(team.getGoal().getTotalRunningSeconds())
-                    .distance(team.getGoal().getTotalDistance())
-                    .startedAt(team.getGoal().getStartedAt())
-                    .build();
+            Team team = teamRepository.findByIdHaveTeamMembers(teamId).orElseThrow(NotFoundTeamException::new);
+            List<Long> totalMembers = team.getTeamMembers()
+                    .stream()
+                    .map(teamMember -> teamMember.getId())
+                    .collect(Collectors.toList());
 
-            teamInfo = TeamInfo.builder()
+            teamInfo = TeamInfo.fromGoal()
                     .teamId(teamId)
-                    .goal(goal)
+                    .goal(team.getGoal())
+                    .totalMembers(totalMembers)
                     .build();
         }
 
-        teamInfo.getMembers().add(memberId);
+        teamInfo.participateRunning(memberId);
         teamInfoRepository.save(teamInfo);
 
-        if (memberInfoRepository.findById(memberId).orElse(null) == null) {
-            MemberInfo memberInfo = MemberInfo.builder()
-                    .memberId(memberId)
-                    .teamId(teamId)
-                    .build();
-            memberInfoRepository.save(memberInfo);
+        if (memberInfoRepository.findById(memberId).equals(Optional.empty())) {
+            persistMemberInfoDataToMem(teamId, memberId);
         }
+    }
+
+    private void persistMemberInfoDataToMem(Long teamId, Long memberId) {
+        MemberInfo memberInfo = MemberInfo.builder()
+                .memberId(memberId)
+                .teamId(teamId)
+                .build();
+        memberInfoRepository.save(memberInfo);
     }
 }

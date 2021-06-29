@@ -1,5 +1,6 @@
 package com.runmate.service;
 
+import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.redis.TeamInfo;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +31,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 public class RunningDataMoveToMemTest {
     @Autowired
     TeamRepository teamRepository;
@@ -84,11 +88,15 @@ public class RunningDataMoveToMemTest {
     @Test
     void When_PersistRunningDataToMem_Initialize_Redis() {
         //given
+        final LocalDateTime startedAt = now().minus(1, ChronoUnit.HOURS);
+        final Long runningTime = 3700L;
+        final int numOfUser = 5;
+
         TestTransaction.flagForCommit();
         Goal goal = Goal.builder()
                 .totalDistance(10.0F)
-                .totalRunningSeconds(3600L)
-                .startedAt(LocalDateTime.now().plus(10, ChronoUnit.HOURS))
+                .totalRunningSeconds(runningTime)
+                .startedAt(startedAt)
                 .build();
         team = Team.builder()
                 .title("test team")
@@ -96,7 +104,6 @@ public class RunningDataMoveToMemTest {
                 .build();
         teamRepository.save(team);
 
-        final int numOfUser = 5;
         crew = textureFactory.makeCrew(true);
 
         for (int i = 0; i < numOfUser; i++) {
@@ -113,7 +120,6 @@ public class RunningDataMoveToMemTest {
             teamMemberRepository.save(teamMember);
             teamMembers.add(teamMember);
         }
-        redisTemplate.exec();
         TestTransaction.end();
 
         //when
@@ -122,9 +128,9 @@ public class RunningDataMoveToMemTest {
         //then
         TeamInfo teamInfo = teamInfoRepository.findById(team.getId()).orElse(null);
 
-        assertEquals(teamInfo.getMembers().size(), teamMembers.size());
-        for (int i = 0; i < teamInfo.getMembers().size(); i++) {
-            assertEquals(teamInfo.getMembers().get(i), teamMembers.get(i).getId());
+        assertEquals(teamInfo.getOnlineMembers().size(), teamMembers.size());
+        for (int i = 0; i < teamInfo.getOnlineMembers().size(); i++) {
+            assertEquals(teamInfo.getOnlineMembers().get(i), teamMembers.get(i).getId());
         }
 
         assertEquals(teamInfo.getGoal().getDistance(), team.getGoal().getTotalDistance());

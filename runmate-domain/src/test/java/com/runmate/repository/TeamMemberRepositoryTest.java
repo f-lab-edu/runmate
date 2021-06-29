@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @Transactional
@@ -63,6 +64,21 @@ public class TeamMemberRepositoryTest {
 
         TeamMember result = teamMemberRepository.findById(teamMember.getId()).get();
         checkSameTeamMember(teamMember, result);
+    }
+
+    @Test
+    public void When_findByIdAndTeam() {
+        TeamMember teamMember = TeamMember.builder()
+                .team(team)
+                .crewUser(crewUser)
+                .build();
+        teamMemberRepository.save(teamMember);
+
+        //when
+        TeamMember result = teamMemberRepository.findByIdAndTeam(teamMember.getId(), team).orElse(null);
+        //then
+        assertNotNull(result);
+        assertEquals(result.getTeam().getId(), team.getId());
     }
 
     void checkSameTeamMember(TeamMember one, TeamMember another) {

@@ -1,5 +1,6 @@
 package com.runmate.service;
 
+import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.redis.GoalForTempStore;
@@ -20,17 +21,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 public class RunningDataMoveToDiskTest {
     @Autowired
     TeamRepository teamRepository;
@@ -55,9 +60,9 @@ public class RunningDataMoveToDiskTest {
     void loadData() {
         //init rdbms
         final int numOfMember = 5;
-        final long goalSeconds = 3600L;
+        final long goalSeconds = 3800L;
         final float goalDistance = 10F;
-        final LocalDateTime startedAt = LocalDateTime.now();
+        final LocalDateTime startedAt = now().minus(1, ChronoUnit.HOURS);
         final int adminIndex = 0;
         memberIds = new ArrayList<>();
         memberInfos = new ArrayList<>();
@@ -98,6 +103,7 @@ public class RunningDataMoveToDiskTest {
                 .teamId(team.getId())
                 .adminId(memberIds.get(adminIndex))
                 .goal(goalForTempStore)
+                .totalMembers(memberIds)
                 .build();
         teamInfo.increaseTotalDistance(0.5F);
 
@@ -108,7 +114,7 @@ public class RunningDataMoveToDiskTest {
                     .build();
             memberInfo.increaseTotalDistance(0.1F);
 
-            teamInfo.getMembers().add(memberId);
+            teamInfo.getOnlineMembers().add(memberId);
             memberInfoRepository.save(memberInfo);
         });
         teamInfoRepository.save(teamInfo);
