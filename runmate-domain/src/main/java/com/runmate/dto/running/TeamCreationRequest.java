@@ -1,6 +1,5 @@
 package com.runmate.dto.running;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +18,5 @@ public class TeamCreationRequest {
     private final List<String> emails;
     @NotNull
     private final TeamGoalRequest goal;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime startTime;
 }

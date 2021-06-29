@@ -29,6 +29,7 @@ public class TeamMember {
     @Embedded
     private IndividualResult result;
 
+    @Column(name = "team_member_status")
     @Enumerated(EnumType.STRING)
     private TeamMemberStatus teamMemberStatus;
 
