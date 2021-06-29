@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,6 +27,9 @@ public class Team {
 
     @Embedded
     private Result result;
+
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    private List<TeamMember> teamMembers = new ArrayList<>();
 
     @Builder
     public Team(String title, Goal goal) {
