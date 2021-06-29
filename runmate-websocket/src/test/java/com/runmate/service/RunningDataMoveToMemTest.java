@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -87,11 +88,15 @@ public class RunningDataMoveToMemTest {
     @Test
     void When_PersistRunningDataToMem_Initialize_Redis() {
         //given
+        final LocalDateTime startedAt = now().minus(1, ChronoUnit.HOURS);
+        final Long runningTime = 3700L;
+        final int numOfUser = 5;
+
         TestTransaction.flagForCommit();
         Goal goal = Goal.builder()
                 .totalDistance(10.0F)
-                .totalRunningSeconds(3600L)
-                .startedAt(LocalDateTime.now().plus(10, ChronoUnit.HOURS))
+                .totalRunningSeconds(runningTime)
+                .startedAt(startedAt)
                 .build();
         team = Team.builder()
                 .title("test team")
@@ -99,7 +104,6 @@ public class RunningDataMoveToMemTest {
                 .build();
         teamRepository.save(team);
 
-        final int numOfUser = 5;
         crew = textureFactory.makeCrew(true);
 
         for (int i = 0; i < numOfUser; i++) {
@@ -116,7 +120,6 @@ public class RunningDataMoveToMemTest {
             teamMemberRepository.save(teamMember);
             teamMembers.add(teamMember);
         }
-        redisTemplate.exec();
         TestTransaction.end();
 
         //when
