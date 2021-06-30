@@ -47,11 +47,7 @@ public class RunningDataManageService {
 
     public void clearAllRunningData(long teamId, long memberId) {
         List<String> deleteKeys = new ArrayList<>();
-        TeamInfo teamInfo = teamInfoRepository.findById(teamId)
-                .orElse(null);
-        if (teamInfo != null)
-            deleteKeys.add(teamKey + ":" + teamId);
-
+        teamInfoRepository.findById(teamId).ifPresent(teamInfo -> deleteKeys.add(teamKey + ":" + teamId));
         deleteKeys.add(memberKey + ":" + memberId);
         redisTemplate.delete(deleteKeys);
     }

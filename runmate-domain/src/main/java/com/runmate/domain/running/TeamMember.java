@@ -29,6 +29,10 @@ public class TeamMember {
     @Embedded
     private IndividualResult result;
 
+    @Column(name = "team_member_status")
+    @Enumerated(EnumType.STRING)
+    private TeamMemberStatus teamMemberStatus;
+
     @Builder
     public TeamMember(CrewUser crewUser, Team team) {
         this.crewUser = crewUser;
@@ -37,6 +41,7 @@ public class TeamMember {
                 .totalDistance(0F)
                 .totalRunningSeconds(0L)
                 .build();
+        this.teamMemberStatus = TeamMemberStatus.PENDING;
     }
 
     public void decideResult(Long runningSeconds, float distance) {
@@ -44,5 +49,9 @@ public class TeamMember {
                 .totalDistance(distance)
                 .totalRunningSeconds(runningSeconds)
                 .build();
+    }
+
+    public boolean isDifferentCrew(CrewUser crewUser) {
+        return !this.crewUser.getCrew().equals(crewUser.getCrew());
     }
 }
