@@ -1,11 +1,12 @@
 package com.runmate.domain.running;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,5 +27,10 @@ public class Goal {
         this.totalDistance = totalDistance;
         this.totalRunningSeconds = totalRunningSeconds;
         this.startedAt = startedAt;
+    }
+
+    public LocalTime calculatePace() {
+        long secondsPerDistance = totalRunningSeconds / (long) totalDistance;
+        return LocalDateTime.ofEpochSecond(secondsPerDistance, 0, ZoneOffset.UTC).toLocalTime();
     }
 }
