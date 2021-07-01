@@ -64,6 +64,7 @@ public class RunningDataMoveService {
             teamInfo = TeamInfo.fromGoal()
                     .teamId(teamId)
                     .goal(team.getGoal())
+                    .adminId(team.getLeader().getId())
                     .totalMembers(totalMembers)
                     .build();
         }

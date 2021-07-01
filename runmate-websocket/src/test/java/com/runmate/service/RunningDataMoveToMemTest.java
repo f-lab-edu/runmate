@@ -71,11 +71,12 @@ public class RunningDataMoveToMemTest {
         while (iterator.hasNext()) {
             redisTemplate.delete(iterator.next());
         }
+        team.assignLeader(null);
+        teamRepository.save(team);
 
         teamMembers.forEach(teamMember -> {
             teamMemberRepository.delete(teamMember);
         });
-        teamRepository.delete(team);
         crewUsers.forEach(crewUser -> {
             crewUserRepository.delete(crewUser);
         });
@@ -83,6 +84,7 @@ public class RunningDataMoveToMemTest {
         users.forEach(user -> {
             userRepository.delete(user);
         });
+        teamRepository.delete(team);
     }
 
     @Test
@@ -91,6 +93,7 @@ public class RunningDataMoveToMemTest {
         final LocalDateTime startedAt = now().minus(1, ChronoUnit.HOURS);
         final Long runningTime = 3700L;
         final int numOfUser = 5;
+        final int indexOfAdmin = 0;
 
         TestTransaction.flagForCommit();
         Goal goal = Goal.builder()
@@ -105,7 +108,6 @@ public class RunningDataMoveToMemTest {
         teamRepository.save(team);
 
         crew = textureFactory.makeCrew(true);
-
         for (int i = 0; i < numOfUser; i++) {
             User user = textureFactory.makeUser(i + "ran@ran.com", true);
             CrewUser crewUser = textureFactory.makeCrewUser(crew, user, true);
@@ -120,6 +122,10 @@ public class RunningDataMoveToMemTest {
             teamMemberRepository.save(teamMember);
             teamMembers.add(teamMember);
         }
+
+        team.assignLeader(teamMembers.get(indexOfAdmin));
+        teamRepository.save(team);
+
         TestTransaction.end();
 
         //when
