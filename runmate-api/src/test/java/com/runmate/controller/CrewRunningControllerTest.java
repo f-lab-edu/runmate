@@ -5,6 +5,7 @@ import com.runmate.TestActiveProfilesResolver;
 import com.runmate.configure.jwt.JwtAuthenticationFilter;
 import com.runmate.configure.jwt.JwtProvider;
 import com.runmate.domain.crew.CrewUser;
+import com.runmate.domain.user.Grade;
 import com.runmate.domain.user.User;
 import com.runmate.dto.AuthRequest;
 import com.runmate.exception.NotFoundCrewUserException;
@@ -27,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -39,26 +41,27 @@ import static org.hamcrest.Matchers.*;
 @ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 class CrewRunningControllerTest {
 
+    private static final String TEAM_MEMBER_RESOUCE_PATTERN = "http://localhost/api/crew-running/teams/[0-9]+/members/[0-9]+";
     MockMvc mockMvc;
 
-    @Autowired
-    WebApplicationContext ctx;
-    @Autowired
-    JwtProvider provider;
+    @Autowired WebApplicationContext ctx;
+    @Autowired JwtProvider provider;
+    @Autowired UserService userService;
+    @Autowired CrewUserRepository crewUserRepository;
+    @Autowired ObjectMapper mapper;
 
     User leaderUser;
     String leaderToken;
     CrewUser leaderCrewUser;
 
-    static final String WITH_CREW_USER_EMAIL = "you@you.com";
+    private static final String WITH_CREW_USER_EMAIL = "you@you.com";
 
-    @Autowired
-    UserService userService;
-    @Autowired
-    CrewUserRepository crewUserRepository;
-
-    @Autowired
-    ObjectMapper mapper;
+    private static final String TEAM_TITLE = "my team";
+    private static final String FIRST_MEMBER_EMAIL = "one@gmail.com";
+    private static final String SECOND_MEMBER_EMAIL = "two@gmail.com";
+    private static final double TEAM_GOAL_DISTANCE = 5.0d;
+    private static final int TEAM_GOAL_TIME = 1500;
+    private static final String TEAM_START_TIME = "2021-06-29 23:30:30";
 
     @BeforeEach
     void createValidToken() throws Exception {
@@ -92,17 +95,17 @@ class CrewRunningControllerTest {
     }
 
     @Test
-    @DisplayName("초기 초대 멤버 없이 팀 생성 요청은 201 Created 응답을 받고 응답 본문의 data 속성이 비어있음")
+    @DisplayName("초기 초대 멤버 없이 팀 생성 요청은 201 Created 응답을 받고 응답 본문의 data 속성은 생성된 팀의 정보의 members가 비어 있는 배열로 구성")
     void When_CreateTeam_WithNoInitialMember_Expect_StatusCreated_BodyDataIsEmptyArray() throws Exception {
         String requestBody = "{\n" +
                 "  \"leader_id\": " + leaderCrewUser.getId() + ", \n" +
-                "  \"title\": \"my team\", \n" +
+                "  \"title\": \"" + TEAM_TITLE + "\", \n" +
                 "  \"emails\": [], \n" +
                 "  \"goal\": {\n" +
-                "    \"distance\": 5.0, \n" +
-                "    \"running_time\": 1500\n" +
+                "    \"distance\": " + TEAM_GOAL_DISTANCE + ", \n" +
+                "    \"running_time\": " + TEAM_GOAL_TIME + "\n" +
                 "  },\n" +
-                "  \"start_time\" : \"2021-06-29 23:30:30\"" + "\n" +
+                "  \"start_time\" : \"" + TEAM_START_TIME + "\"" + "\n" +
                 "}";
 
         ResultActions result = mockMvc.perform(
@@ -116,23 +119,31 @@ class CrewRunningControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(redirectedUrlPattern("**/api/crew-running/teams/*"))
                 .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.data").isArray());
+                .andExpect(jsonPath("$.data").isMap())
+                .andExpect(jsonPath("$.data.id").exists())
+                .andExpect(jsonPath("$.data.title", is(TEAM_TITLE)))
+                .andExpect(jsonPath("$.data.members").isArray())
+                .andExpect(jsonPath("$.data.members.length()", is(0)))
+                .andExpect(jsonPath("$.data.goal.distance", is(TEAM_GOAL_DISTANCE)))
+                .andExpect(jsonPath("$.data.goal.running_time", is(TEAM_GOAL_TIME)))
+                .andExpect(jsonPath("$.data.goal.pace", is("00:05:00")))
+                .andExpect(jsonPath("$.data.start_time").exists());
     }
 
     @Test
-    @DisplayName("초기 초대 멤버를 지닌 팀 생성 요청은 201 Created 응답을 받고 응답 본문의 data 속성은 생성된 팀멤버 객체의 id에 대한 uri의 배열로 구성됨")
-    void When_CreateTeam_WithInitialMembers_Expect_StatusCreated_BodyDataIsArrayContainingUris() throws Exception {
+    @DisplayName("초기 초대 멤버를 지닌 팀 생성 요청은 201 Created 응답을 받고 응답 본문의 data 속성은 생성된 팀의 정보를 TeamCreationResponse에 TeamMemberCreationResponse와 함께 구성함")
+    void When_CreateTeam_WithInitialMembers_Expect_StatusCreated_BodyDataIsMapWithTeamInformation() throws Exception {
         String requestBody = "{\n" +
                 "  \"leader_id\": " + leaderCrewUser.getId() + ", \n" +
-                "  \"title\": \"my team\", \n" +
+                "  \"title\": \"" + TEAM_TITLE + "\", \n" +
                 "  \"emails\": [" +
-                "  \"one@gmail.com\", \"two@gmail.com\"" +
+                "  \"" + FIRST_MEMBER_EMAIL + "\", \"" + SECOND_MEMBER_EMAIL + "\"" +
                 "  ], \n" +
                 "  \"goal\": {\n" +
-                "    \"distance\": 5.0, \n" +
-                "    \"running_time\": 1500\n" +
+                "    \"distance\": " + TEAM_GOAL_DISTANCE + ", \n" +
+                "    \"running_time\": " + TEAM_GOAL_TIME + "\n" +
                 "  },\n" +
-                "  \"start_time\" : \"2021-06-29 23:30:30\"" + "\n" +
+                "  \"start_time\" : \"" + TEAM_START_TIME + "\"" + "\n" +
                 "}";
 
         ResultActions result = mockMvc.perform(
@@ -146,10 +157,29 @@ class CrewRunningControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(redirectedUrlPattern("**/api/crew-running/teams/*"))
                 .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.length()", is(2)))
-                .andExpect(jsonPath("$.data[0]").isString())
-                .andExpect(jsonPath("$.data[1]").isString());
+                .andExpect(jsonPath("$.data").isMap())
+                .andExpect(jsonPath("$.data.id").exists())
+                .andExpect(jsonPath("$.data.title", is(TEAM_TITLE)))
+                .andExpect(jsonPath("$.data.members").isArray())
+                .andExpect(jsonPath("$.data.members.length()", is(2)))
+                // first member
+                .andExpect(jsonPath("$.data.members[0]").isMap())
+                .andExpect(jsonPath("$.data.members[0].id").exists())
+                .andExpect(jsonPath("$.data.members[0].name", is("one")))
+                .andExpect(jsonPath("$.data.members[0].email", is(FIRST_MEMBER_EMAIL)))
+                .andExpect(jsonPath("$.data.members[0].grade", is(Grade.SILVER.getValue())))
+                .andExpect(jsonPath("$.data.members[0].uri", is(matchesPattern(Pattern.compile(TEAM_MEMBER_RESOUCE_PATTERN)))))
+                // second member
+                .andExpect(jsonPath("$.data.members[1]").isMap())
+                .andExpect(jsonPath("$.data.members[1].id").exists())
+                .andExpect(jsonPath("$.data.members[1].name", is("two")))
+                .andExpect(jsonPath("$.data.members[1].email", is(SECOND_MEMBER_EMAIL)))
+                .andExpect(jsonPath("$.data.members[1].grade", is(Grade.UNRANKED.getValue())))
+                .andExpect(jsonPath("$.data.members[1].uri", is(matchesPattern(Pattern.compile(TEAM_MEMBER_RESOUCE_PATTERN)))))
+                .andExpect(jsonPath("$.data.goal.distance", is(TEAM_GOAL_DISTANCE)))
+                .andExpect(jsonPath("$.data.goal.running_time", is(TEAM_GOAL_TIME)))
+                .andExpect(jsonPath("$.data.goal.pace", is("00:05:00")))
+                .andExpect(jsonPath("$.data.start_time").exists());
     }
 
     @Test
@@ -157,15 +187,15 @@ class CrewRunningControllerTest {
     void When_CreateTeam_WithNotSameCrewMemberEmail_Expect_StatusNotFound() throws Exception {
         String requestBody = "{\n" +
                 "  \"leader_id\": " + leaderCrewUser.getId() + ", \n" +
-                "  \"title\": \"my team\", \n" +
+                "  \"title\": \"" + TEAM_TITLE + "\", \n" +
                 "  \"emails\": [" +
-                "  \"one@gmail.com\", \"sdfg@gmail.com\"" +
+                "  \"" + FIRST_MEMBER_EMAIL + "\", \"sdfg@gmail.com\"" +
                 "  ], \n" +
                 "  \"goal\": {\n" +
-                "    \"distance\": 5.0, \n" +
-                "    \"running_time\": 1500\n" +
+                "    \"distance\": " + TEAM_GOAL_DISTANCE + ", \n" +
+                "    \"running_time\": " + TEAM_GOAL_TIME + "\n" +
                 "  },\n" +
-                "  \"start_time\" : \"2021-06-29 23:30:30\"" + "\n" +
+                "  \"start_time\" : \"" + TEAM_START_TIME + "\"" + "\n" +
                 "}";
 
         ResultActions result = mockMvc.perform(

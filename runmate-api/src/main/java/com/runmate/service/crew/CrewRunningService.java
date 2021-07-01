@@ -11,6 +11,7 @@ import com.runmate.exception.NotFoundTeamException;
 import com.runmate.exception.NotFoundTeamMemberException;
 import com.runmate.exception.NotFoundUserEmailException;
 import com.runmate.repository.crew.CrewUserRepository;
+import com.runmate.repository.running.TeamMemberQueryRepository;
 import com.runmate.repository.running.TeamMemberRepository;
 import com.runmate.repository.running.TeamRepository;
 import com.runmate.repository.user.UserRepository;
@@ -30,6 +31,7 @@ public class CrewRunningService {
     private final CrewUserRepository crewUserRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final TeamMemberQueryRepository teamMemberQueryRepository;
 
     public Team createTeam(TeamCreationRequest request) {
         CrewUser leaderCrewUser = crewUserRepository.findById(request.getLeaderId()).orElseThrow(NotFoundCrewUserException::new);
@@ -58,7 +60,7 @@ public class CrewRunningService {
     public TeamMemberCreationResponse convertMemberCreationResponse(URI uri) {
         String[] pathParts = uri.getPath().split(URI_SEPARATOR);
         long teamMemberId = Long.parseLong(pathParts[pathParts.length - 1]);
-        TeamMemberCreationResponse response = teamMemberRepository.findWithUserById(teamMemberId).orElseThrow(NotFoundTeamMemberException::new);
+        TeamMemberCreationResponse response = teamMemberQueryRepository.findByIdWithUser(teamMemberId).orElseThrow(NotFoundTeamMemberException::new);
         response.setUri(uri);
         return response;
     }
