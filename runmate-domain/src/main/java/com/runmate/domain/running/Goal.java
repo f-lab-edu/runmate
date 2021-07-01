@@ -30,7 +30,7 @@ public class Goal {
     }
 
     public LocalTime calculatePace() {
-        long secondsPerDistance = totalRunningSeconds / (long) totalDistance;
+        long secondsPerDistance = Math.round((float) totalRunningSeconds / totalDistance);
         return LocalDateTime.ofEpochSecond(secondsPerDistance, 0, ZoneOffset.UTC).toLocalTime();
     }
 }
