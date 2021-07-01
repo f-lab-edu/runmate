@@ -13,6 +13,8 @@ import java.time.ZoneOffset;
 @Getter
 @EqualsAndHashCode
 public class Goal {
+    private static final int MAX_PACE_SECONDS = 86400;
+
     @Column(name = "goal_total_distance")
     private float totalDistance;
 
@@ -31,6 +33,9 @@ public class Goal {
 
     public LocalTime calculatePace() {
         long secondsPerDistance = Math.round((float) totalRunningSeconds / totalDistance);
+        if (secondsPerDistance >= MAX_PACE_SECONDS) {
+            return LocalTime.of(23, 59, 59);
+        }
         return LocalDateTime.ofEpochSecond(secondsPerDistance, 0, ZoneOffset.UTC).toLocalTime();
     }
 }
