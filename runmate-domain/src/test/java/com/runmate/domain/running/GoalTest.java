@@ -1,6 +1,5 @@
 package com.runmate.domain.running;
 
-import jdk.vm.ci.meta.Local;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -12,7 +11,6 @@ import java.time.LocalTime;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GoalTest {
@@ -43,4 +41,16 @@ class GoalTest {
         );
     }
 
+    @Test
+    @DisplayName("속력이 24시간을 넘어가면 23:59:59를 반환")
+    void GivenPaceIsOverMaxSeconds_WhenCalculatePace_ThenReturn235959() {
+        //given
+        Goal goal = Goal.builder().totalDistance(0.01f).totalRunningSeconds(60 * 60 * 2 + 60 * 32 + 4).build();
+
+        //when
+        LocalTime pace = goal.calculatePace();
+
+        //then
+        assertThat(pace).isEqualTo(LocalTime.of(23, 59, 59));
+    }
 }
