@@ -3,15 +3,14 @@ package com.runmate.controller;
 import com.runmate.domain.running.Team;
 import com.runmate.domain.running.TeamMember;
 import com.runmate.dto.running.TeamCreationRequest;
+import com.runmate.dto.running.TeamCreationResponse;
+import com.runmate.dto.running.TeamMemberCreationResponse;
 import com.runmate.service.crew.CrewRunningService;
 import com.runmate.utils.JsonWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -28,12 +27,13 @@ public class CrewRunningController {
     public ResponseEntity<JsonWrapper> createTeam(@RequestBody TeamCreationRequest request) {
         Team team = crewRunningService.createTeam(request);
         List<String> initialMemberEmails = request.getEmails();
-        List<URI> memberUris = initialMemberEmails.stream()
+        List<TeamMemberCreationResponse> members = initialMemberEmails.stream()
                 .map(email -> crewRunningService.addMember(team, email))
                 .map(teamMember -> buildTeamMemberUri(team, teamMember))
+                .map(crewRunningService::convertMemberCreationResponse)
                 .collect(Collectors.toList());
 
-        JsonWrapper body = JsonWrapper.success(memberUris);
+        JsonWrapper body = JsonWrapper.success(TeamCreationResponse.of(team, members));
         URI uri = WebMvcLinkBuilder.linkTo(CrewRunningController.class).slash("teams").slash(team.getId()).toUri();
         return ResponseEntity.created(uri).body(body);
     }

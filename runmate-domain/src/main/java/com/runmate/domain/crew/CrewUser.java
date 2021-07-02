@@ -31,14 +31,14 @@ public class CrewUser {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
-    public CrewUser(User user,Crew crew,Role role){
-        this.user=user;
-        this.crew=crew;
-        this.role=role;
+    public CrewUser(User user, Crew crew, Role role) {
+        this.user = user;
+        this.crew = crew;
+        this.role = role;
     }
 
     public boolean isNormal() {

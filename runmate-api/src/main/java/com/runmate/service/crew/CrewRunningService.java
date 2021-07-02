@@ -5,9 +5,13 @@ import com.runmate.domain.running.Team;
 import com.runmate.domain.running.TeamMember;
 import com.runmate.domain.user.User;
 import com.runmate.dto.running.TeamCreationRequest;
+import com.runmate.dto.running.TeamMemberCreationResponse;
 import com.runmate.exception.NotFoundCrewUserException;
+import com.runmate.exception.NotFoundTeamException;
+import com.runmate.exception.NotFoundTeamMemberException;
 import com.runmate.exception.NotFoundUserEmailException;
 import com.runmate.repository.crew.CrewUserRepository;
+import com.runmate.repository.running.TeamMemberQueryRepository;
 import com.runmate.repository.running.TeamMemberRepository;
 import com.runmate.repository.running.TeamRepository;
 import com.runmate.repository.user.UserRepository;
@@ -15,14 +19,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URI;
+
 @Transactional
 @RequiredArgsConstructor
 @Service
 public class CrewRunningService {
+    private static final String URI_SEPARATOR = "/";
+
     private final UserRepository userRepository;
     private final CrewUserRepository crewUserRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final TeamMemberQueryRepository teamMemberQueryRepository;
 
     public Team createTeam(TeamCreationRequest request) {
         CrewUser leaderCrewUser = crewUserRepository.findById(request.getLeaderId()).orElseThrow(NotFoundCrewUserException::new);
@@ -41,5 +50,18 @@ public class CrewRunningService {
         // 초대 후처리
 
         return teamMemberRepository.save(teamMember);
+    }
+
+    @Transactional(readOnly = true)
+    public Team findTeamById(Long teamId) {
+        return teamRepository.findById(teamId).orElseThrow(NotFoundTeamException::new);
+    }
+
+    public TeamMemberCreationResponse convertMemberCreationResponse(URI uri) {
+        String[] pathParts = uri.getPath().split(URI_SEPARATOR);
+        long teamMemberId = Long.parseLong(pathParts[pathParts.length - 1]);
+        TeamMemberCreationResponse response = teamMemberQueryRepository.findByIdWithUser(teamMemberId).orElseThrow(NotFoundTeamMemberException::new);
+        response.setUri(uri);
+        return response;
     }
 }
