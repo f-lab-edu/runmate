@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -107,5 +109,32 @@ public class JudgeRunningDataServiceTest {
 
         //then
         assertEquals(true, judgeRunningDataService.isTeamTimeOver(teamInfo.getTeamId()));
+    }
+
+    @Test
+    void When_isTeamLeader() {
+        final Long leaderId = 1L;
+        final Long normalId = 2L;
+        final List<Long> members = Arrays.asList(1L, 2L);
+        final LocalDateTime startedAt = LocalDateTime.now().minus(1, ChronoUnit.HOURS);
+
+        final GoalForTempStore goal = GoalForTempStore.builder()
+                .runningSeconds(3500)
+                .distance(2F)
+                .startedAt(startedAt)
+                .build();
+
+        TeamInfo teamInfo = TeamInfo.builder()
+                .teamId(1L)
+                .goal(goal)
+                .adminId(leaderId)
+                .totalMembers(members)
+                .build();
+
+        teamInfoRepository.save(teamInfo);
+        redisTemplate.exec();
+
+        assertEquals(true, judgeRunningDataService.isTeamLeader(teamInfo.getTeamId(), leaderId));
+        assertEquals(false, judgeRunningDataService.isTeamLeader(teamInfo.getTeamId(), normalId));
     }
 }

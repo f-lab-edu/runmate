@@ -42,11 +42,12 @@ public class RunningDataMoveService {
         team.decideResult(teamInfo.getTotalDistance(), teamInfo.getRunningSeconds(), teamInfo.isSuccessOnRunning());
 
         teamInfo.getTotalMembers().forEach(memberId -> {
-            MemberInfo memberInfo = memberInfoRepository.findById(memberId).orElseThrow(NotFoundMemberInfoException::new);
-            TeamMember teamMember = teamMemberRepository.findById(memberId).orElseThrow(NotFoundTeamMemberException::new);
-            teamMember.decideResult(teamInfo.getRunningSeconds(), memberInfo.getTotalDistance());
+            memberInfoRepository.findById(memberId).ifPresent(memberInfo -> {
+                TeamMember teamMember = teamMemberRepository.findById(memberId).orElseThrow(NotFoundTeamMemberException::new);
+                teamMember.decideResult(teamInfo.getRunningSeconds(), memberInfo.getTotalDistance());
 
-            deleteKeys.add(memberKey + ":" + memberId);
+                deleteKeys.add(memberKey + ":" + memberId);
+            });
         });
         redisTemplate.delete(deleteKeys);
     }
@@ -63,6 +64,7 @@ public class RunningDataMoveService {
             teamInfo = TeamInfo.fromGoal()
                     .teamId(teamId)
                     .goal(team.getGoal())
+                    .adminId(team.getLeader().getId())
                     .totalMembers(totalMembers)
                     .build();
         }

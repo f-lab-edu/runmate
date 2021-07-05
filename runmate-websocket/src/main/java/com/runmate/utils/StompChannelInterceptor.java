@@ -24,16 +24,22 @@ public class StompChannelInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
         if (accessor.getCommand() == StompCommand.CONNECT) {
-            final Long teamId = Long.parseLong(accessor.getFirstNativeHeader(TEAM_ID_HEADER));
-            final Long memberId = Long.parseLong(accessor.getFirstNativeHeader(MEMBER_ID_HEADER));
+            final Long teamId = getTeamIdFromStompHeader(accessor, TEAM_ID_HEADER);
+            final Long memberId = getTeamIdFromStompHeader(accessor, MEMBER_ID_HEADER);
 
             runningDataMoveService.persistRunningDataToMem(teamId, memberId);
         } else if (accessor.getCommand() == StompCommand.DISCONNECT) {
-            final Long teamId = Long.parseLong(accessor.getFirstNativeHeader(TEAM_ID_HEADER));
-            if (judgeRunningDataService.isTeamTimeOver(teamId)) {
+            final Long teamId = getTeamIdFromStompHeader(accessor, TEAM_ID_HEADER);
+            final Long memberId = getTeamIdFromStompHeader(accessor, MEMBER_ID_HEADER);
+
+            if (judgeRunningDataService.isTeamLeader(teamId, memberId))
                 runningDataMoveService.persistRunningResultToDisk(teamId);
-            }
         }
         return message;
     }
+
+    private Long getTeamIdFromStompHeader(StompHeaderAccessor accessor, String key) {
+        return Long.parseLong(accessor.getFirstNativeHeader(key));
+    }
+
 }
