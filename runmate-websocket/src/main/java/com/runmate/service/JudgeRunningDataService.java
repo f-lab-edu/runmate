@@ -13,6 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class JudgeRunningDataService {
     private final TeamInfoRepository teamInfoRepository;
 
+    public boolean isTeamFinishedRunning(long teamId) {
+        TeamInfo teamInfo = findTeamInfo(teamId);
+        return teamInfo.isTeamFinishedRunning();
+    }
+
     public boolean isTeamLeader(long teamId, long memberId) {
         TeamInfo teamInfo = findTeamInfo(teamId);
         return teamInfo.getTeamId() == memberId;

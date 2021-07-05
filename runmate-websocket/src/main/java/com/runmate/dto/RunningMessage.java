@@ -20,6 +20,7 @@ public class RunningMessage {
     @JsonProperty("position")
     private Position position;
     private float distance;
+    private MessageType messageType;
 
     @Builder
     public RunningMessage(Long teamId, Long memberId, String username, LocalTime averagePace, LocalTime instantaneousPace, Position position, float distance) {
@@ -30,5 +31,10 @@ public class RunningMessage {
         this.instantaneousPace = instantaneousPace;
         this.position = position;
         this.distance = distance;
+        this.messageType = MessageType.RUNNING;
+    }
+
+    public void changeMessageType(MessageType messageType) {
+        this.messageType = messageType;
     }
 }

@@ -2,6 +2,7 @@ package com.runmate.service;
 
 import com.runmate.domain.redis.MemberInfo;
 import com.runmate.domain.redis.TeamInfo;
+import com.runmate.dto.MessageType;
 import com.runmate.dto.RunningMessage;
 import com.runmate.exception.NotFoundMemberInfoException;
 import com.runmate.exception.NotFoundTeamInfoException;
@@ -26,23 +27,37 @@ public class RunningDataManageService {
     private final MemberInfoRepository memberInfoRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void updateRunningData(RunningMessage message) {
+    public RunningMessage updateRunningData(RunningMessage message) {
         updateMemberInfo(message);
-        updateTeamInfo(message);
+        TeamInfo teamInfo = updateTeamInfo(message);
+        return assignMessageType(message, teamInfo);
     }
 
-    private void updateMemberInfo(RunningMessage message) {
+    private MemberInfo updateMemberInfo(RunningMessage message) {
         long memberId = message.getMemberId();
         MemberInfo memberInfo = memberInfoRepository.findById(memberId).orElseThrow(NotFoundMemberInfoException::new);
         memberInfo.increaseTotalDistance(message.getDistance());
         memberInfoRepository.save(memberInfo);
+        return memberInfo;
     }
 
-    private void updateTeamInfo(RunningMessage message) {
+    private TeamInfo updateTeamInfo(RunningMessage message) {
         long teamId = message.getTeamId();
         TeamInfo teamInfo = teamInfoRepository.findById(teamId).orElseThrow(NotFoundTeamInfoException::new);
         teamInfo.increaseTotalDistance(message.getDistance());
         teamInfoRepository.save(teamInfo);
+        return teamInfo;
+    }
+
+    private RunningMessage assignMessageType(RunningMessage message, TeamInfo teamInfo) {
+        if (teamInfo.isFailOnRunning())
+            message.changeMessageType(MessageType.FAIL);
+        else if (teamInfo.isSuccessOnRunning()) {
+            message.changeMessageType(MessageType.SUCCESS);
+        } else {
+            message.changeMessageType(MessageType.RUNNING);
+        }
+        return message;
     }
 
     public void clearAllRunningData(long teamId, long memberId) {
