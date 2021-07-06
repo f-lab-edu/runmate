@@ -13,39 +13,54 @@ memberId:<input type="text" name="memberId" id="memberId"><br>
 <form id="messageForm">
     username:<input type="text" name="username" id="username"><br>
     latitude:<input type="text" name="latitude" id="latitude"><br>
-    longitude:<input type="text" name="longitude" id="longitude">
+    longitude:<input type="text" name="longitude" id="longitude"><br>
 
     <input type="submit" value="send message">
 </form>
-<div id="messageWindow">
 
+<div>
+    현재 속도:<span id="currentSpeedTxt">0 km/s</span>
+    <button id="speedUp">속도 증가▲</button>
+    <button id="speedDown">속도 감소▽</button>
+</div>
+
+<div id="messageWindow">
 </div>
 
 <script type="text/javascript">
+    let currentSpeed = 0;
+    let interval;
+    const currentSpeedTxt = document.getElementById('currentSpeedTxt');
+    const speedUp = document.getElementById('speedUp');
+    const speedDown = document.getElementById('speedDown');
+
+    speedUp.addEventListener('click', ev => {
+        currentSpeed = Math.round((currentSpeed + 0.1) * 10) / 10;
+        currentSpeedTxt.innerText = currentSpeed + " km/s";
+    })
+    speedDown.addEventListener('click', ev => {
+        currentSpeed = Math.max(0, Math.round((currentSpeed - 0.1) * 10) / 10)
+        currentSpeedTxt.innerText = currentSpeed + " km/s";
+    })
+
     const messageForm = document.getElementById('messageForm');
     const messageWindow = document.getElementById('messageWindow');
     const btnEnter = document.getElementById('btnEnter');
     var stompClient = null;
 
-    messageForm.addEventListener("submit", e => {
-        e.preventDefault();
-        const teamId = document.getElementById('teamId').value;
-        const username = document.getElementById('username').value;
-        const latitude = document.getElementById('latitude').value;
-        const longitude = document.getElementById('longitude').value;
 
-        const jsonValue = JSON.stringify({
-            teamId: teamId,
-            username: username,
-            position: {latitude: latitude, longitude: longitude}
-        })
-        stompClient.send('/app/running', {}, jsonValue);
-    });
+    function running() {
+            const teamId = document.getElementById('teamId').value;
+            const memberId = document.getElementById('memberId').value;
+            const username = document.getElementById('username').value;
 
-    function renderItem(jsonItem) {
-        const divEl = document.createElement('div')
-        divEl.innerText = 'From:' + jsonItem.username + ", pos:(" + jsonItem.position.latitude + "," + jsonItem.position.longitude + ")";
-        messageWindow.appendChild(divEl);
+            const jsonValue = JSON.stringify({
+                teamId: teamId,
+                memberId: memberId,
+                username: username,
+                distance: currentSpeed,
+            });
+            stompClient.send('/app/running', {}, jsonValue);
     }
 
     btnEnter.addEventListener("click", ev => {
@@ -61,14 +76,30 @@ memberId:<input type="text" name="memberId" id="memberId"><br>
             stompClient.connect({teamId: teamId, memberId: memberId}, function (frame) {
                 stompClient.subscribe('/topic/' + teamId, function (messageOutput) {
                     const jsonResult = JSON.parse(messageOutput.body);
-                    renderItem(jsonResult);
+                    console.log(jsonResult);
+
+                    if (jsonResult.messageType == "SUCCESS") {
+                        stompClient.disconnect(() => {
+                            console.log("success");
+                            console.log(teamId + "," + memberId);
+                            clearInterval(interval);
+                        }, {teamId: teamId, memberId: memberId});
+                    } else if (jsonResult.messageType == "FAIL") {
+                        stompClient.disconnect(() => {
+                            console.log("fail");
+                            console.log(teamId + "," + memberId);
+                            clearInterval(interval);
+                        }, {teamId: teamId, memberId: memberId});
+                    } else {
+                        console.log(jsonResult);
+                    }
                 });
             });
         }
 
         connect();
+        interval=setInterval(running, 1000);
     });
-
 </script>
 </body>
 </html>

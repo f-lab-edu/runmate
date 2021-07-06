@@ -16,3 +16,5 @@ values (4, 1, 0, 0);
 
 insert into team_member(crew_user_id, team_id, individual_distance, individual_running_seconds)
 values (5, 1, 0, 0);
+
+update team set leader_id=1 where id = 1;

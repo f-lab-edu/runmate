@@ -93,6 +93,11 @@ public class TeamInfo {
         return currentTime.isBefore(this.getGoal().getStartedAt());
     }
 
+    @JsonIgnore
+    public boolean isTeamFinishedRunning() {
+        return isTimeOver() || this.totalDistance >= goal.getDistance();
+    }
+
     public void participateRunning(Long memberId) {
         checkCanParticipate(memberId);
         this.getOnlineMembers().add(memberId);

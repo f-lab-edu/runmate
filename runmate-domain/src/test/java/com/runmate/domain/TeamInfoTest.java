@@ -46,7 +46,7 @@ public class TeamInfoTest {
     void When_IsSuccessOnRunning_Expect_True() {
         final float goalDistance = 10F;
         final float currentDistance = 12F;
-        final LocalDateTime start = LocalDateTime.now().minus(1,ChronoUnit.HOURS);
+        final LocalDateTime start = LocalDateTime.now().minus(1, ChronoUnit.HOURS);
         final long hour = 3600;
 
         goal = GoalForTempStore.builder()
@@ -87,8 +87,9 @@ public class TeamInfoTest {
 
     @Test
     void When_IsTimeOver_Expect_True() {
+        final LocalDateTime start = LocalDateTime.now().minus(10, ChronoUnit.HOURS);
         goal = GoalForTempStore.builder()
-                .startedAt(LocalDateTime.now().minus(10, ChronoUnit.HOURS))
+                .startedAt(start)
                 .distance(10)
                 .runningSeconds(1)
                 .build();
@@ -99,5 +100,25 @@ public class TeamInfoTest {
                 .build();
 
         teamInfo.isTimeOver();
+    }
+
+    @Test
+    void When_IsTeamFinishedRunning_Expect_True() {
+        final float goalDistance = 5F;
+        final float increasedDistance = 6F;
+        final LocalDateTime start = LocalDateTime.now().minus(5, ChronoUnit.MINUTES);
+        goal = GoalForTempStore.builder()
+                .startedAt(LocalDateTime.now().minus(10, ChronoUnit.HOURS))
+                .distance(goalDistance)
+                .runningSeconds(360)
+                .build();
+        teamInfo = TeamInfo.builder()
+                .teamId(2L)
+                .adminId(3L)
+                .goal(goal)
+                .build();
+        teamInfo.increaseTotalDistance(increasedDistance);
+
+        assertEquals(true, teamInfo.isTeamFinishedRunning());
     }
 }
