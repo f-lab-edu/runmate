@@ -1,7 +1,6 @@
-package com.runmate.repository.redis;
+package com.runmate.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.runmate.domain.redis.TeamInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;

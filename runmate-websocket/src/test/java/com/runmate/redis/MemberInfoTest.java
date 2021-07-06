@@ -1,12 +1,8 @@
-package com.runmate.domain;
+package com.runmate.redis;
 
-import com.runmate.domain.redis.GoalForTempStore;
-import com.runmate.domain.redis.MemberInfo;
-import com.runmate.domain.redis.TeamInfo;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

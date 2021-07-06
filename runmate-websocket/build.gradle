@@ -5,6 +5,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

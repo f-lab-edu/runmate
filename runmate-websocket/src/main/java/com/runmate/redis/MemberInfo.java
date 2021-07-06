@@ -1,4 +1,4 @@
-package com.runmate.domain.redis;
+package com.runmate.redis;
 
 import lombok.AccessLevel;
 import lombok.Builder;

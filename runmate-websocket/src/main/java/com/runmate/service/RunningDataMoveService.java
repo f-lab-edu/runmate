@@ -1,12 +1,12 @@
 package com.runmate.service;
 
-import com.runmate.domain.redis.MemberInfo;
-import com.runmate.domain.redis.TeamInfo;
+import com.runmate.redis.MemberInfo;
+import com.runmate.redis.TeamInfo;
 import com.runmate.domain.running.Team;
 import com.runmate.domain.running.TeamMember;
 import com.runmate.exception.*;
-import com.runmate.repository.redis.MemberInfoRepository;
-import com.runmate.repository.redis.TeamInfoRepository;
+import com.runmate.redis.MemberInfoRepository;
+import com.runmate.redis.TeamInfoRepository;
 import com.runmate.repository.running.TeamMemberRepository;
 import com.runmate.repository.running.TeamRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.runmate.repository.redis.MemberInfoRepository.memberKey;
-import static com.runmate.repository.redis.TeamInfoRepository.teamKey;
+import static com.runmate.redis.MemberInfoRepository.memberKey;
+import static com.runmate.redis.TeamInfoRepository.teamKey;
 
 @Service
 @RequiredArgsConstructor

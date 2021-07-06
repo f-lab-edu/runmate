@@ -1,4 +1,4 @@
-package com.runmate.configure;
+package com.runmate.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
