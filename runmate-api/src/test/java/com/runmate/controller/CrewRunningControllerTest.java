@@ -41,7 +41,9 @@ import static org.hamcrest.Matchers.*;
 @ActiveProfiles(inheritProfiles = false, resolver = TestActiveProfilesResolver.class)
 class CrewRunningControllerTest {
 
-    private static final String TEAM_MEMBER_RESOUCE_PATTERN = "http://localhost/api/crew-running/teams/[0-9]+/members/[0-9]+";
+    private static final String TEAM_MEMBER_RESOURCE_PATTERN = "http://[^/]+/api/crew-running/teams/[0-9]+/members/[0-9]+";
+    private static final String TEAM_ID = "1";
+
     MockMvc mockMvc;
 
     @Autowired WebApplicationContext ctx;
@@ -55,6 +57,7 @@ class CrewRunningControllerTest {
     CrewUser leaderCrewUser;
 
     private static final String WITH_CREW_USER_EMAIL = "you@you.com";
+    private static final String DIFFERENT_CREW_EMAIL = "sung@sung.com";
 
     private static final String TEAM_TITLE = "my team";
     private static final String FIRST_MEMBER_EMAIL = "one@gmail.com";
@@ -62,6 +65,8 @@ class CrewRunningControllerTest {
     private static final double TEAM_GOAL_DISTANCE = 5.0d;
     private static final int TEAM_GOAL_TIME = 1500;
     private static final String TEAM_START_TIME = "2021-06-29 23:30:30";
+
+    private static final String INVITED_MEMBER_EMAIL = "three@gmail.com";
 
     @BeforeEach
     void createValidToken() throws Exception {
@@ -168,14 +173,14 @@ class CrewRunningControllerTest {
                 .andExpect(jsonPath("$.data.members[0].name", is("one")))
                 .andExpect(jsonPath("$.data.members[0].email", is(FIRST_MEMBER_EMAIL)))
                 .andExpect(jsonPath("$.data.members[0].grade", is(Grade.SILVER.getValue())))
-                .andExpect(jsonPath("$.data.members[0].uri", is(matchesPattern(Pattern.compile(TEAM_MEMBER_RESOUCE_PATTERN)))))
+                .andExpect(jsonPath("$.data.members[0].uri", is(matchesPattern(Pattern.compile(TEAM_MEMBER_RESOURCE_PATTERN)))))
                 // second member
-                .andExpect(jsonPath("$.data.members[1]").isMap())
-                .andExpect(jsonPath("$.data.members[1].id").exists())
-                .andExpect(jsonPath("$.data.members[1].name", is("two")))
-                .andExpect(jsonPath("$.data.members[1].email", is(SECOND_MEMBER_EMAIL)))
-                .andExpect(jsonPath("$.data.members[1].grade", is(Grade.UNRANKED.getValue())))
-                .andExpect(jsonPath("$.data.members[1].uri", is(matchesPattern(Pattern.compile(TEAM_MEMBER_RESOUCE_PATTERN)))))
+                .andExpect(jsonPath("$.data.members[" + TEAM_ID + "]").isMap())
+                .andExpect(jsonPath("$.data.members[" + TEAM_ID + "].id").exists())
+                .andExpect(jsonPath("$.data.members[" + TEAM_ID + "].name", is("two")))
+                .andExpect(jsonPath("$.data.members[" + TEAM_ID + "].email", is(SECOND_MEMBER_EMAIL)))
+                .andExpect(jsonPath("$.data.members[" + TEAM_ID + "].grade", is(Grade.UNRANKED.getValue())))
+                .andExpect(jsonPath("$.data.members[" + TEAM_ID + "].uri", is(matchesPattern(Pattern.compile(TEAM_MEMBER_RESOURCE_PATTERN)))))
                 .andExpect(jsonPath("$.data.goal.distance", is(TEAM_GOAL_DISTANCE)))
                 .andExpect(jsonPath("$.data.goal.running_time", is(TEAM_GOAL_TIME)))
                 .andExpect(jsonPath("$.data.goal.pace", is("00:05:00")))
@@ -202,6 +207,48 @@ class CrewRunningControllerTest {
                 post("/api/crew-running/teams")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody)
+                        .header("Authorization", "Bearer " + leaderToken)
+        );
+
+        result.andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.data", nullValue()))
+                .andExpect(jsonPath("$.error").exists())
+                .andExpect(jsonPath("$.error").isString());
+    }
+
+    @Test
+    @DisplayName("같은 크루 멤버에게로의 초대 요청은 201 Created 응답을 받고 응답 본문의 data 속성은 생성된 멤버의 정보를 TeamMemberCreationResponse로 구성함")
+    void When_InviteMember_WithSameCrew_Expect_StatusCreated_BodyDataIsMapWithTeamMemberInformation() throws Exception {
+        String url = "/api/crew-running/teams/" + TEAM_ID + "/members";
+
+        ResultActions result = mockMvc.perform(
+                post(url)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(INVITED_MEMBER_EMAIL)
+                        .header("Authorization", "Bearer " + leaderToken)
+        );
+
+        result.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(redirectedUrlPattern("**/api/crew-running/teams/*/members/*"))
+                .andExpect(jsonPath("$.data", notNullValue()))
+                .andExpect(jsonPath("$.data.name", is("three")))
+                .andExpect(jsonPath("$.data.email", is("three@gmail.com")))
+                .andExpect(jsonPath("$.data.grade", is("UNRANKED")))
+                .andExpect(jsonPath("$.data.uri", is(matchesPattern(Pattern.compile(TEAM_MEMBER_RESOURCE_PATTERN)))))
+                .andExpect(jsonPath("$.error", nullValue()));
+    }
+
+    @Test
+    @DisplayName("다른 크루 멤버에게로의 초대 요청은 404 Not Found 응답을 받음")
+    void When_InviteMember_WithDifferentCrew_Expect_StatusNotFound() throws Exception {
+        String url = "/api/crew-running/teams/" + TEAM_ID + "/members";
+
+        ResultActions result = mockMvc.perform(
+                post(url)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content(DIFFERENT_CREW_EMAIL)
                         .header("Authorization", "Bearer " + leaderToken)
         );
 

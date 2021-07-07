@@ -57,6 +57,7 @@ public class CrewRunningService {
         return teamRepository.findById(teamId).orElseThrow(NotFoundTeamException::new);
     }
 
+    @Transactional(readOnly = true)
     public TeamMemberCreationResponse convertMemberCreationResponse(URI uri) {
         String[] pathParts = uri.getPath().split(URI_SEPARATOR);
         long teamMemberId = Long.parseLong(pathParts[pathParts.length - 1]);
