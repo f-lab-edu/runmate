@@ -18,3 +18,6 @@ values ('one@gmail.com', '소개', 'one', '1234', 'seoul', 'mapo', 'SILVER');
 
 insert into user(email, introduction, name, password, si, gu, grade)
 values ('two@gmail.com', '소개', 'two', '1234', 'seoul', 'dongjak', 'UNRANKED');
+
+insert into user(email, introduction, name, password, si, gu, grade)
+values ('three@gmail.com', '소개', 'three', '1234', 'seoul', 'dongjak', 'UNRANKED');
