@@ -51,6 +51,14 @@ public class TeamMember {
                 .build();
     }
 
+    public void acceptTeamInvitation() {
+        this.teamMemberStatus = TeamMemberStatus.ACCEPTED;
+    }
+
+    public void rejectTeamInvitation() {
+        this.teamMemberStatus = TeamMemberStatus.REJECTED;
+    }
+
     public boolean isDifferentCrew(CrewUser crewUser) {
         return !this.crewUser.getCrew().equals(crewUser.getCrew());
     }
