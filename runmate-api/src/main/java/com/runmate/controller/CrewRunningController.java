@@ -38,6 +38,19 @@ public class CrewRunningController {
         return ResponseEntity.created(uri).body(body);
     }
 
+    @PostMapping("/teams/{teamId}/members")
+    public ResponseEntity<JsonWrapper> inviteMember(@PathVariable(value = "teamId") long teamId,
+                                                    @RequestBody String memberEmail) {
+
+        Team team = crewRunningService.findTeamById(teamId);
+        TeamMember teamMember = crewRunningService.addMember(team, memberEmail);
+
+        URI uri = buildTeamMemberUri(team, teamMember);
+        TeamMemberCreationResponse response = crewRunningService.convertMemberCreationResponse(uri);
+        JsonWrapper body = JsonWrapper.success(response);
+        return ResponseEntity.created(uri).body(body);
+    }
+
     private URI buildTeamMemberUri(Team team, TeamMember teamMember) {
         return WebMvcLinkBuilder.linkTo(CrewRunningController.class)
                 .slash("teams")
