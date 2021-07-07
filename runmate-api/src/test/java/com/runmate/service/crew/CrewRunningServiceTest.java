@@ -4,9 +4,7 @@ import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.crew.Role;
-import com.runmate.domain.running.Goal;
-import com.runmate.domain.running.Team;
-import com.runmate.domain.running.TeamMember;
+import com.runmate.domain.running.*;
 import com.runmate.domain.user.User;
 import com.runmate.dto.running.TeamCreationRequest;
 import com.runmate.dto.running.TeamGoalRequest;
@@ -84,6 +82,8 @@ class CrewRunningServiceTest {
         //then
         assertThat(createdTeam).isEqualTo(mockedTeam);
         assertThat(mockedTeam.getLeader().getCrewUser()).isEqualTo(leaderCrewUser);
+        assertThat(mockedTeam.getTeamStatus()).isEqualTo(TeamStatus.PENDING);
+        assertThat(mockedTeam.getLeader().getTeamMemberStatus()).isEqualTo(TeamMemberStatus.ACCEPTED);
     }
 
     @Test
