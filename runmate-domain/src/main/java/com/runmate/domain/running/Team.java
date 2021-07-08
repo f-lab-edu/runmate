@@ -70,6 +70,7 @@ public class Team {
 
     public void assignLeader(TeamMember leader) {
         this.leader = leader;
+        this.leader.acceptTeamInvitation();
     }
 
     public void validateMember(CrewUser crewUser) {

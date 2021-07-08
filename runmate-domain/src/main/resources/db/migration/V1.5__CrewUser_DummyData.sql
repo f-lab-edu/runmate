@@ -12,3 +12,6 @@ values (6, 3, 'NORMAL');
 
 insert into crew_user(user_id, crew_id, role)
 values (7, 3, 'NORMAL');
+
+insert into crew_user(user_id, crew_id, role)
+values (8, 3, 'NORMAL');

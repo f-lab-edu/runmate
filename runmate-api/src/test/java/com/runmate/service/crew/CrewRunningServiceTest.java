@@ -4,9 +4,7 @@ import com.runmate.TestActiveProfilesResolver;
 import com.runmate.domain.crew.Crew;
 import com.runmate.domain.crew.CrewUser;
 import com.runmate.domain.crew.Role;
-import com.runmate.domain.running.Goal;
-import com.runmate.domain.running.Team;
-import com.runmate.domain.running.TeamMember;
+import com.runmate.domain.running.*;
 import com.runmate.domain.user.User;
 import com.runmate.dto.running.TeamCreationRequest;
 import com.runmate.dto.running.TeamGoalRequest;
@@ -84,9 +82,47 @@ class CrewRunningServiceTest {
         //then
         assertThat(createdTeam).isEqualTo(mockedTeam);
         assertThat(mockedTeam.getLeader().getCrewUser()).isEqualTo(leaderCrewUser);
+        assertThat(mockedTeam.getTeamStatus()).isEqualTo(TeamStatus.PENDING);
+        assertThat(mockedTeam.getLeader().getTeamMemberStatus()).isEqualTo(TeamMemberStatus.ACCEPTED);
     }
 
     @Test
+    @DisplayName("같은 크루 멤버에게 팀 초대 요청시 PENDING 상태의 TeamMember가 저장됨")
     void addMember() {
+        //given
+        String leaderEmail = "leader@gmail.com";
+        User leaderUser = User.of().email(leaderEmail).build();
+        Crew crew = Crew.builder().name("crew").build();
+        CrewUser leaderCrewUser = CrewUser.builder().user(leaderUser).crew(crew).role(Role.ADMIN).build();
+
+        Team team = Team.builder()
+                .title(request.getTitle())
+                .goal(new Goal(request.getGoal().getDistance(), request.getGoal().getRunningTime(), request.getStartTime()))
+                .build();
+
+        TeamMember leader = TeamMember.builder().team(team).crewUser(leaderCrewUser).build();
+        team.assignLeader(leader);
+
+        String memberEmail = "member@gmail.com";
+
+        User invitedUser = User.of().email(memberEmail).build();
+        CrewUser invitedCrewUser = CrewUser.builder().user(invitedUser).crew(crew).role(Role.NORMAL).build();
+
+        TeamMember mockedMember = TeamMember.builder()
+                .crewUser(invitedCrewUser)
+                .team(team)
+                .build();
+
+        when(userRepository.findByEmail(memberEmail)).thenReturn(Optional.of(invitedUser));
+        when(crewUserRepository.findByUser(invitedUser)).thenReturn(Optional.of(invitedCrewUser));
+        when(teamMemberRepository.save(any())).thenReturn(mockedMember);
+
+        //when
+        TeamMember invitedMember = crewRunningService.addMember(team, memberEmail);
+
+        //then
+        assertThat(mockedMember).isEqualTo(invitedMember);
+        assertThat(invitedMember.getTeam()).isEqualTo(team);
+        assertThat(invitedMember.getTeamMemberStatus()).isEqualTo(TeamMemberStatus.PENDING);
     }
 }

@@ -479,7 +479,7 @@ class CrewControllerTest {
         result.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.length()", is(3)))
+                .andExpect(jsonPath("$.data.length()", is(4)))
                 //첫번째 멤버 출력
                 .andExpect(jsonPath("$.data[0].id", is(4)))
                 .andExpect(jsonPath("$.data[0].username", is("one")))
@@ -500,7 +500,14 @@ class CrewControllerTest {
                 .andExpect(jsonPath("$.data[2].role", is("NORMAL")))
                 .andExpect(jsonPath("$.data[2].total_distance", is(0.0)))
                 .andExpect(jsonPath("$.data[2].total_running_seconds", is(0)))
-                .andExpect(jsonPath("$.data[2].created_at").exists());
+                .andExpect(jsonPath("$.data[2].created_at").exists())
+                //네번째 멤버 출력
+                .andExpect(jsonPath("$.data[3].id", is(6)))
+                .andExpect(jsonPath("$.data[3].username", is("three")))
+                .andExpect(jsonPath("$.data[3].role", is("NORMAL")))
+                .andExpect(jsonPath("$.data[3].total_distance", is(0.0)))
+                .andExpect(jsonPath("$.data[3].total_running_seconds", is(0)))
+                .andExpect(jsonPath("$.data[3].created_at").exists());
     }
 
     @Test
