@@ -7,6 +7,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'com.google.firebase:firebase-admin:6.8.1' // firebase sdk
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
