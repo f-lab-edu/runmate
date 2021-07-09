@@ -10,10 +10,12 @@ import com.runmate.exception.NotFoundCrewUserException;
 import com.runmate.exception.NotFoundTeamException;
 import com.runmate.exception.NotFoundTeamMemberException;
 import com.runmate.exception.NotFoundUserEmailException;
+import com.runmate.infra.FirebaseCloudMessageService;
 import com.runmate.repository.crew.CrewUserRepository;
 import com.runmate.repository.running.TeamMemberQueryRepository;
 import com.runmate.repository.running.TeamMemberRepository;
 import com.runmate.repository.running.TeamRepository;
+import com.runmate.repository.user.UserDeviceQueryRepository;
 import com.runmate.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,9 @@ public class CrewRunningService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamMemberQueryRepository teamMemberQueryRepository;
+    private final UserDeviceQueryRepository userDeviceQueryRepository;
+
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     public Team createTeam(TeamCreationRequest request) {
         CrewUser leaderCrewUser = crewUserRepository.findById(request.getLeaderId()).orElseThrow(NotFoundCrewUserException::new);
@@ -47,8 +52,8 @@ public class CrewRunningService {
         team.validateMember(crewUser);
         TeamMember teamMember = TeamMember.builder().team(team).crewUser(crewUser).build();
 
-        // 초대 후처리
-
+        userDeviceQueryRepository.findAllDeviceTokenByEmail(email)
+                .forEach(deviceToken -> firebaseCloudMessageService.sendMessageTo(deviceToken, "title", "body"));
         return teamMemberRepository.save(teamMember);
     }
 
