@@ -21,7 +21,7 @@ public class UserDeviceQueryRepository {
                     Projections.constructor(String.class, userDevice.deviceToken)
                 )
                 .from(user)
-                .leftJoin(userDevice)
+                .innerJoin(userDevice)
                 .on(user.id.eq(userDevice.user.id))
                 .where(user.email.eq(email))
                 .fetch();
