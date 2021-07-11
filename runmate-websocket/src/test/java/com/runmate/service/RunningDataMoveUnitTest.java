@@ -1,12 +1,12 @@
 package com.runmate.service;
 
 import com.runmate.TestActiveProfilesResolver;
-import com.runmate.domain.redis.GoalForTempStore;
-import com.runmate.domain.redis.TeamInfo;
+import com.runmate.redis.GoalForTempStore;
+import com.runmate.redis.TeamInfo;
 import com.runmate.exception.CurrentIsNotRunningTimeException;
 import com.runmate.exception.MemberNotIncludedTeamException;
-import com.runmate.repository.redis.MemberInfoRepository;
-import com.runmate.repository.redis.TeamInfoRepository;
+import com.runmate.redis.MemberInfoRepository;
+import com.runmate.redis.TeamInfoRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

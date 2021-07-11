@@ -1,20 +1,20 @@
 package com.runmate.service;
 
-import com.runmate.domain.redis.MemberInfo;
-import com.runmate.domain.redis.TeamInfo;
+import com.runmate.redis.MemberInfo;
+import com.runmate.redis.TeamInfo;
 import com.runmate.dto.MessageType;
 import com.runmate.dto.RunningMessage;
 import com.runmate.exception.NotFoundMemberInfoException;
 import com.runmate.exception.NotFoundTeamInfoException;
-import com.runmate.repository.redis.MemberInfoRepository;
-import com.runmate.repository.redis.TeamInfoRepository;
+import com.runmate.redis.MemberInfoRepository;
+import com.runmate.redis.TeamInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.runmate.repository.redis.MemberInfoRepository.*;
-import static com.runmate.repository.redis.TeamInfoRepository.*;
+import static com.runmate.redis.MemberInfoRepository.*;
+import static com.runmate.redis.TeamInfoRepository.*;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,15 +1,13 @@
-package com.runmate.domain.redis;
+package com.runmate.redis;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@RedisHash("running:member")
 public class MemberInfo {
     @Id
     private long memberId;

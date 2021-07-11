@@ -1,8 +1,5 @@
-package com.runmate.domain;
+package com.runmate.redis;
 
-import com.runmate.domain.redis.GoalForTempStore;
-import com.runmate.domain.redis.TeamInfo;
-import com.runmate.exception.AdminNotIncludedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TeamInfoTest {
     List<Long> memberIds = Arrays.asList(2L, 3L);

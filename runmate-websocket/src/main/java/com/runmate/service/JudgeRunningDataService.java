@@ -1,8 +1,8 @@
 package com.runmate.service;
 
-import com.runmate.domain.redis.TeamInfo;
+import com.runmate.redis.TeamInfo;
 import com.runmate.exception.NotFoundTeamInfoException;
-import com.runmate.repository.redis.TeamInfoRepository;
+import com.runmate.redis.TeamInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

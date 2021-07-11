@@ -1,4 +1,4 @@
-package com.runmate.domain.redis;
+package com.runmate.redis;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.runmate.domain.running.Goal;
