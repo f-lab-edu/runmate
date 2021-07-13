@@ -64,3 +64,13 @@ create table crew_join_request
     foreign key (user_id) references user(id) on delete cascade ,
     foreign key (crew_id) references crew(id) on delete cascade
 ) default character set utf8;
+
+create table user_device
+(
+    id          bigint primary key auto_increment,
+    user_id     bigint not null ,
+    device_alias varchar(255),
+    device_token varchar(255) not null,
+
+    foreign key (user_id) references user(id) on delete cascade
+) default character set utf8;
