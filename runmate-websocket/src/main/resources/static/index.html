@@ -8,6 +8,7 @@
 teamId:<input type="text" name="teamId" id="teamId"><br>
 memberId:<input type="text" name="memberId" id="memberId"><br>
 <button id="btnEnter">입장</button>
+<button id="startRunning">러닝 시작</button>
 
 
 <form id="messageForm">
@@ -33,6 +34,7 @@ memberId:<input type="text" name="memberId" id="memberId"><br>
     const currentSpeedTxt = document.getElementById('currentSpeedTxt');
     const speedUp = document.getElementById('speedUp');
     const speedDown = document.getElementById('speedDown');
+    const startRunning = document.getElementById('startRunning');
 
     speedUp.addEventListener('click', ev => {
         currentSpeed = Math.round((currentSpeed + 0.1) * 10) / 10;
@@ -50,17 +52,17 @@ memberId:<input type="text" name="memberId" id="memberId"><br>
 
 
     function running() {
-            const teamId = document.getElementById('teamId').value;
-            const memberId = document.getElementById('memberId').value;
-            const username = document.getElementById('username').value;
+        const teamId = document.getElementById('teamId').value;
+        const memberId = document.getElementById('memberId').value;
+        const username = document.getElementById('username').value;
 
-            const jsonValue = JSON.stringify({
-                teamId: teamId,
-                memberId: memberId,
-                username: username,
-                distance: currentSpeed,
-            });
-            stompClient.send('/app/running', {}, jsonValue);
+        const jsonValue = JSON.stringify({
+            teamId: teamId,
+            memberId: memberId,
+            username: username,
+            distance: currentSpeed,
+        });
+        stompClient.send('/app/running', {}, jsonValue);
     }
 
     btnEnter.addEventListener("click", ev => {
@@ -77,20 +79,11 @@ memberId:<input type="text" name="memberId" id="memberId"><br>
                 stompClient.subscribe('/topic/' + teamId, function (messageOutput) {
                     const jsonResult = JSON.parse(messageOutput.body);
                     console.log(jsonResult);
-
-                    if (jsonResult.messageType == "SUCCESS") {
+                    if (jsonResult == false || jsonResult.messageType == "SUCCESS" || jsonResult.messageType == "FAIL") {
                         stompClient.disconnect(() => {
-                            console.log("success");
-                            console.log(teamId + "," + memberId);
                             clearInterval(interval);
                         }, {teamId: teamId, memberId: memberId});
-                    } else if (jsonResult.messageType == "FAIL") {
-                        stompClient.disconnect(() => {
-                            console.log("fail");
-                            console.log(teamId + "," + memberId);
-                            clearInterval(interval);
-                        }, {teamId: teamId, memberId: memberId});
-                    } else {
+                    } else if (jsonResult.messageType == "RUNNING") {
                         console.log(jsonResult);
                     }
                 });
@@ -98,8 +91,12 @@ memberId:<input type="text" name="memberId" id="memberId"><br>
         }
 
         connect();
-        interval=setInterval(running, 1000);
     });
+
+
+    startRunning.addEventListener('click', ev => {
+        interval = setInterval(running, 1000);
+    })
 </script>
 </body>
 </html>
