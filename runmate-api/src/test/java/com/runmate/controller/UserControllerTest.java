@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -20,7 +21,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import java.net.URL;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -120,5 +125,26 @@ public class UserControllerTest {
                 .header("Authorization", "Bearer " + token))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    //can be access s3
+    @Test
+    public void When_UploadImage_Expect_Status_OK() throws Exception {
+        final String requestUrl = "/api/users/" + user.getEmail() + "/thumbnail";
+        final String keyName = "";
+
+        URL url = new URL("https://blog.kakaocdn.net/dn/cfcwdg/btq9E5yyy5I/17QtKpp8A7Ylg4XGUo3XN0/img.jpg");
+        MockMultipartFile file = new MockMultipartFile("file",
+                "sky.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                url.openStream());
+
+        MvcResult result = mockMvc.perform(multipart(requestUrl)
+                .file(file)
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andReturn();
+        String body = result.getResponse().getContentAsString();
+        assertTrue(body.contains(keyName));
     }
 }

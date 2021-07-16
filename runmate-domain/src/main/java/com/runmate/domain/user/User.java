@@ -38,6 +38,9 @@ public class User {
     @Embedded
     private Region region;
 
+    @Embedded
+    private ImageFileInfo imageFileInfo;
+
     @Column(name = "introduction", length = 255)
     private String introduction;
 
@@ -84,7 +87,7 @@ public class User {
     public boolean isGradeHigherOrEqualThanCrewGradeLimit(Crew crew) {
         return this.getGrade().higherOrEqualThan(crew.getGradeLimit());
     }
-    
+
     public void upgrade() {
         this.grade = this.grade.getNext();
     }
@@ -107,5 +110,11 @@ public class User {
 
     public boolean isMatchedPassword(String password) {
         return this.password.equals(password);
+    }
+
+    public void selectImage(ImageFileInfo imageFileInfo) {
+        if (imageFileInfo == null)
+            throw new IllegalArgumentException("imageFileInfo is Null");
+        setImageFileInfo(imageFileInfo);
     }
 }
