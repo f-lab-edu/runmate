@@ -3,6 +3,7 @@ spring:
   profiles:
     include:
       - core
+      - s3
   jackson:
     property-naming-strategy: SNAKE_CASE
 server:
@@ -30,6 +31,6 @@ jwt:
 
 ---
 spring.config.activate.on-profile: local
-
+logging.level.com.amazonaws.util.EC2MetadataUtils: error
 ---
 spring.config.activate.on-profile: prod
