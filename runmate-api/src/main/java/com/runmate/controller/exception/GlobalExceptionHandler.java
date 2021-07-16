@@ -60,6 +60,13 @@ public class GlobalExceptionHandler {
                 .body(JsonWrapper.error("server error"));
     }
 
+    @ExceptionHandler(ImageFileUploadFailedException.class)
+    public ResponseEntity<JsonWrapper> handleImageUploadFileException(ImageFileUploadFailedException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(JsonWrapper.error("image upload failed"));
+    }
+
     private String createErrorMessage(MethodArgumentNotValidException e) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < e.getErrorCount(); i++) {
