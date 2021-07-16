@@ -15,7 +15,9 @@ create table user
     gu           varchar(20),
     gun          varchar(20),
     grade        varchar(20) not null default 'UNRANKED',
-    created_at   timestamp            default CURRENT_TIMESTAMP
+    created_at   timestamp            default CURRENT_TIMESTAMP,
+    image_key_name varchar(255),
+    image_created_at timestamp null
 ) default character set utf8;
 
 create table activity
